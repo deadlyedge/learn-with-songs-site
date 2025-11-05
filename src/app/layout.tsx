@@ -7,9 +7,10 @@ import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
 
 const notoSerif = Noto_Serif_TC({
-	variable: '--font-geist-sans',
+	variable: '--font-noto-serif',
 	subsets: ['latin'],
 })
+
 
 export const metadata: Metadata = {
 	title: 'Learn English with Songs',

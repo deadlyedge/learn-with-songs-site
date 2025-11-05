@@ -3,6 +3,13 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
+import { Uncial_Antiqua } from 'next/font/google'
+import { cn } from '@/lib/utils'
+const uncialAntiqua = Uncial_Antiqua({
+	variable: '--font-uncial-antiqua',
+	subsets: ['latin'],
+	weight: ['400'],
+})
 
 type SongPageProps = {
 	params: Promise<{
@@ -74,18 +81,26 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 
 	return (
-		<article className="space-y-10 pb-6">
+		<article className="space-y-6 pb-6">
 			<div className="flex flex-col gap-2 bg-linear-to-tr from-cyan-200 to-yellow-100 p-2 border-b shadow">
 				<Link
 					href="/"
 					className="text-sm font-medium text-primary underline-offset-4 hover:underline">
 					← 返回搜索
 				</Link>
-				<h1 className="text-2xl font-semibold">{song.title}</h1>
+				<h1 className={cn('text-2xl font-semibold', uncialAntiqua.className)}>
+					{song.title}
+				</h1>
 				<div className="flex flex-col md:flex-row gap-4">
 					<div className="flex justify-between w-full md:w-1/2">
 						<div className="flex flex-col">
-							<p className="text-lg text-muted-foreground">{song.artist}</p>
+							<p
+								className={cn(
+									'text-lg text-muted-foreground',
+									uncialAntiqua.className
+								)}>
+								{song.artist}
+							</p>
 							<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
 								{song.album ? <span>专辑：{song.album}</span> : null}
 								{song.releaseDate ? (
@@ -129,7 +144,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 				</div>
 			</div>
 
-			<section className="space-y-4">
+			<section className="space-y-2">
 				<h2 className="text-xl font-semibold">歌词，xdream&apos;s</h2>
 				{lyricsError ? (
 					<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
