@@ -74,52 +74,63 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 
 	return (
-		<article className="space-y-10 pb-12 pt-4">
-			<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-				<div className="space-y-2">
-					<Link
-						href="/"
-						className="text-sm font-medium text-primary underline-offset-4 hover:underline">
-						← 返回搜索
-					</Link>
-					<h1 className="text-3xl font-semibold">{song.title}</h1>
-					<p className="text-lg text-muted-foreground">{song.artist}</p>
-					<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-						{song.album ? <span>专辑：{song.album}</span> : null}
-						{song.releaseDate ? (
-							<time dateTime={song.releaseDate.toISOString()}>
-								发行：{song.releaseDate.getFullYear()}
-							</time>
+		<article className="space-y-10 pb-6">
+			<div className="flex flex-col gap-2 bg-linear-to-tr from-cyan-200 to-yellow-100 p-2 border-b shadow">
+				<Link
+					href="/"
+					className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+					← 返回搜索
+				</Link>
+				<h1 className="text-2xl font-semibold">{song.title}</h1>
+				<div className="flex flex-col md:flex-row gap-4">
+					<div className="flex justify-between w-full md:w-1/2">
+						<div className="flex flex-col">
+							<p className="text-lg text-muted-foreground">{song.artist}</p>
+							<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+								{song.album ? <span>专辑：{song.album}</span> : null}
+								{song.releaseDate ? (
+									<time dateTime={song.releaseDate.toISOString()}>
+										发行：{song.releaseDate.getFullYear()}
+									</time>
+								) : null}
+								{song.language ? <span>语言：{song.language}</span> : null}
+							</div>
+							{song.url ? (
+								<Link
+									href={song.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex text-sm text-primary underline-offset-4 hover:underline">
+									在 Genius 上查看
+								</Link>
+							) : null}
+						</div>
+						{song.artworkUrl ? (
+							<div className="h-48 w-48 overflow-hidden rounded-xl border border-border/60 shadow-sm">
+								<Image
+									src={song.artworkUrl}
+									alt={`${song.title} 封面`}
+									className="object-cover"
+									sizes="192px"
+									width={192}
+									height={192}
+									priority
+								/>
+							</div>
 						) : null}
-						{song.language ? <span>语言：{song.language}</span> : null}
 					</div>
-					{song.url ? (
-						<Link
-							href={song.url}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="inline-flex text-sm text-primary underline-offset-4 hover:underline">
-							在 Genius 上查看
-						</Link>
-					) : null}
+					<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/30 p-2 text-sm">
+						{song.geniusPath ? (
+							<p className="text-muted-foreground">
+								歌词来源：{song.geniusPath}
+							</p>
+						) : null}
+					</div>
 				</div>
-
-				{song.artworkUrl ? (
-					<div className="relative h-48 w-48 shrink-0 overflow-hidden rounded-xl border border-border/60 shadow-sm">
-						<Image
-							fill
-							src={song.artworkUrl}
-							alt={`${song.title} 封面`}
-							className="object-cover"
-							sizes="192px"
-							priority
-						/>
-					</div>
-				) : null}
 			</div>
 
 			<section className="space-y-4">
-				<h2 className="text-xl font-semibold">歌词</h2>
+				<h2 className="text-xl font-semibold">歌词，xdream&apos;s</h2>
 				{lyricsError ? (
 					<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
 						{lyricsError}

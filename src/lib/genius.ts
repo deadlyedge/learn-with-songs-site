@@ -35,25 +35,30 @@ const ensureToken = () => {
 
 	if (!token) {
 		throw new Error(
-			'GENIUS_ACCESS_TOKEN is not set. Add it to your environment to enable Genius search fallback.',
+			'GENIUS_API_TOKEN is not set. Add it to your environment to enable Genius search fallback.'
 		)
 	}
 
 	return token
 }
 
-export async function searchGeniusSongs(query: string): Promise<NormalizedSong[]> {
+export async function searchGeniusSongs(
+	query: string
+): Promise<NormalizedSong[]> {
 	const token = ensureToken()
 
-	const response = await fetch(`${GENIUS_API_BASE}/search?q=${encodeURIComponent(query)}`, {
-		headers: {
-			Accept: 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-		next: {
-			revalidate: 0,
-		},
-	})
+	const response = await fetch(
+		`${GENIUS_API_BASE}/search?q=${encodeURIComponent(query)}`,
+		{
+			headers: {
+				Accept: 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			next: {
+				revalidate: 0,
+			},
+		}
+	)
 
 	if (!response.ok) {
 		throw new Error(`Genius search failed with status ${response.status}`)

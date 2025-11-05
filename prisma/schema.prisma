@@ -15,9 +15,9 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  clerkId  String @unique
-  email    String @db.Text
+  id       String  @id @default(uuid())
+  clerkId  String  @unique
+  email    String  @db.Text
   name     String?
   imageUrl String?
 
@@ -26,8 +26,8 @@ model User {
 }
 
 model Song {
-  id          String   @id @default(uuid())
-  geniusId    String?  @unique
+  id          String    @id @default(uuid())
+  geniusId    String?   @unique
   geniusPath  String?
   title       String
   artist      String
@@ -37,7 +37,7 @@ model Song {
   language    String? // e.g. 'en'
   url         String? // canonical song url
 
-  lyrics   Lyric?
+  lyrics    Lyric?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

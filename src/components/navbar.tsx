@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export const Navbar = () => {
 	return (
-		<nav className="sticky top-0 left-0 w-full h-12 flex items-center justify-between gap-2 bg-foreground/20 backdrop-blur-md p-2">
+		<nav className="sticky top-0 left-0 w-full h-12 flex items-center justify-between gap-2 bg-foreground/20 backdrop-blur-md p-2 z-40">
 			<div className="font-bold">
 				<Link href="/">LEwS</Link>
 			</div>
