@@ -14,13 +14,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Profile {
+model User {
   id       String @id @default(uuid())
-  userId   String @unique
-  name     String
-  imageUrl String @db.Text
+  clerkId  String @unique
   email    String @db.Text
+  name     String?
+  imageUrl String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Song {
+  id          String   @id @default(uuid())
+  geniusId    String?  @unique
+  geniusPath  String?
+  title       String
+  artist      String
+  album       String?
+  releaseDate DateTime?
+  artworkUrl  String?
+  language    String? // e.g. 'en'
+  url         String? // canonical song url
+
+  lyrics   Lyric?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([title, artist])
+  @@index([artist])
+}
+
+model Lyric {
+  id        String   @id @default(uuid())
+  songId    String   @unique
+  content   String   @db.Text
+  provider  String?
+  fetchedAt DateTime @default(now())
+
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
 }
