@@ -17,6 +17,7 @@
   - 用户输入“歌曲名”或“艺人名”；
   - 前端通过 Next.js API 路由调用后端；
   - 优先检索本地数据库，未命中则请求Genius API；
+  - 歌词无法直接通过genius api获取，可通过 `https://lyrics.zick.me/lyrics?path=/Guns-n-roses-november-rain-lyrics` 获取歌曲的歌词；
   - 新资源自动回流数据库缓存（实时/异步，后端同步逻辑）。
 - 歌词页结构
   - 显示歌曲基础信息（歌名、艺人、专辑、年等）；
