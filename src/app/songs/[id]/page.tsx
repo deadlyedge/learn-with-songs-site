@@ -179,13 +179,13 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 
 			<section className="space-y-2">
 				<h2 className="text-xl font-semibold px-2">歌词 Lyrics</h2>
-				<div className="flex flex-col gap-2 md:flex-row p-4 md:p-6">
+				<div className="p-4 md:p-6">
 					{lyricsError ? (
 						<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
 							{lyricsError}
 						</p>
 					) : (
-						<div className="w-full md:w-1/2">
+						<div className="w-full mb-80">
 							{lyricLines.length > 0 ? (
 								<ul className="space-y-3">
 									{lyricLines.map((line, index) =>
@@ -205,7 +205,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							)}
 						</div>
 					)}
-					<div className="flex flex-col gap-2 w-full md:w-1/2 bg-white/50 shadow-2xl rounded-2xl border p-2">
+					<div id='float-annoted' className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl border border-white/20 p-2 backdrop-blur-sm">
 						{lyricRecord ? (
 							<>
 								<p className="text-sm text-muted-foreground">
