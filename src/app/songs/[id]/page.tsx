@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { Uncial_Antiqua } from 'next/font/google'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { HeartIcon, Outdent, ShareIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
 const uncialAntiqua = Uncial_Antiqua({
 	variable: '--font-uncial-antiqua',
 	subsets: ['latin'],
@@ -18,20 +22,27 @@ type SongPageProps = {
 }
 
 const splitLyrics = (content: string) => {
+	// 保留原始格式：按换行分割并保留每一行的原始内容。
+	// 如果某行（忽略前导空白）以 '[' 开头（通常是节或注释），
+	// 且之前一行不是空行，则在它前面插入一个空行以便视觉分隔。
 	const lines = content.split(/\r?\n/)
 	const normalized: string[] = []
 
 	for (const rawLine of lines) {
-		const line = rawLine.trim()
+		// 保留行的原始内容，不 trim
+		const line = rawLine
 
-		if (!line) {
+		// 如果当前行（忽略前导空白）以 '[' 开头
+		if (line.trimStart().startsWith('[')) {
+			// 如果前一行存在且不是空行，则插入一个空行作为分隔
 			if (normalized.length > 0 && normalized[normalized.length - 1] !== '') {
 				normalized.push('')
 			}
-
+			normalized.push(line)
 			continue
 		}
 
+		// 普通行直接保留（包括空字符串）
 		normalized.push(line)
 	}
 
@@ -89,39 +100,61 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 					← 返回搜索
 				</Link>
 				<h1 className={cn('text-2xl font-semibold', uncialAntiqua.className)}>
-					{song.title}
+					{song.title}oh my god this will be too longoh my god this will be too
+					long
 				</h1>
 				<div className="flex flex-col md:flex-row gap-4">
 					<div className="flex justify-between w-full md:w-1/2">
-						<div className="flex flex-col">
-							<p
-								className={cn(
-									'text-lg text-muted-foreground',
-									uncialAntiqua.className
-								)}>
-								{song.artist}
-							</p>
-							<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-								{song.album ? <span>专辑：{song.album}</span> : null}
-								{song.releaseDate ? (
-									<time dateTime={song.releaseDate.toISOString()}>
-										发行：{song.releaseDate.getFullYear()}
-									</time>
-								) : null}
-								{song.language ? <span>语言：{song.language}</span> : null}
+						<div className="flex flex-col justify-between flex-2">
+							<div className="flex flex-col">
+								<p
+									className={cn(
+										'text-lg text-muted-foreground',
+										uncialAntiqua.className
+									)}>
+									{song.artist} oh my god
+								</p>
+								<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+									{song.album ? <span>专辑：{song.album}</span> : null}
+									{song.releaseDate ? (
+										<time dateTime={song.releaseDate.toISOString()}>
+											发行：{song.releaseDate.getFullYear()}
+										</time>
+									) : null}
+									{song.language ? <span>语言：{song.language}</span> : null}
+								</div>
 							</div>
-							{song.url ? (
-								<Link
-									href={song.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="inline-flex text-sm text-primary underline-offset-4 hover:underline">
-									在 Genius 上查看
-								</Link>
-							) : null}
+							<div className="flex flex-col items-end px-2 gap-1">
+								<div className="flex text-xs justify-end gap-1">
+									<Badge
+										variant="outline"
+										className="hover:bg-amber-100 hover:cursor-pointer">
+										<ShareIcon />
+										分享
+									</Badge>
+									<Badge
+										variant="outline"
+										className="hover:bg-amber-100 hover:cursor-pointer">
+										<HeartIcon />
+										收藏
+									</Badge>
+								</div>
+								{song.url ? (
+									<Link
+										href={song.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="">
+										<Button size="sm" className="rounded-full text-xs">
+											在 Genius 上查看
+											<Outdent />
+										</Button>
+									</Link>
+								) : null}
+							</div>
 						</div>
 						{song.artworkUrl ? (
-							<div className="h-48 w-48 overflow-hidden rounded-xl border border-border/60 shadow-sm">
+							<div className="h-48 w-48 shrink-0 overflow-hidden rounded-xl border border-border/60 shadow-sm">
 								<Image
 									src={song.artworkUrl}
 									alt={`${song.title} 封面`}
@@ -145,30 +178,46 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 			</div>
 
 			<section className="space-y-2">
-				<h2 className="text-xl font-semibold">歌词，xdream&apos;s</h2>
-				{lyricsError ? (
-					<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-						{lyricsError}
-					</p>
-				) : (
-					<div className="rounded-xl border border-border/70 bg-background p-6 shadow-sm">
-						{lyricLines.length > 0 ? (
-							<ul className="space-y-3">
-								{lyricLines.map((line, index) => (
-									<li
-										key={`${index}-${line}`}
-										className="text-base leading-relaxed">
-										{line}
-									</li>
-								))}
-							</ul>
-						) : (
-							<p className="text-sm text-muted-foreground">
-								歌词加载中或暂不可用。
-							</p>
-						)}
+				<h2 className="text-xl font-semibold px-2">歌词 Lyrics</h2>
+				<div className="flex flex-col gap-2 md:flex-row p-4 md:p-6">
+					{lyricsError ? (
+						<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+							{lyricsError}
+						</p>
+					) : (
+						<div className="w-full md:w-1/2">
+							{lyricLines.length > 0 ? (
+								<ul className="space-y-3">
+									{lyricLines.map((line, index) =>
+										line === '' ? (
+											<li key={`spacer-${index}`} className="h-3" />
+										) : (
+											<li key={`${index}-${line}`} className="leading-4">
+												{line}
+											</li>
+										)
+									)}
+								</ul>
+							) : (
+								<p className="text-sm text-muted-foreground">
+									歌词加载中或暂不可用。
+								</p>
+							)}
+						</div>
+					)}
+					<div className="flex flex-col gap-2 w-full md:w-1/2 bg-white/50 shadow-2xl rounded-2xl border p-2">
+						{lyricRecord ? (
+							<>
+								<p className="text-sm text-muted-foreground">
+									歌词提供者：{lyricRecord.provider}
+								</p>
+								<p className="text-sm text-muted-foreground">
+									歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
+								</p>
+							</>
+						) : null}
 					</div>
-				)}
+				</div>
 			</section>
 		</article>
 	)
