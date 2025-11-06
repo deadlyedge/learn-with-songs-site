@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Iridescence from '@/components/ui/effects/iridescence'
 
 const uncialAntiqua = Uncial_Antiqua({
 	variable: '--font-uncial-antiqua',
@@ -92,11 +93,21 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 
 	return (
-		<article className="space-y-6 pb-6">
-			<div className="flex flex-col gap-2 bg-linear-to-tr from-cyan-200 to-yellow-100 p-2 border-b shadow">
+		<article className="space-y-6 pb-6 relative">
+			<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
+				<div className="absolute inset-0 top-0 z-[-2]">
+					<Iridescence
+						color={[0.5, 0.1, 0.2]}
+						mouseReact={false}
+						amplitude={0.1}
+						speed={0.2}
+					/>
+				</div>
+				{/* <div className='absolute inset-0 top-0 z-[-1] bg-white/80' /> */}
+
 				<Link
 					href="/"
-					className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+					className="text-sm font-medium text-secondary underline-offset-4 hover:underline">
 					← 返回搜索
 				</Link>
 				<h1 className={cn('text-2xl font-semibold', uncialAntiqua.className)}>
@@ -109,12 +120,12 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							<div className="flex flex-col">
 								<p
 									className={cn(
-										'text-lg text-muted-foreground',
+										'text-lg text-secondary',
 										uncialAntiqua.className
 									)}>
 									{song.artist} oh my god
 								</p>
-								<div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+								<div className="flex flex-wrap gap-3 text-sm">
 									{song.album ? <span>专辑：{song.album}</span> : null}
 									{song.releaseDate ? (
 										<time dateTime={song.releaseDate.toISOString()}>
@@ -127,14 +138,14 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							<div className="flex flex-col items-end px-2 gap-1">
 								<div className="flex text-xs justify-end gap-1">
 									<Badge
-										variant="outline"
-										className="hover:bg-amber-100 hover:cursor-pointer">
+										variant="buttonLike"
+										className="hover:cursor-pointer border-0">
 										<ShareIcon />
 										分享
 									</Badge>
 									<Badge
-										variant="outline"
-										className="hover:bg-amber-100 hover:cursor-pointer">
+										variant="buttonLike"
+										className="hover:cursor-pointer border-0">
 										<HeartIcon />
 										收藏
 									</Badge>
@@ -167,13 +178,11 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							</div>
 						) : null}
 					</div>
-					<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/30 p-2 text-sm">
-						{song.geniusPath ? (
-							<p className="text-muted-foreground">
-								歌词来源：{song.geniusPath}
-							</p>
-						) : null}
-					</div>
+				<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/40 p-2 text-sm">
+					{song.geniusPath ? (
+						<p className="">歌词来源：{song.geniusPath}</p>
+					) : null}
+				</div>
 				</div>
 			</div>
 
@@ -205,7 +214,9 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							)}
 						</div>
 					)}
-					<div id='float-annoted' className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl border border-white/20 p-2 backdrop-blur-sm">
+					<div
+						id="float-annoted"
+						className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl border border-white/20 p-2 backdrop-blur-sm">
 						{lyricRecord ? (
 							<>
 								<p className="text-sm text-muted-foreground">
