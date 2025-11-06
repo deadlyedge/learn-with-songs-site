@@ -28,7 +28,7 @@ model User {
 model Song {
   id          String    @id @default(uuid())
   geniusId    String?   @unique
-  geniusPath  String?
+  geniusPath  String?   @unique
   title       String
   artist      String
   album       String?
@@ -43,6 +43,7 @@ model Song {
 
   @@index([title, artist])
   @@index([artist])
+  @@index([geniusPath])
 }
 
 model Lyric {
