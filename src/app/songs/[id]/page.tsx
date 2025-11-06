@@ -111,8 +111,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 					← 返回搜索
 				</Link>
 				<h1 className={cn('text-2xl font-semibold', uncialAntiqua.className)}>
-					{song.title}oh my god this will be too longoh my god this will be too
-					long
+					{song.title}
 				</h1>
 				<div className="flex flex-col md:flex-row gap-4">
 					<div className="flex justify-between w-full md:w-1/2">
@@ -123,7 +122,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 										'text-lg text-secondary',
 										uncialAntiqua.className
 									)}>
-									{song.artist} oh my god
+									{song.artist}
 								</p>
 								<div className="flex flex-wrap gap-3 text-sm">
 									{song.album ? <span>专辑：{song.album}</span> : null}
@@ -132,6 +131,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 											发行：{song.releaseDate.getFullYear()}
 										</time>
 									) : null}
+									{song.geniusId ? <span>GeniusID：{song.geniusId}</span> : null}
 									{song.language ? <span>语言：{song.language}</span> : null}
 								</div>
 							</div>

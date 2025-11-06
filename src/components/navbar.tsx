@@ -1,14 +1,13 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
-
-// import { NavSearch } from './navSearch'
-import { Button } from './ui/button'
 import Link from 'next/link'
+
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { Button } from './ui/button'
 
 export const Navbar = () => {
 	return (
 		<nav className="sticky top-0 left-0 w-full h-12 flex items-center justify-between gap-2 bg-primary/50 backdrop-blur-md p-2 z-40">
 			<div className="font-bold">
-				<Link href="/">LEwS</Link>
+				<Link href="/">LEwS <span className='text-xs text-muted-foreground font-light italic'>powered by genius.com</span></Link>
 			</div>
 			<div className="flex items-center">
 				{/* <NavSearch /> */}
