@@ -36,6 +36,8 @@ model Song {
   artworkUrl  String?
   language    String? // e.g. 'en'
   url         String? // canonical song url
+  details     Json?
+  detailsFetchedAt DateTime?
 
   lyrics    Lyric?
   createdAt DateTime @default(now())

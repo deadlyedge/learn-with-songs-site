@@ -1,5 +1,5 @@
 import { GENIUS_API_BASE } from '@/constants'
-import type { GeniusSongHit, NormalizedSong } from '@/types'
+import type { GeniusSongHit, GeniusSongInfo, NormalizedSong } from '@/types'
 
 const ensureToken = () => {
 	const token = process.env.GENIUS_API_TOKEN
@@ -57,4 +57,50 @@ export async function searchGeniusSongs(
 			url: result.url ?? undefined,
 			path: result.path ?? undefined,
 		}))
+}
+
+export async function fetchGeniusSongDetails(
+	geniusId: number | string
+): Promise<GeniusSongInfo> {
+	const token = ensureToken()
+	const idValue =
+		typeof geniusId === 'number'
+			? Math.trunc(geniusId)
+			: Number.parseInt(String(geniusId).trim(), 10)
+
+	if (!Number.isFinite(idValue)) {
+		throw new Error(`Invalid Genius song id: ${geniusId}`)
+	}
+
+	const id = idValue.toString()
+
+	const response = await fetch(`${GENIUS_API_BASE}/songs/${id}`, {
+		headers: {
+			Accept: 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		next: {
+			revalidate: 0,
+		},
+	})
+
+	if (!response.ok) {
+		throw new Error(
+			`Genius song details fetch failed with status ${response.status}`
+		)
+	}
+
+	const payload = (await response.json()) as {
+		response?: {
+			song?: GeniusSongInfo
+		}
+	}
+
+	const song = payload.response?.song
+
+	if (!song) {
+		throw new Error('Genius song details payload did not include song data.')
+	}
+
+	return song
 }

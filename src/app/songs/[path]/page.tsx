@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
+import { ensureSongDetails } from '@/lib/song-details'
 import { Uncial_Antiqua } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -53,13 +54,26 @@ const splitLyrics = (content: string) => {
 export default async function SongDetailPage({ params }: SongPageProps) {
 	const { path } = await params
 	const geniusPath = `/${path}`
-	const song = await prisma.song.findUnique({
+	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },
 		include: { lyrics: true },
 	})
 
-	if (!song) {
+	if (!songRecord) {
 		notFound()
+	}
+
+	let song = songRecord
+
+	try {
+		const { song: syncedSong } = await ensureSongDetails(songRecord)
+		song = {
+			...songRecord,
+			...syncedSong,
+			lyrics: songRecord.lyrics,
+		}
+	} catch (error) {
+		console.error('Failed to sync song details', error)
 	}
 
 	let lyricRecord = song.lyrics
