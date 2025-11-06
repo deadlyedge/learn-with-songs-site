@@ -1,5 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -176,9 +177,12 @@
 		@apply bg-background text-foreground;
 	}
 	button:not(:disabled),
-	[role="button"]:not(:disabled) {
+	[role='button']:not(:disabled) {
 		cursor: pointer;
 	}
+	/* #md a {
+		@apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600;
+	} */
 }
 
 /* width */
@@ -188,7 +192,7 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-	background: var(--background) ;
+	background: var(--background);
 }
 
 /* Handle */

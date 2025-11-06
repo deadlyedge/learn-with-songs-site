@@ -36,9 +36,7 @@ export type GeniusSongInfo = {
 	apple_music_id?: string | null
 	apple_music_player_url?: string | null
 	artist_names?: string
-	description?: {
-		dom?: DomNode
-	} | null
+	description?: string | null
 	embed_content?: string
 	full_title?: string
 	header_image_thumbnail_url?: string
@@ -80,13 +78,6 @@ export type GeniusSongInfo = {
 	verified_contributors?: string[]
 	verified_lyrics_by?: string[]
 	writer_artists?: Artist[]
-}
-
-export type DomNode = {
-	tag: string
-	attributes?: Record<string, string>
-	data?: Record<string, string>
-	children?: Array<string | DomNode>
 }
 
 export type SongStats = {
@@ -253,9 +244,7 @@ export type Annotatable = {
 
 export type Annotation = {
 	api_path?: string
-	body?: {
-		dom?: DomNode
-	}
+	body?: string | null
 	comment_count?: number
 	community?: boolean
 	custom_preview?: string | null
@@ -279,4 +268,30 @@ export type AnnotationAuthor = {
 	attribution?: number
 	pinned_role?: string | null
 	user?: User
+}
+
+export type GeniusDomNode = {
+	tag?: string
+	attributes?: Record<string, string>
+	data?: Record<string, string>
+	children?: Array<string | GeniusDomNode>
+}
+
+export type AnnotationRaw = Omit<Annotation, 'body'> & {
+	body?: string | { dom?: GeniusDomNode } | null
+}
+
+export type DescriptionAnnotationRaw = Omit<
+	DescriptionAnnotation,
+	'annotations'
+> & {
+	annotations?: AnnotationRaw[] | null
+}
+
+export type GeniusSongInfoRaw = Omit<
+	GeniusSongInfo,
+	'description' | 'description_annotation'
+> & {
+	description?: string | { dom?: GeniusDomNode } | null
+	description_annotation?: DescriptionAnnotationRaw | null
 }

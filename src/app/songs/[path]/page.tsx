@@ -1,18 +1,27 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { Uncial_Antiqua, Noto_Sans } from 'next/font/google'
 import { notFound } from 'next/navigation'
+import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { ensureSongDetails } from '@/lib/song-details'
-import { Uncial_Antiqua } from 'next/font/google'
-import { cn } from '@/lib/utils'
+import { cn, hexToRgb01 } from '@/lib/utils'
+
 import { Badge } from '@/components/ui/badge'
-import { HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Iridescence from '@/components/ui/effects/iridescence'
+import Markdown from 'react-markdown'
+import { GeniusSongInfo } from '@/types'
 
 const uncialAntiqua = Uncial_Antiqua({
 	variable: '--font-uncial-antiqua',
+	subsets: ['latin'],
+	weight: ['400'],
+})
+
+const notoSans = Noto_Sans({
+	variable: '--font-noto-sans',
 	subsets: ['latin'],
 	weight: ['400'],
 })
@@ -102,19 +111,23 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	}
 
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
+	const details = song.details as GeniusSongInfo
+	const description = details.description
+	const colorArray = details.song_art_primary_color
+		? hexToRgb01(details.song_art_primary_color)
+		: ([0.5, 0.1, 0.2] as [number, number, number])
 
 	return (
 		<article className="space-y-6 pb-6 relative">
 			<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 				<div className="absolute inset-0 top-0 z-[-2]">
 					<Iridescence
-						color={[0.5, 0.1, 0.2]}
+						color={colorArray}
 						mouseReact={false}
 						amplitude={0.1}
 						speed={0.2}
 					/>
 				</div>
-				{/* <div className='absolute inset-0 top-0 z-[-1] bg-white/80' /> */}
 
 				<Link
 					href="/"
@@ -135,17 +148,30 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 									)}>
 									{song.artist}
 								</p>
-								<div className="flex flex-wrap gap-3 text-sm">
+								<div className="flex flex-wrap gap-2 gap-x-3 mt-1.5 text-sm">
 									{song.album ? <span>专辑：{song.album}</span> : null}
 									{song.releaseDate ? (
 										<time dateTime={song.releaseDate.toISOString()}>
-											发行：{song.releaseDate.getFullYear()}
+											发行：{details.release_date_for_display}
+											{/* 发行：{song.releaseDate.getFullYear()} */}
 										</time>
 									) : null}
-									{song.geniusId ? (
+									{/* {song.geniusId ? (
 										<span>GeniusID：{song.geniusId}</span>
-									) : null}
+									) : null} */}
 									{song.language ? <span>语言：{song.language}</span> : null}
+									{details.stats?.contributors ? (
+										<span className='flex'>
+											<EditIcon />
+											{details.stats.contributors}
+										</span>
+									) : null}
+									{details.stats?.pageviews ? (
+										<span className='flex'>
+											<EyeIcon />
+											{details.stats.pageviews}
+										</span>
+									) : null}
 								</div>
 							</div>
 							<div className="flex flex-col items-end px-2 gap-1">
@@ -191,10 +217,17 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							</div>
 						) : null}
 					</div>
-					<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/40 p-2 text-sm">
-						{song.geniusPath ? (
-							<p className="">歌词来源：{song.geniusPath}</p>
-						) : null}
+					<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-amber-100/80 p-2 text-sm text-shadow-none">
+						{description && (
+							<div
+								id="md"
+								className={cn(
+									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none text-sm text-foreground',
+									notoSans.className
+								)}>
+								<Markdown>{description}</Markdown>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
@@ -229,17 +262,27 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 					)}
 					<div
 						id="float-annoted"
-						className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl border border-white/20 p-2 backdrop-blur-sm">
+						className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 p-2 backdrop-blur-sm overflow-y-auto">
 						{lyricRecord ? (
-							<>
+							<div className=" text-xs">
 								<p className="text-sm text-muted-foreground">
 									歌词提供者：{lyricRecord.provider}
 								</p>
 								<p className="text-sm text-muted-foreground">
 									歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
 								</p>
-							</>
+							</div>
 						) : null}
+						{description && (
+							<div
+								id="md"
+								className={cn(
+									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
+									notoSans.className
+								)}>
+								<Markdown>{description}</Markdown>
+							</div>
+						)}
 					</div>
 				</div>
 			</section>

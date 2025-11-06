@@ -10,7 +10,7 @@ export const Navbar = () => {
 			<div className="font-bold">
 				<Link href="/">
 					LEwS{' '}
-					<span className="text-xs text-muted-foreground font-light italic">
+					<span className="text-[6px] text-muted-foreground font-light italic">
 						powered by genius.com
 					</span>
 				</Link>
@@ -18,13 +18,13 @@ export const Navbar = () => {
 			<div className="flex items-center">
 				{/* <NavSearch /> */}
 				<SignedIn>
-					<Button variant="link" asChild>
+					<Button variant="link" size="sm" asChild>
 						<Link href="/vocabulary">
 							<BookIcon />
 							生词本
 						</Link>
 					</Button>
-					<Button variant="link" asChild>
+					<Button variant="link" size="sm" asChild>
 						<Link href="/collections">
 							<HeartIcon />
 							我的收藏

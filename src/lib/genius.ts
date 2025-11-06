@@ -1,5 +1,9 @@
 import { GENIUS_API_BASE } from '@/constants'
-import type { GeniusSongHit, GeniusSongInfo, NormalizedSong } from '@/types'
+import type {
+	GeniusSongHit,
+	GeniusSongInfoRaw,
+	NormalizedSong,
+} from '@/types'
 
 const ensureToken = () => {
 	const token = process.env.GENIUS_API_TOKEN
@@ -61,7 +65,7 @@ export async function searchGeniusSongs(
 
 export async function fetchGeniusSongDetails(
 	geniusId: number | string
-): Promise<GeniusSongInfo> {
+): Promise<GeniusSongInfoRaw> {
 	const token = ensureToken()
 	const idValue =
 		typeof geniusId === 'number'
@@ -92,7 +96,7 @@ export async function fetchGeniusSongDetails(
 
 	const payload = (await response.json()) as {
 		response?: {
-			song?: GeniusSongInfo
+			song?: GeniusSongInfoRaw
 		}
 	}
 
