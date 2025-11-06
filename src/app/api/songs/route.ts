@@ -8,7 +8,7 @@ const parseQuery = (request: NextRequest) => {
 	return url.searchParams.get('q')?.trim() ?? ''
 }
 
-const toSongDto = (song: Song) => {
+const toSongDTO = (song: Song) => {
 	return {
 		id: song.id,
 		title: song.title,
@@ -24,6 +24,7 @@ const toSongDto = (song: Song) => {
 
 export async function GET(request: NextRequest) {
 	const query = parseQuery(request)
+	console.log('route.ts hit')
 
 	if (!query) {
 		return NextResponse.json(
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
 	if (dbSongs.length > 0) {
 		return NextResponse.json({
 			source: 'database' as const,
-			songs: dbSongs.map(toSongDto),
+			songs: dbSongs.map(toSongDTO),
 		})
 	}
 
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
 
 		return NextResponse.json({
 			source: 'genius' as const,
-			songs: persisted.map(toSongDto),
+			songs: persisted.map(toSongDTO),
 		})
 	} catch (error) {
 		console.error(error)

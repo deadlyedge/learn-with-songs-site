@@ -1,11 +1,11 @@
-const DEFAULT_LYRICS_ENDPOINT = 'https://lyrics.zick.me/lyrics'
+import { DEFAULT_LYRICS_ENDPOINT } from "@/constants"
 
 export async function fetchLyricsFromPath(path: string) {
 	if (!path.startsWith('/')) {
 		throw new Error(`Invalid Genius path: ${path}`)
 	}
 
-	const baseUrl = process.env.LYRICS_API_URL ?? DEFAULT_LYRICS_ENDPOINT
+	const baseUrl = process.env.LYRICS_ENDPOINT ?? DEFAULT_LYRICS_ENDPOINT
 	const url = new URL(baseUrl)
 	url.searchParams.set('path', path)
 

@@ -1,34 +1,5 @@
-const GENIUS_API_BASE = 'https://api.genius.com'
-
-export type NormalizedSong = {
-	geniusId: number
-	title: string
-	artist: string
-	album?: string
-	releaseDate?: string
-	artworkUrl?: string
-	language?: string
-	url?: string
-	path?: string
-}
-
-type GeniusSongHit = {
-	result: {
-		id: number
-		title: string
-		primary_artist: {
-			name: string
-		}
-		primary_album?: {
-			name?: string
-		}
-		release_date_for_display?: string
-		song_art_image_url?: string
-		language?: string
-		url?: string
-		path?: string
-	}
-}
+import { GENIUS_API_BASE } from '@/constants'
+import type { GeniusSongHit, NormalizedSong } from '@/types'
 
 const ensureToken = () => {
 	const token = process.env.GENIUS_API_TOKEN

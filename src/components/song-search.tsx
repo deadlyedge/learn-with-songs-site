@@ -62,7 +62,7 @@ export const SongSearch = () => {
 				const payload = (await response.json()) as Partial<SearchResponse> & {
 					error?: string
 				}
-				console.log(payload)
+				// console.log(payload)
 
 				if (!response.ok || !payload.songs) {
 					throw new Error(payload.error ?? '搜索失败，请稍后重试。')
