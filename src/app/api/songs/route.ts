@@ -18,6 +18,7 @@ const toSongDto = (song: Song) => {
 		artworkUrl: song.artworkUrl,
 		language: song.language,
 		url: song.url,
+		path: song.geniusPath,
 	}
 }
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 	if (!query) {
 		return NextResponse.json(
 			{ error: 'Parameter `q` is required for searching songs.' },
-			{ status: 400 },
+			{ status: 400 }
 		)
 	}
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 			],
 		},
 		orderBy: {
-			updatedAt: 'desc',
+			releaseDate: 'asc',
 		},
 		take: 10,
 	})
@@ -63,9 +64,13 @@ export async function GET(request: NextRequest) {
 
 		const persisted = await Promise.all(
 			fallbackSongs.slice(0, 10).map((song) => {
-				const releaseDate = song.releaseDate ? new Date(song.releaseDate) : undefined
+				const releaseDate = song.releaseDate
+					? new Date(song.releaseDate)
+					: undefined
 				const parsedReleaseDate =
-					releaseDate && !Number.isNaN(releaseDate.getTime()) ? releaseDate : undefined
+					releaseDate && !Number.isNaN(releaseDate.getTime())
+						? releaseDate
+						: undefined
 
 				return prisma.song.upsert({
 					where: {
@@ -93,7 +98,7 @@ export async function GET(request: NextRequest) {
 						geniusPath: song.path ?? null,
 					},
 				})
-			}),
+			})
 		)
 
 		return NextResponse.json({
@@ -107,7 +112,7 @@ export async function GET(request: NextRequest) {
 			{
 				error: (error as Error).message ?? 'Failed to fetch songs from Genius.',
 			},
-			{ status: 502 },
+			{ status: 502 }
 		)
 	}
 }

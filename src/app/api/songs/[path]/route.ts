@@ -20,21 +20,24 @@ const toSongDetailDto = (song: Song, lyric: Lyric) => ({
 })
 
 type RouteContext = {
-	params: {
-		id: string
-	}
+	params: Promise<{
+		path: string
+	}>
 }
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-	const songId = context.params.id
+	const { path } = await context.params
 
-	if (!songId) {
-		return NextResponse.json({ error: 'Song id is required.' }, { status: 400 })
+	if (!path) {
+		return NextResponse.json(
+			{ error: 'Song path id is required.' },
+			{ status: 400 }
+		)
 	}
 
 	const song = await prisma.song.findUnique({
 		where: {
-			id: songId,
+			geniusPath: path,
 		},
 		include: {
 			lyrics: true,
@@ -48,15 +51,15 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 	let lyricRecord = song.lyrics
 
 	if (!lyricRecord) {
-		if (!song.geniusPath) {
-			return NextResponse.json(
-				{ error: 'Lyrics are not available for this song yet.' },
-				{ status: 404 },
-			)
-		}
+		// if (!song.geniusPath) {
+		// 	return NextResponse.json(
+		// 		{ error: 'Lyrics are not available for this song yet.' },
+		// 		{ status: 404 }
+		// 	)
+		// }
 
 		try {
-			const lyrics = await fetchLyricsFromPath(song.geniusPath)
+			const lyrics = await fetchLyricsFromPath(path)
 
 			lyricRecord = await prisma.lyric.upsert({
 				where: {
@@ -77,7 +80,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 			console.error(error)
 			return NextResponse.json(
 				{ error: 'Failed to fetch lyrics from upstream service.' },
-				{ status: 502 },
+				{ status: 502 }
 			)
 		}
 	}

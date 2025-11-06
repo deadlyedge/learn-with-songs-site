@@ -18,7 +18,7 @@ const uncialAntiqua = Uncial_Antiqua({
 
 type SongPageProps = {
 	params: Promise<{
-		id: string
+		path: string
 	}>
 }
 
@@ -51,9 +51,10 @@ const splitLyrics = (content: string) => {
 }
 
 export default async function SongDetailPage({ params }: SongPageProps) {
-	const { id } = await params
+	const { path } = await params
+	const geniusPath = `/${path}`
 	const song = await prisma.song.findUnique({
-		where: { id },
+		where: { geniusPath },
 		include: { lyrics: true },
 	})
 
@@ -65,28 +66,24 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	let lyricsError: string | null = null
 
 	if (!lyricRecord) {
-		if (!song.geniusPath) {
-			lyricsError = '当前歌曲缺少歌词来源，请稍后再试。'
-		} else {
-			try {
-				const fetchedLyrics = await fetchLyricsFromPath(song.geniusPath)
-				lyricRecord = await prisma.lyric.upsert({
-					where: { songId: song.id },
-					update: {
-						content: fetchedLyrics,
-						provider: 'lyrics.zick.me',
-						fetchedAt: new Date(),
-					},
-					create: {
-						songId: song.id,
-						content: fetchedLyrics,
-						provider: 'lyrics.zick.me',
-					},
-				})
-			} catch (error) {
-				console.error(error)
-				lyricsError = '歌词拉取失败，请稍后再试。'
-			}
+		try {
+			const fetchedLyrics = await fetchLyricsFromPath(geniusPath)
+			lyricRecord = await prisma.lyric.upsert({
+				where: { songId: song.id },
+				update: {
+					content: fetchedLyrics,
+					provider: 'lyrics.zick.me',
+					fetchedAt: new Date(),
+				},
+				create: {
+					songId: song.id,
+					content: fetchedLyrics,
+					provider: 'lyrics.zick.me',
+				},
+			})
+		} catch (error) {
+			console.error(error)
+			lyricsError = '歌词拉取失败，请稍后再试。'
 		}
 	}
 
@@ -131,7 +128,9 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 											发行：{song.releaseDate.getFullYear()}
 										</time>
 									) : null}
-									{song.geniusId ? <span>GeniusID：{song.geniusId}</span> : null}
+									{song.geniusId ? (
+										<span>GeniusID：{song.geniusId}</span>
+									) : null}
 									{song.language ? <span>语言：{song.language}</span> : null}
 								</div>
 							</div>
@@ -178,11 +177,11 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 							</div>
 						) : null}
 					</div>
-				<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/40 p-2 text-sm">
-					{song.geniusPath ? (
-						<p className="">歌词来源：{song.geniusPath}</p>
-					) : null}
-				</div>
+					<div className="w-full md:w-1/2 border rounded-lg bg-amber-100/40 p-2 text-sm">
+						{song.geniusPath ? (
+							<p className="">歌词来源：{song.geniusPath}</p>
+						) : null}
+					</div>
 				</div>
 			</div>
 

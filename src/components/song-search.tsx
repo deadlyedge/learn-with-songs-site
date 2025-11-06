@@ -14,6 +14,7 @@ type SongResult = {
 	artworkUrl?: string | null
 	language?: string | null
 	url?: string | null
+	path?: string | null
 }
 
 type Source = 'database' | 'genius'
@@ -61,6 +62,7 @@ export const SongSearch = () => {
 				const payload = (await response.json()) as Partial<SearchResponse> & {
 					error?: string
 				}
+				console.log(payload)
 
 				if (!response.ok || !payload.songs) {
 					throw new Error(payload.error ?? '搜索失败，请稍后重试。')
@@ -120,7 +122,7 @@ export const SongSearch = () => {
 							key={song.id}
 							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5"
 						>
-							<Link href={`/songs/${song.id}`} className="block space-y-2">
+							<Link href={`/songs${song.path}`} className="block space-y-2">
 								<div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
 									<div>
 										<h3 className="text-lg font-semibold group-hover:text-primary">
