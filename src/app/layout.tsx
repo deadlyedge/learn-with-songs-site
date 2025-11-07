@@ -19,19 +19,20 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<ClerkProvider>
-			<html lang="en">
-				<body className={`${fonts.noto} antialiased`}>
-					<main className="mx-auto w-full xl:w-3/4">
-						<Suspense fallback={<Loader />}>
+		<Suspense fallback={<Loader />}>
+			<ClerkProvider>
+				<html lang="en">
+					<body className={`${fonts.noto} antialiased`}>
+						<main className="mx-auto w-full xl:w-3/4">
 							<EnsureClerkUser />
-						</Suspense>
-						<Navbar />
-						{children}
-						<Footer />
-					</main>
-				</body>
-			</html>
-		</ClerkProvider>
+
+							<Navbar />
+							{children}
+							<Footer />
+						</main>
+					</body>
+				</html>
+			</ClerkProvider>
+		</Suspense>
 	)
 }

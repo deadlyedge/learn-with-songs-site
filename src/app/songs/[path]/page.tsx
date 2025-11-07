@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fonts } from '@/lib/utils'
-import { notFound } from 'next/navigation'
+// import { notFound } from 'next/navigation'
 import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
@@ -20,7 +20,6 @@ type SongPageProps = {
 		path: string
 	}>
 }
-
 
 const splitLyrics = (content: string) => {
 	// 保留原始格式：按换行分割并保留每一行的原始内容。
@@ -59,7 +58,18 @@ async function SongDetailContent({ params }: SongPageProps) {
 	})
 
 	if (!songRecord) {
-		notFound()
+		// notFound()
+		return (
+			<div className="flex flex-col items-center justify-center gap-4">
+				<h1 className="text-2xl font-semibold">歌曲未找到</h1>
+				<p className="text-muted-foreground">
+					歌曲不存在或已被删除。请检查路径是否正确。
+				</p>
+				<Button asChild>
+					<Link href="/">返回搜索</Link>
+				</Button>
+			</div>
+		)
 	}
 
 	let song = songRecord
@@ -140,7 +150,8 @@ async function SongDetailContent({ params }: SongPageProps) {
 									{song.releaseDate ? (
 										<time dateTime={song.releaseDate.toISOString()}>
 											发行：
-											{details?.release_date_for_display ?? song.releaseDate.getFullYear()}
+											{details?.release_date_for_display ??
+												song.releaseDate.getFullYear()}
 										</time>
 									) : null}
 									{song.language ? <span>语言：{song.language}</span> : null}
@@ -183,8 +194,8 @@ async function SongDetailContent({ params }: SongPageProps) {
 											在 Genius 上查看
 											<Outdent />
 										</Button>
-										</Link>
-									) : null}
+									</Link>
+								) : null}
 							</div>
 						</div>
 						{song.artworkUrl ? (
@@ -300,7 +311,7 @@ const SongDetailFallback = () => (
 	</article>
 )
 
-export default function SongDetailPage(props: SongPageProps) {
+export default async function SongDetailPage(props: SongPageProps) {
 	return (
 		<Suspense fallback={<SongDetailFallback />}>
 			<SongDetailContent {...props} />
