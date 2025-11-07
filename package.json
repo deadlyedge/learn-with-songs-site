@@ -10,7 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && prisma db push"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.4",
