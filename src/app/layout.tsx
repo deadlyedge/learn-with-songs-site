@@ -5,7 +5,8 @@ import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
-
+import { Suspense } from 'react'
+import { Loader } from 'lucide-react'
 
 export const metadata: Metadata = {
 	title: 'Learn English with Songs',
@@ -22,7 +23,9 @@ export default function RootLayout({
 			<html lang="en">
 				<body className={`${fonts.noto} antialiased`}>
 					<main className="mx-auto w-full xl:w-3/4">
-						<EnsureClerkUser />
+						<Suspense fallback={<Loader />}>
+							<EnsureClerkUser />
+						</Suspense>
 						<Navbar />
 						{children}
 						<Footer />

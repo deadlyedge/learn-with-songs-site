@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fonts } from '@/lib/utils'
@@ -19,6 +20,7 @@ type SongPageProps = {
 		path: string
 	}>
 }
+
 
 const splitLyrics = (content: string) => {
 	// 保留原始格式：按换行分割并保留每一行的原始内容。
@@ -48,7 +50,7 @@ const splitLyrics = (content: string) => {
 	return normalized
 }
 
-export default async function SongDetailPage({ params }: SongPageProps) {
+async function SongDetailContent({ params }: SongPageProps) {
 	const { path } = await params
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
@@ -99,9 +101,10 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 	}
 
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
-	const details = song.details as GeniusSongInfo
-	const description = details.description
-	const colorArray = details.song_art_primary_color
+	const details = (song.details ?? null) as GeniusSongInfo | null
+	const description = details?.description
+	const stats = details?.stats
+	const colorArray = details?.song_art_primary_color
 		? hexToRgb01(details.song_art_primary_color)
 		: ([0.5, 0.1, 0.2] as [number, number, number])
 
@@ -136,24 +139,21 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 									{song.album ? <span>专辑：{song.album}</span> : null}
 									{song.releaseDate ? (
 										<time dateTime={song.releaseDate.toISOString()}>
-											发行：{details.release_date_for_display}
-											{/* 发行：{song.releaseDate.getFullYear()} */}
+											发行：
+											{details?.release_date_for_display ?? song.releaseDate.getFullYear()}
 										</time>
 									) : null}
-									{/* {song.geniusId ? (
-										<span>GeniusID：{song.geniusId}</span>
-									) : null} */}
 									{song.language ? <span>语言：{song.language}</span> : null}
-									{details.stats?.contributors ? (
+									{stats?.contributors ? (
 										<span className="flex">
 											<EditIcon />
-											{details.stats.contributors}
+											{stats.contributors}
 										</span>
 									) : null}
-									{details.stats?.pageviews ? (
+									{stats?.pageviews ? (
 										<span className="flex">
 											<EyeIcon />
-											{details.stats.pageviews}
+											{stats.pageviews}
 										</span>
 									) : null}
 								</div>
@@ -183,8 +183,8 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 											在 Genius 上查看
 											<Outdent />
 										</Button>
-									</Link>
-								) : null}
+										</Link>
+									) : null}
 							</div>
 						</div>
 						{song.artworkUrl ? (
@@ -202,7 +202,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 						) : null}
 					</div>
 					<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-amber-100/80 p-2 text-sm text-shadow-none">
-						{description && (
+						{description ? (
 							<div
 								id="md"
 								className={cn(
@@ -211,6 +211,8 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 								)}>
 								<Markdown>{description}</Markdown>
 							</div>
+						) : (
+							<p className="text-sm text-muted-foreground">歌曲详情加载中。</p>
 						)}
 					</div>
 				</div>
@@ -271,5 +273,37 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 				</div>
 			</section>
 		</article>
+	)
+}
+
+const SongDetailFallback = () => (
+	<article className="space-y-6 pb-6">
+		<div className="rounded-2xl border bg-muted/20 p-4 shadow-sm animate-pulse space-y-4">
+			<div className="h-4 w-24 rounded bg-muted" />
+			<div className="h-8 w-3/4 rounded bg-muted" />
+			<div className="grid gap-4 md:grid-cols-[1fr,192px]">
+				<div className="space-y-3">
+					<div className="h-4 w-32 rounded bg-muted" />
+					<div className="h-20 rounded bg-muted/60" />
+				</div>
+				<div className="h-48 w-48 rounded-xl bg-muted/60" />
+			</div>
+		</div>
+		<section className="space-y-3">
+			<div className="h-6 w-32 rounded bg-muted" />
+			<div className="space-y-2">
+				<div className="h-4 w-full rounded bg-muted/80" />
+				<div className="h-4 w-5/6 rounded bg-muted/60" />
+				<div className="h-4 w-2/3 rounded bg-muted/40" />
+			</div>
+		</section>
+	</article>
+)
+
+export default function SongDetailPage(props: SongPageProps) {
+	return (
+		<Suspense fallback={<SongDetailFallback />}>
+			<SongDetailContent {...props} />
+		</Suspense>
 	)
 }

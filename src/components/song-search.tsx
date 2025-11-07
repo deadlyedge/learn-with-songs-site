@@ -17,19 +17,25 @@ type SongResult = {
 	path?: string | null
 }
 
-type Source = 'database' | 'genius'
+type Source = 'database' | 'genius' | 'mixed'
 
 type SearchResponse = {
 	source: Source
 	songs: SongResult[]
+	canSearchGenius?: boolean
+	performedGenius?: boolean
+	autoContinued?: boolean
 }
 
 export const SongSearch = () => {
 	const [query, setQuery] = useState('')
 	const [results, setResults] = useState<SongResult[]>([])
 	const [source, setSource] = useState<Source | null>(null)
+	const [lastQuery, setLastQuery] = useState('')
 	const [hasSearched, setHasSearched] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const [canSearchGenius, setCanSearchGenius] = useState(false)
+	const [autoContinued, setAutoContinued] = useState(false)
 	const [isPending, startTransition] = useTransition()
 
 	const getReleaseYear = (value?: string | null) => {
@@ -41,6 +47,44 @@ export const SongSearch = () => {
 		return Number.isNaN(parsed.getTime()) ? null : parsed.getFullYear()
 	}
 
+	const requestSearch = async (searchParams: URLSearchParams) => {
+		const currentQuery = searchParams.get('q')?.trim() ?? ''
+
+		if (currentQuery) {
+			setLastQuery(currentQuery)
+		}
+
+		setHasSearched(true)
+		setError(null)
+		setCanSearchGenius(false)
+		setAutoContinued(false)
+
+		try {
+			const response = await fetch(`/api/songs?${searchParams.toString()}`, {
+				method: 'GET',
+			})
+			const payload = (await response.json()) as Partial<SearchResponse> & {
+				error?: string
+			}
+
+			if (!response.ok || !payload.songs) {
+				throw new Error(payload.error ?? '搜索失败，请稍后重试。')
+			}
+
+			setResults(payload.songs)
+			setSource(payload.source ?? null)
+			setCanSearchGenius(payload.canSearchGenius ?? false)
+			setAutoContinued(Boolean(payload.autoContinued))
+		} catch (fetchError) {
+			console.error(fetchError)
+			setResults([])
+			setSource(null)
+			setCanSearchGenius(false)
+			setAutoContinued(false)
+			setError((fetchError as Error).message)
+		}
+	}
+
 	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
 		const trimmed = query.trim()
@@ -50,32 +94,22 @@ export const SongSearch = () => {
 			return
 		}
 
-		startTransition(async () => {
-			try {
-				setError(null)
-				setHasSearched(true)
+		setLastQuery(trimmed)
 
-				const params = new URLSearchParams({ q: trimmed })
-				const response = await fetch(`/api/songs?${params.toString()}`, {
-					method: 'GET',
-				})
-				const payload = (await response.json()) as Partial<SearchResponse> & {
-					error?: string
-				}
-				// console.log(payload)
+		startTransition(() => {
+			const params = new URLSearchParams({ q: trimmed })
+			void requestSearch(params)
+		})
+}
 
-				if (!response.ok || !payload.songs) {
-					throw new Error(payload.error ?? '搜索失败，请稍后重试。')
-				}
+	const handleGeniusSearch = () => {
+		if (!lastQuery) {
+			return
+		}
 
-				setResults(payload.songs)
-				setSource(payload.source ?? null)
-			} catch (fetchError) {
-				console.error(fetchError)
-				setResults([])
-				setSource(null)
-				setError((fetchError as Error).message)
-			}
+		startTransition(() => {
+			const params = new URLSearchParams({ q: lastQuery, source: 'genius' })
+			void requestSearch(params)
 		})
 	}
 
@@ -107,11 +141,37 @@ export const SongSearch = () => {
 				<p className="text-sm text-muted-foreground">暂无匹配结果，换个关键词试试。</p>
 			) : null}
 
+	{source || canSearchGenius ? (
+		<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 			{source ? (
 				<p className="text-xs uppercase tracking-wide text-muted-foreground">
-					数据来源：{source === 'database' ? '本地缓存' : 'Genius API'}
+					数据来源：
+					{source === 'database'
+						? '本地缓存'
+						: source === 'genius'
+							? 'Genius API'
+							: '本地缓存 + Genius'}
 				</p>
 			) : null}
+			{canSearchGenius ? (
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={handleGeniusSearch}
+					disabled={isPending}
+				>
+					{isPending ? '搜索中...' : '通过 Genius 继续搜索'}
+				</Button>
+			) : null}
+		</div>
+	) : null}
+
+	{autoContinued ? (
+		<p className="text-xs text-muted-foreground">
+			本地结果较少，已自动通过 Genius 扩展搜索。
+		</p>
+	) : null}
 
 			<ul className="grid gap-3">
 				{results.map((song) => {
