@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Uncial_Antiqua, Noto_Sans } from 'next/font/google'
+import { fonts } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
@@ -13,18 +13,6 @@ import { Button } from '@/components/ui/button'
 import Iridescence from '@/components/ui/effects/iridescence'
 import Markdown from 'react-markdown'
 import { GeniusSongInfo } from '@/types'
-
-const uncialAntiqua = Uncial_Antiqua({
-	variable: '--font-uncial-antiqua',
-	subsets: ['latin'],
-	weight: ['400'],
-})
-
-const notoSans = Noto_Sans({
-	variable: '--font-noto-sans',
-	subsets: ['latin'],
-	weight: ['400'],
-})
 
 type SongPageProps = {
 	params: Promise<{
@@ -134,18 +122,14 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 					className="text-sm font-medium text-secondary underline-offset-4 hover:underline">
 					← 返回搜索
 				</Link>
-				<h1 className={cn('text-2xl font-semibold', uncialAntiqua.className)}>
+				<h1 className={cn('text-2xl font-semibold', fonts.uncial)}>
 					{song.title}
 				</h1>
 				<div className="flex flex-col md:flex-row gap-4">
 					<div className="flex justify-between w-full md:w-1/2">
 						<div className="flex flex-col justify-between flex-2">
 							<div className="flex flex-col">
-								<p
-									className={cn(
-										'text-lg text-secondary',
-										uncialAntiqua.className
-									)}>
+								<p className={cn('text-lg text-secondary', fonts.uncial)}>
 									{song.artist}
 								</p>
 								<div className="flex flex-wrap gap-2 gap-x-3 mt-1.5 text-sm">
@@ -161,13 +145,13 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 									) : null} */}
 									{song.language ? <span>语言：{song.language}</span> : null}
 									{details.stats?.contributors ? (
-										<span className='flex'>
+										<span className="flex">
 											<EditIcon />
 											{details.stats.contributors}
 										</span>
 									) : null}
 									{details.stats?.pageviews ? (
-										<span className='flex'>
+										<span className="flex">
 											<EyeIcon />
 											{details.stats.pageviews}
 										</span>
@@ -223,7 +207,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 								id="md"
 								className={cn(
 									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none text-sm text-foreground',
-									notoSans.className
+									fonts.sans
 								)}>
 								<Markdown>{description}</Markdown>
 							</div>
@@ -278,7 +262,7 @@ export default async function SongDetailPage({ params }: SongPageProps) {
 								id="md"
 								className={cn(
 									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
-									notoSans.className
+									fonts.sans
 								)}>
 								<Markdown>{description}</Markdown>
 							</div>

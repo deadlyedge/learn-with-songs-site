@@ -1,15 +1,10 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
-import { Noto_Serif_TC } from 'next/font/google'
+import { fonts } from '@/lib/utils'
 import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
-
-const notoSerif = Noto_Serif_TC({
-	variable: '--font-noto-serif',
-	subsets: ['latin'],
-})
 
 
 export const metadata: Metadata = {
@@ -25,7 +20,7 @@ export default function RootLayout({
 	return (
 		<ClerkProvider>
 			<html lang="en">
-				<body className={`${notoSerif.className} antialiased`}>
+				<body className={`${fonts.noto} antialiased`}>
 					<main className="mx-auto w-full xl:w-3/4">
 						<EnsureClerkUser />
 						<Navbar />

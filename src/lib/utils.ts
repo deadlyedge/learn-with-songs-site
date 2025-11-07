@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx'
+import { Noto_Sans, Noto_Serif, Uncial_Antiqua } from 'next/font/google'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,4 +22,27 @@ export function hexToRgb01(hex: string) {
 	const b = parseInt(hex.slice(4, 6), 16)
 	// 转换到 [0,1] 范围，返回元组 [r, g, b]
 	return [r / 255, g / 255, b / 255] as [number, number, number]
+}
+
+const notoSerif = Noto_Serif({
+	variable: '--font-noto-serif',
+	subsets: ['latin'],
+})
+
+const uncialAntiqua = Uncial_Antiqua({
+	variable: '--font-uncial-antiqua',
+	subsets: ['latin'],
+	weight: ['400'],
+})
+
+const notoSans = Noto_Sans({
+	variable: '--font-noto-sans',
+	subsets: ['latin'],
+	weight: ['400'],
+})
+
+export const fonts = {
+	noto: notoSerif.className,
+	uncial: uncialAntiqua.className,
+	sans: notoSans.className,
 }
