@@ -1,16 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
-// import dynamic from 'next/dynamic'
-
-import { prisma } from '@/lib/prisma'
-import type { GeniusSongInfo } from '@/types'
-import { SongSearch } from '@/components/song-search'
 import { cacheLife } from 'next/cache'
 
-// const SongSearch = dynamic(
-// 	() => import('@/components/song-search').then((mod) => mod.SongSearch),
-// 	{ suspense: true }
-// )
+import { prisma } from '@/lib/prisma'
+import { SongSearch } from '@/components/song-search'
+import type { GeniusSongInfo } from '@/types'
 
 type FeaturedSong = {
 	id: string
@@ -43,47 +37,31 @@ const getFeaturedSongs = async (): Promise<FeaturedSong[]> => {
 		},
 	})
 
-	return songs
-		.map((song) => {
-			const details = (song.details ?? null) as GeniusSongInfo | null
-			const pageviews = details?.stats?.pageviews
+	const mapped = songs.map((song) => {
+		const details = (song.details ?? null) as GeniusSongInfo | null
+		const pageviews = details?.stats?.pageviews
 
-			if (!details || !song.geniusPath || !pageviews) {
-				return null
-			}
+		if (!details || !song.geniusPath || !pageviews) {
+			return null
+		}
 
-			return {
-				id: song.id,
-				title: song.title,
-				artist: song.artist,
-				album: song.album ?? undefined,
-				artworkUrl: song.artworkUrl ?? undefined,
-				pageviews,
-				geniusPath: song.geniusPath,
-			}
-		})
-		.filter((value): value is FeaturedSong => value !== null)
-		.sort((a, b) => b.pageviews - a.pageviews)
-		.slice(0, 6)
+		return {
+			id: song.id,
+			title: song.title,
+			artist: song.artist,
+			album: song.album ?? undefined,
+			artworkUrl: song.artworkUrl ?? undefined,
+			pageviews,
+			geniusPath: song.geniusPath,
+		} as FeaturedSong
+	})
+
+	const filtered = mapped.filter(
+		(value): value is FeaturedSong => value !== null
+	)
+
+	return filtered.sort((a, b) => b.pageviews - a.pageviews).slice(0, 6)
 }
-
-// const SongSearchFallback = () => {
-// 	return (
-// 		<section className="space-y-6 animate-pulse">
-// 			<div className="flex flex-col gap-3 sm:flex-row">
-// 				<div className="h-11 rounded-md bg-muted" />
-// 				<div className="h-11 w-28 rounded-md bg-muted" />
-// 			</div>
-// 			<div className="space-y-3">
-// 				<div className="h-4 w-40 rounded bg-muted" />
-// 				<div className="grid gap-2">
-// 					<div className="h-20 rounded-lg border border-dashed border-muted-foreground/40" />
-// 					<div className="h-20 rounded-lg border border-dashed border-muted-foreground/40" />
-// 				</div>
-// 			</div>
-// 		</section>
-// 	)
-// }
 
 export default async function HomePage() {
 	const featuredSongs = await getFeaturedSongs()
@@ -99,6 +77,8 @@ export default async function HomePage() {
 					输入歌曲或歌手名称，快速找到歌词，配合注释与学习记录开启你的音乐英语之旅。
 				</p>
 			</section>
+
+			<SongSearch />
 
 			{featuredSongs.length > 0 ? (
 				<section className="space-y-4">
@@ -156,8 +136,6 @@ export default async function HomePage() {
 					</div>
 				</section>
 			) : null}
-
-			<SongSearch />
 		</div>
 	)
 }
