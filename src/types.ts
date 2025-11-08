@@ -28,6 +28,16 @@ export type GeniusSongHit = {
 	}
 }
 
+export type FeaturedSong = {
+	id: string
+	title: string
+	artist: string
+	album?: string
+	artworkUrl?: string
+	pageviews: number
+	geniusPath: string
+}
+
 // Types generated from documents/songsAPIRespone.md (Genius /songs/:id response)
 export type GeniusSongInfo = {
 	id: number
