@@ -1,0 +1,3073 @@
+{
+	"meta": {
+		"status": 200
+	},
+	"request_url": "https://api.genius.com/referents?song_id=1470",
+	"response": {
+		"referents": [
+			{
+				"_type": "referent",
+				"annotator_id": 409316,
+				"annotator_login": "shadesofblue",
+				"api_path": "/referents/9190640",
+				"classification": "accepted",
+				"fragment": "[Instrumental Break]",
+				"id": 9190640,
+				"is_description": false,
+				"path": "/9190640/Guns-n-roses-sweet-child-o-mine/Instrumental-break",
+				"range": {
+					"content": "[Instrumental Break]"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/9190640/Guns-n-roses-sweet-child-o-mine/Instrumental-break",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/9190640",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"The song has three instrumental breaks increasing in length after each chorus with the third elaborate solo being the most notable."
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"In an effort to make the song more marketable to radio stations, the song was shortened with much of Slash’s guitar solos removed. ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.nme.com/blogs/nme-blogs/25-things-you-might-not-know-about-appetite-for-destruction",
+													"rel": "noopener nofollow"
+												},
+												"children": ["Axl loathed the radio edit"]
+											},
+											", telling Rolling Stone in 1989:"
+										]
+									},
+									"",
+									{
+										"tag": "blockquote",
+										"children": [
+											{
+												"tag": "p",
+												"children": [
+													"I hate the edit of “Sweet Child O' Mine”… My favorite part of the song is Slash’s slow solo; it’s the heaviest part for me. There’s no reason for it to be missing except to create more space for commercials, so the radio-station owners can get more advertising dollars."
+												]
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 0,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 9190640,
+						"pinned": false,
+						"share_url": "https://genius.com/9190640",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/9190640/Guns-n-roses-sweet-child-o-mine/Instrumental-break",
+						"verified": false,
+						"votes_total": 98,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 1,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/409316",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/05dc3bb985ee7cf36652b4aaae06c86a",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/05dc3bb985ee7cf36652b4aaae06c86a",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/05dc3bb985ee7cf36652b4aaae06c86a",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/05dc3bb985ee7cf36652b4aaae06c86a",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/9p98UiObTYCD72rxHN2Y_RedSpace.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 409316,
+									"iq": 97101,
+									"login": "shadesofblue",
+									"name": "shadesofblue",
+									"role_for_display": "editor",
+									"url": "https://genius.com/shadesofblue",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 269182,
+				"annotator_login": "igordebraga",
+				"api_path": "/referents/8339569",
+				"classification": "accepted",
+				"fragment": "[Instrumental Intro]",
+				"id": 8339569,
+				"is_description": false,
+				"path": "/8339569/Guns-n-roses-sweet-child-o-mine/Instrumental-intro",
+				"range": {
+					"content": "[Instrumental Intro]"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/8339569/Guns-n-roses-sweet-child-o-mine/Instrumental-intro",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/8339569",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"The now-famous intro, once chosen as the best riff of all time, ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.heretodaygonetohell.com/articles/showarticle.php?articleid=149",
+													"rel": "noopener nofollow"
+												},
+												"children": [
+													"started as Slash was “fucking around with this stupid little riff,” which caught Axl Rose’s attention. Within five minutes, the band had worked Slash’s cyclical riff into the bare bones of a song."
+												]
+											}
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"Slash ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.songfacts.com/detail.php?id=628",
+													"rel": "noopener nofollow"
+												},
+												"children": ["told some more about the riff"]
+											},
+											" to ",
+											{
+												"tag": "em",
+												"children": ["Rolling Stone"]
+											},
+											":"
+										]
+									},
+									"",
+									{
+										"tag": "blockquote",
+										"children": [
+											{
+												"tag": "p",
+												"children": [
+													"It’s a combination of influences. From ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/artists/Jeff-beck",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/artists/53156"
+														},
+														"children": ["Jeff Beck"]
+													},
+													", ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/artists/Cream",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/artists/4800"
+														},
+														"children": ["Cream"]
+													},
+													" and ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/artists/Led-zeppelin",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/artists/562"
+														},
+														"children": ["Zeppelin"]
+													},
+													" to stuff you’d be surprised at: the solos in ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/artists/Manfred-mann",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/artists/40094"
+														},
+														"children": ["Manfred Mann’s"]
+													},
+													" version of ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/Manfred-mann-blinded-by-the-light-lyrics",
+															"rel": "noopener"
+														},
+														"children": ["“Blinded By The Light”"]
+													},
+													" and ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/artists/Gerry-rafferty",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/artists/23574"
+														},
+														"children": ["Gerry Rafferty’s"]
+													},
+													" ",
+													{
+														"tag": "a",
+														"attributes": {
+															"href": "https://genius.com/Gerry-rafferty-baker-street-annotated",
+															"rel": "noopener"
+														},
+														"data": {
+															"api_path": "/songs/84258"
+														},
+														"children": ["“Baker Street.”"]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 1,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 8339569,
+						"pinned": false,
+						"share_url": "https://genius.com/8339569",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/8339569/Guns-n-roses-sweet-child-o-mine/Instrumental-intro",
+						"verified": false,
+						"votes_total": 109,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.9886363636363636,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/269182",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/3GmrMEUaTVW5V3WEham0_Foto0079.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 269182,
+									"iq": 447606,
+									"login": "igordebraga",
+									"name": "​igordebraga",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/igordebraga",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.011363636363636364,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/4624897",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/nyup308v1e9",
+									"human_readable_role_for_display": "Editor",
+									"id": 4624897,
+									"iq": 268054,
+									"login": "velociraptigor",
+									"name": "velociraptigor",
+									"role_for_display": "editor",
+									"url": "https://genius.com/velociraptigor",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 308476,
+				"annotator_login": "jasonjimmymortimer",
+				"api_path": "/referents/3435102",
+				"classification": "accepted",
+				"fragment": "[Guitar Solo]",
+				"id": 3435102,
+				"is_description": false,
+				"path": "/3435102/Guns-n-roses-sweet-child-o-mine/Guitar-solo",
+				"range": {
+					"content": "[Guitar Solo]"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/3435102/Guns-n-roses-sweet-child-o-mine/Guitar-solo",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/3435102",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"This guitar solo is widely known as the best guitar solo in history. In fact, this came in on ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.rollingstone.com/music/blogs/staff-blog/the-25-coolest-guitar-solos-20070806",
+													"rel": "noopener nofollow"
+												},
+												"children": [
+													"Rolling Stones as the greatest guitar solo ever."
+												]
+											}
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"Apparently, however, ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://books.google.com.au/books?id=Fg838EcECUwC&pg=PT157&dq=%E2%80%9CWhen+%E2%80%98Sweet+Child+O%E2%80%99+Mine%E2%80%99+was+written,+it+was+a+joke+as+far+as+I&hl=en&sa=X&ei=1vfFU4rcOY2E8gXZyYDwDA&ved=0CBsQ6AEwAA#v=onepage&q=%E2%80%9CWhen%20%E2%80%98Sweet%20Child%20O%E2%80%99%20Mine%E2%80%99%20was%20written%2C%20it%20was%20a%20joke%20as%20far%20as%20I&f=false",
+													"rel": "noopener nofollow"
+												},
+												"children": ["Slash didn’t feel same-way:"]
+											}
+										]
+									},
+									"",
+									{
+										"tag": "blockquote",
+										"children": [
+											{
+												"tag": "p",
+												"children": [
+													"When “Sweet Child O’ Mine” was written, it was a joke as far as I was concerned. I was just fuckin’ around when I came up with that riff. To me it was a nightmare because, for some strange reason, everyone picked up on it and, the next thing you knew, it had turned into a song. I hated it forever! The guitar solo itself is a one-take, spontaneous kind of thing. Having played the song at rehearsals enough times, when it came to recording it I knew exactly where the melody was and it came real easy."
+												]
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 0,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 3435102,
+						"pinned": false,
+						"share_url": "https://genius.com/3435102",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/3435102/Guns-n-roses-sweet-child-o-mine/Guitar-solo",
+						"verified": false,
+						"votes_total": 118,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.9770992366412214,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/308476",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.rapgenius.com/avatars/tiny/788c5c10177ac69ec7cdc9a5c1b40bc1",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.rapgenius.com/avatars/thumb/788c5c10177ac69ec7cdc9a5c1b40bc1",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.rapgenius.com/avatars/small/788c5c10177ac69ec7cdc9a5c1b40bc1",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.rapgenius.com/avatars/medium/788c5c10177ac69ec7cdc9a5c1b40bc1",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.rapgenius.com/avatars/medium/788c5c10177ac69ec7cdc9a5c1b40bc1",
+									"human_readable_role_for_display": "Contributor",
+									"id": 308476,
+									"iq": 16474,
+									"login": "jasonjimmymortimer",
+									"name": "jasonjimmymortimer",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/jasonjimmymortimer",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.0076335877862595426,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1931244",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/3655b7947c455ad9378be8cd9dc63f62",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/3655b7947c455ad9378be8cd9dc63f62",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/3655b7947c455ad9378be8cd9dc63f62",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/3655b7947c455ad9378be8cd9dc63f62",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/f45814fd26ee32464af77c72e7e0e3d0.1000x750x1.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 1931244,
+									"iq": 354372,
+									"login": "eatthemooncake",
+									"name": "​eatthemooncake",
+									"role_for_display": "editor",
+									"url": "https://genius.com/eatthemooncake",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.0076335877862595426,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/5077322",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/f6c51eeb13288750bd6dd58f854c5f12",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/f6c51eeb13288750bd6dd58f854c5f12",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/f6c51eeb13288750bd6dd58f854c5f12",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/f6c51eeb13288750bd6dd58f854c5f12",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/d8c4727c568093ee9e0377761356d48b.1000x662x1.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 5077322,
+									"iq": 133181,
+									"login": "shashwatbansal1",
+									"name": "Shashwat Bansal",
+									"role_for_display": "editor",
+									"url": "https://genius.com/shashwatbansal1",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.0076335877862595426,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/4624897",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/nyup308v1e9",
+									"human_readable_role_for_display": "Editor",
+									"id": 4624897,
+									"iq": 268054,
+									"login": "velociraptigor",
+									"name": "velociraptigor",
+									"role_for_display": "editor",
+									"url": "https://genius.com/velociraptigor",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 269182,
+				"annotator_login": "igordebraga",
+				"api_path": "/referents/2323295",
+				"classification": "accepted",
+				"fragment": "Where do we go?\n Where do we go now?\n Where do we go?\n Mm-mm, oh, where do we go?\n Where do we go now?\n Oh, where do we go now? (Where do we go?)\n Where do we go? (Sweet child of mine)\n Mm, oh, where do we go now?\n Aye, aye, aye, aye, aye, aye, aye, aye (Where do we go? Where do we go?)\n Ooh, where do we go now? (Where do we go?)\n Oh-oh-oh-oh-oh, oh, woah\n Where do we go?\n Oh-oh, where do we go now?\n Where do we go?\n Where do we go now?\n Where do we go?\n Woah-oh, where do we go now?\n No, no, no, no, no, no, no\n Sweet child\n Sweet child of mine",
+				"id": 2323295,
+				"is_description": false,
+				"path": "/2323295/Guns-n-roses-sweet-child-o-mine/Where-do-we-go-where-do-we-go-now-where-do-we-go-mm-mm-oh-where-do-we-go-where-do-we-go-now-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-sweet-child-of-mine-mm-oh-where-do-we-go-now-aye-aye-aye-aye-aye-aye-aye-aye-where-do-we-go-where-do-we-go-ooh-where-do-we-go-now-where-do-we-go-oh-oh-oh-oh-oh-oh-woah-where-do-we-go-oh-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-now-where-do-we-go-woah-oh-where-do-we-go-now-no-no-no-no-no-no-no-sweet-child-sweet-child-of-mine",
+				"range": {
+					"content": "Where do we go?\n Where do we go now?\n Where do we go?\n Mm-mm, oh, where do we go?\n Where do we go now?\n Oh, where do we go now? (Where do we go?)\n Where do we go? (Sweet child of mine)\n Mm, oh, where do we go now?\n Aye, aye, aye, aye, aye, aye, aye, aye (Where do we go? Where do we go?)\n Ooh, where do we go now? (Where do we go?)\n Oh-oh-oh-oh-oh, oh, woah\n Where do we go?\n Oh-oh, where do we go now?\n Where do we go?\n Where do we go now?\n Where do we go?\n Woah-oh, where do we go now?\n No, no, no, no, no, no, no\n Sweet child\n Sweet child of mine"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/2323295/Guns-n-roses-sweet-child-o-mine/Where-do-we-go-where-do-we-go-now-where-do-we-go-mm-mm-oh-where-do-we-go-where-do-we-go-now-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-sweet-child-of-mine-mm-oh-where-do-we-go-now-aye-aye-aye-aye-aye-aye-aye-aye-where-do-we-go-where-do-we-go-ooh-where-do-we-go-now-where-do-we-go-oh-oh-oh-oh-oh-oh-woah-where-do-we-go-oh-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-now-where-do-we-go-woah-oh-where-do-we-go-now-no-no-no-no-no-no-no-sweet-child-sweet-child-of-mine",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/2323295",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"According to Slash’s autobiography, producer ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.allmusic.com/artist/spencer-proffer-mn0000743091/credits",
+													"rel": "noopener nofollow"
+												},
+												"children": ["Spencer Proffer"]
+											},
+											" suggested adding a dramatic breakdown before the ending. No one had any idea what to do. As they listened again and again to the song in the control room, Axl started asking “Where do we go? Where do we go now?… where do we go?.” Spencer turned down the music, and said, “Why don’t you just try singing that?” and thus the last part of the song was born."
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 2,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 2323295,
+						"pinned": false,
+						"share_url": "https://genius.com/2323295",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/2323295/Guns-n-roses-sweet-child-o-mine/Where-do-we-go-where-do-we-go-now-where-do-we-go-mm-mm-oh-where-do-we-go-where-do-we-go-now-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-sweet-child-of-mine-mm-oh-where-do-we-go-now-aye-aye-aye-aye-aye-aye-aye-aye-where-do-we-go-where-do-we-go-ooh-where-do-we-go-now-where-do-we-go-oh-oh-oh-oh-oh-oh-woah-where-do-we-go-oh-oh-where-do-we-go-now-where-do-we-go-where-do-we-go-now-where-do-we-go-woah-oh-where-do-we-go-now-no-no-no-no-no-no-no-sweet-child-sweet-child-of-mine",
+						"verified": false,
+						"votes_total": 171,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.986842105263158,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/269182",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/3GmrMEUaTVW5V3WEham0_Foto0079.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 269182,
+									"iq": 447606,
+									"login": "igordebraga",
+									"name": "​igordebraga",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/igordebraga",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.013157894736842106,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/3650910",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/e622e28b3bdc980d7e69f301169282bd",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/e622e28b3bdc980d7e69f301169282bd",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/e622e28b3bdc980d7e69f301169282bd",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/e622e28b3bdc980d7e69f301169282bd",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/JNhj0aB9SZyfYra4EVeW_shelves.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 3650910,
+									"iq": 63247,
+									"login": "scopeyclaire",
+									"name": "Seaeffess",
+									"role_for_display": "editor",
+									"url": "https://genius.com/scopeyclaire",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 269182,
+				"annotator_login": "igordebraga",
+				"api_path": "/referents/2323290",
+				"classification": "accepted",
+				"fragment": "She’s got eyes of the bluest skies\n As if they thought of rain",
+				"id": 2323290,
+				"is_description": false,
+				"path": "/2323290/Guns-n-roses-sweet-child-o-mine/Shes-got-eyes-of-the-bluest-skies-as-if-they-thought-of-rain",
+				"range": {
+					"content": "She's got eyes of the bluest skies\n As if they thought of rain"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/2323290/Guns-n-roses-sweet-child-o-mine/Shes-got-eyes-of-the-bluest-skies-as-if-they-thought-of-rain",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/2323290",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"Indeed.  “Blue skies” are also seen as perfect weather, so looking into them would be a good omen."
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											{
+												"tag": "img",
+												"attributes": {
+													"src": "https://images.rapgenius.com/818fsytlj3qn9bl1om6p4c5ug.540x720x1.jpg",
+													"alt": "",
+													"width": 540,
+													"height": 720
+												},
+												"data": {
+													"animated": "false",
+													"thumbnail": {
+														"src": "https://images.rapgenius.com/818fsytlj3qn9bl1om6p4c5ug.300x400x1.jpg",
+														"height": 400,
+														"width": 300
+													}
+												}
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 1,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 2323290,
+						"pinned": false,
+						"share_url": "https://genius.com/2323290",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/2323290/Guns-n-roses-sweet-child-o-mine/Shes-got-eyes-of-the-bluest-skies-as-if-they-thought-of-rain",
+						"verified": false,
+						"votes_total": 52,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.7547169811320755,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/269182",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/3GmrMEUaTVW5V3WEham0_Foto0079.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 269182,
+									"iq": 447606,
+									"login": "igordebraga",
+									"name": "​igordebraga",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/igordebraga",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.24528301886792453,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/3736524",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/1ce7e036111fec121a13afef12bf5ffb",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/1ce7e036111fec121a13afef12bf5ffb",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/1ce7e036111fec121a13afef12bf5ffb",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/1ce7e036111fec121a13afef12bf5ffb",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/avatars/medium/1ce7e036111fec121a13afef12bf5ffb",
+									"human_readable_role_for_display": null,
+									"id": 3736524,
+									"iq": 126,
+									"login": "rmclaughlin",
+									"name": "rmclaughlin",
+									"role_for_display": null,
+									"url": "https://genius.com/rmclaughlin",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 249142,
+				"annotator_login": "cdestef142",
+				"api_path": "/referents/1975479",
+				"classification": "accepted",
+				"fragment": "Woah, oh, oh\n Sweet child of mine\n Woah, oh, oh, oh\n Sweet love of mine",
+				"id": 1975479,
+				"is_description": false,
+				"path": "/1975479/Guns-n-roses-sweet-child-o-mine/Woah-oh-oh-sweet-child-of-mine-woah-oh-oh-oh-sweet-love-of-mine",
+				"range": {
+					"content": "Woah, oh, oh\n Sweet child of mine\n Woah, oh, oh, oh\n Sweet love of mine"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/1975479/Guns-n-roses-sweet-child-o-mine/Woah-oh-oh-sweet-child-of-mine-woah-oh-oh-oh-sweet-love-of-mine",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/1975479",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"Sweet Child O’ Mine isn’t just a made up term of endearment for the sake of writing a love song. ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "https://genius.com/artists/Axl-rose",
+													"rel": "noopener"
+												},
+												"data": {
+													"api_path": "/artists/101616"
+												},
+												"children": ["Axl Rose"]
+											},
+											" used similar pet names like Sweet Child in letters he wrote to his girlfriend at the time Erin Everly, which were later auctioned off:"
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											{
+												"tag": "img",
+												"attributes": {
+													"src": "https://images.genius.com/809affed621f7ddbc76aeb96acde5e03.960x519x1.jpg",
+													"alt": "",
+													"width": 960,
+													"height": 519
+												},
+												"data": {
+													"animated": "false",
+													"thumbnail": {
+														"src": "https://images.genius.com/809affed621f7ddbc76aeb96acde5e03.300x162x1.jpg",
+														"height": 162,
+														"width": 300
+													}
+												}
+											}
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"An adult person calling their partner “child” is kind of odd years after the song’s release. It’s mostly fallen out of favor, but at the time it wasn’t much different than something like “baby,” which was done then and is more common now, and was not exclusive to Guns N’ Roses. There are several love songs from around the same time that use similar terms, like ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "https://genius.com/Motley-crue-starry-eyes-lyrics",
+													"rel": "noopener"
+												},
+												"data": {
+													"api_path": "/songs/399234"
+												},
+												"children": ["“Starry Eyes”"]
+											},
+											" from Mötley Crüe, one of the band’s influences:"
+										]
+									},
+									"",
+									{
+										"tag": "blockquote",
+										"children": [
+											{
+												"tag": "p",
+												"children": [
+													"Okay child, you’ve had to take the pain of a man in the streets"
+												]
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 1,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 1975479,
+						"pinned": false,
+						"share_url": "https://genius.com/1975479",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/1975479/Guns-n-roses-sweet-child-o-mine/Woah-oh-oh-sweet-child-of-mine-woah-oh-oh-oh-sweet-love-of-mine",
+						"verified": false,
+						"votes_total": 151,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.7102272727272727,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/14417016",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/d381cef6d97d0f143acae759d3040830",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/d381cef6d97d0f143acae759d3040830",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/d381cef6d97d0f143acae759d3040830",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/d381cef6d97d0f143acae759d3040830",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/5e3c15cc301e78cefdd75bb034e76363.1000x554x1.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 14417016,
+									"iq": 410508,
+									"login": "BehindtheMask",
+									"name": "BehindtheMask",
+									"role_for_display": "editor",
+									"url": "https://genius.com/BehindtheMask",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.14204545454545456,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/249142",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/TwiCE9PORsmEAlgGKhmq.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/TwiCE9PORsmEAlgGKhmq.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/TwiCE9PORsmEAlgGKhmq.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/TwiCE9PORsmEAlgGKhmq.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/TwiCE9PORsmEAlgGKhmq.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 249142,
+									"iq": 15322,
+									"login": "cdestef142",
+									"name": "cdestef142",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/cdestef142",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.0625,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/2632902",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.rapgenius.com/avatars/tiny/49cd5a88940cf20bc0e76c065be52cc0",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.rapgenius.com/avatars/thumb/49cd5a88940cf20bc0e76c065be52cc0",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.rapgenius.com/avatars/small/49cd5a88940cf20bc0e76c065be52cc0",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.rapgenius.com/avatars/medium/49cd5a88940cf20bc0e76c065be52cc0",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.rapgenius.com/avatars/medium/49cd5a88940cf20bc0e76c065be52cc0",
+									"human_readable_role_for_display": null,
+									"id": 2632902,
+									"iq": 263,
+									"login": "skyaudrey",
+									"name": "skyaudrey",
+									"role_for_display": null,
+									"url": "https://genius.com/skyaudrey",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.056818181818181816,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/20108840",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/28ukktsv10n",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/28ukktsv10n",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/28ukktsv10n",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/28ukktsv10n",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/bd4f7da52aa830ba93d8bc20b1de021e4a66c15a8939c406e79984482c26740b%2Fueuaxdxgeli",
+									"human_readable_role_for_display": "Contributor",
+									"id": 20108840,
+									"iq": 6695,
+									"login": "rockchic",
+									"name": "rockchic",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/rockchic",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.017045454545454544,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1553",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+									"human_readable_role_for_display": "Editor",
+									"id": 1553,
+									"iq": 534651,
+									"login": "Avi",
+									"name": "Avi",
+									"role_for_display": "editor",
+									"url": "https://genius.com/Avi",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.011363636363636364,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/113589",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/113589_mca%20-%20You%20the%20Man.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/1358289762_113589_mca%20-%20You%20the%20Man.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/1358289763_113589_mca%20-%20You%20the%20Man.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289762_113589_mca%20-%20You%20the%20Man.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289762_113589_mca%20-%20You%20the%20Man.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 113589,
+									"iq": 62122,
+									"login": "booboosnack",
+									"name": "Booboosnack",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/booboosnack",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 89007,
+				"annotator_login": "MCMo91",
+				"api_path": "/referents/755055",
+				"classification": "accepted",
+				"fragment": "I’d hate to look into those eyes and see an ounce of pain",
+				"id": 755055,
+				"is_description": false,
+				"path": "/755055/Guns-n-roses-sweet-child-o-mine/Id-hate-to-look-into-those-eyes-and-see-an-ounce-of-pain",
+				"range": {
+					"content": "I'd hate to look into those eyes and see an ounce of pain"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/755055/Guns-n-roses-sweet-child-o-mine/Id-hate-to-look-into-those-eyes-and-see-an-ounce-of-pain",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/755055",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"Eyes are described as a gateway to the soul. Although Axl claims that he does not want to look into this woman’s eyes and see sadness, he probably saw a lot of pain in the girl’s eyes considering ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "http://www.people.com/people/archive/article/0,,20103471,00.html",
+													"rel": "noopener nofollow"
+												},
+												"children": ["he beat her."]
+											}
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 0,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 755055,
+						"pinned": false,
+						"share_url": "https://genius.com/755055",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/755055/Guns-n-roses-sweet-child-o-mine/Id-hate-to-look-into-those-eyes-and-see-an-ounce-of-pain",
+						"verified": false,
+						"votes_total": 66,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.4130434782608695,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/333773",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.rapgenius.com/avatars/tiny/93377452384beac7f679730d123a64c8",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.rapgenius.com/avatars/thumb/93377452384beac7f679730d123a64c8",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.rapgenius.com/avatars/small/93377452384beac7f679730d123a64c8",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.rapgenius.com/avatars/medium/93377452384beac7f679730d123a64c8",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.rapgenius.com/avatars/medium/93377452384beac7f679730d123a64c8",
+									"human_readable_role_for_display": "Contributor",
+									"id": 333773,
+									"iq": 15786,
+									"login": "NoKnownName",
+									"name": "NoKnownName",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/NoKnownName",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.4130434782608695,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/89007",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 89007,
+									"iq": 4630,
+									"login": "MCMo91",
+									"name": "MCMo91",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/MCMo91",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.15217391304347827,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/162495",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/DT2b1QrRQl1lNqglNTZV.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/DT2b1QrRQl1lNqglNTZV.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/DT2b1QrRQl1lNqglNTZV.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/DT2b1QrRQl1lNqglNTZV.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/DT2b1QrRQl1lNqglNTZV.jpg",
+									"human_readable_role_for_display": "Editor",
+									"id": 162495,
+									"iq": 3183,
+									"login": "SWITB",
+									"name": "SWITB",
+									"role_for_display": "editor",
+									"url": "https://genius.com/SWITB",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.021739130434782608,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/4624897",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/nyup308v1e9",
+									"human_readable_role_for_display": "Editor",
+									"id": 4624897,
+									"iq": 268054,
+									"login": "velociraptigor",
+									"name": "velociraptigor",
+									"role_for_display": "editor",
+									"url": "https://genius.com/velociraptigor",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 89007,
+				"annotator_login": "MCMo91",
+				"api_path": "/referents/755051",
+				"classification": "accepted",
+				"fragment": "Her hair reminds me of a warm, safe place\n Where, as a child, I’d hide\n And pray for the thunder and the rain to quietly pass me by",
+				"id": 755051,
+				"is_description": false,
+				"path": "/755051/Guns-n-roses-sweet-child-o-mine/Her-hair-reminds-me-of-a-warm-safe-place-where-as-a-child-id-hide-and-pray-for-the-thunder-and-the-rain-to-quietly-pass-me-by",
+				"range": {
+					"content": "Her hair reminds me of a warm, safe place\n Where, as a child, I'd hide\n And pray for the thunder and the rain to quietly pass me by"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/755051/Guns-n-roses-sweet-child-o-mine/Her-hair-reminds-me-of-a-warm-safe-place-where-as-a-child-id-hide-and-pray-for-the-thunder-and-the-rain-to-quietly-pass-me-by",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/755051",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"Axl, like many song writers before him, takes parts of his lover’s body and compares them to other things. In this case, her hair evokes a childhood memory—namely, of a place where a child scared of the storm outside hides until it’s clear."
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											{
+												"tag": "img",
+												"attributes": {
+													"src": "https://images.rapgenius.com/43e726accc257919a95515e63e7d4f83.600x792x1.jpg",
+													"alt": "",
+													"width": 600,
+													"height": 792
+												},
+												"data": {
+													"animated": "false",
+													"thumbnail": {
+														"src": "https://images.rapgenius.com/43e726accc257919a95515e63e7d4f83.300x396x1.jpg",
+														"height": 396,
+														"width": 300
+													}
+												}
+											}
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"Axl had a painful childhood where he would get beaten and his sister would get raped. So here he’s referring to the place he hid away from all that."
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 2,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 755051,
+						"pinned": false,
+						"share_url": "https://genius.com/755051",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/755051/Guns-n-roses-sweet-child-o-mine/Her-hair-reminds-me-of-a-warm-safe-place-where-as-a-child-id-hide-and-pray-for-the-thunder-and-the-rain-to-quietly-pass-me-by",
+						"verified": false,
+						"votes_total": 71,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.49074074074074076,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/89007",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/1358289693_89007_241465_2161977289506_1248783307_32728223_3717083_o.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 89007,
+									"iq": 4630,
+									"login": "MCMo91",
+									"name": "MCMo91",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/MCMo91",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.3055555555555556,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1751793",
+									"avatar": {
+										"tiny": {
+											"url": "https://assets.genius.com/images/default_avatar_16.png?1762532798",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://assets.genius.com/images/default_avatar_32.png?1762532798",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://assets.genius.com/images/default_avatar_100.png?1762532798",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+									"human_readable_role_for_display": null,
+									"id": 1751793,
+									"iq": 216,
+									"login": "Changmang",
+									"name": "Changmang",
+									"role_for_display": null,
+									"url": "https://genius.com/Changmang",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.14814814814814814,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/269182",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/5f579d275735b22510e0bc9a06171bde",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/3GmrMEUaTVW5V3WEham0_Foto0079.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 269182,
+									"iq": 447606,
+									"login": "igordebraga",
+									"name": "​igordebraga",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/igordebraga",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.0462962962962963,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1112222",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.rapgenius.com/avatars/tiny/3db8b52fc2b13a4aa21cca83538d708d",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.rapgenius.com/avatars/thumb/3db8b52fc2b13a4aa21cca83538d708d",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.rapgenius.com/avatars/small/3db8b52fc2b13a4aa21cca83538d708d",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.rapgenius.com/avatars/medium/3db8b52fc2b13a4aa21cca83538d708d",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.rapgenius.com/avatars/medium/3db8b52fc2b13a4aa21cca83538d708d",
+									"human_readable_role_for_display": "Contributor",
+									"id": 1112222,
+									"iq": 77503,
+									"login": "5bankaccounts3ounces2vehicles",
+									"name": "5bankaccounts3ounces2vehicles",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/5bankaccounts3ounces2vehicles",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.009259259259259259,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/4624897",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/nyup308v1e9",
+									"human_readable_role_for_display": "Editor",
+									"id": 4624897,
+									"iq": 268054,
+									"login": "velociraptigor",
+									"name": "velociraptigor",
+									"role_for_display": "editor",
+									"url": "https://genius.com/velociraptigor",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 42460,
+				"annotator_login": "AtomicGhost",
+				"api_path": "/referents/481720",
+				"classification": "accepted",
+				"fragment": "Now and then, when I see her face\n She takes me away to that special place\n And if I stared too long, I’d probably break down and cry",
+				"id": 481720,
+				"is_description": false,
+				"path": "/481720/Guns-n-roses-sweet-child-o-mine/Now-and-then-when-i-see-her-face-she-takes-me-away-to-that-special-place-and-if-i-stared-too-long-id-probably-break-down-and-cry",
+				"range": {
+					"content": "Now and then, when I see her face\n She takes me away to that special place\n And if I stared too long, I'd probably break down and cry"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/481720/Guns-n-roses-sweet-child-o-mine/Now-and-then-when-i-see-her-face-she-takes-me-away-to-that-special-place-and-if-i-stared-too-long-id-probably-break-down-and-cry",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/481720",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"He misses the days when he was a child and life was easy so if he thinks about those days for too long, he starts to cry"
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"The special place refer to a mind-space of innocent love, which is free from the brutal world.  She takes him to that space and he realizes how reality-life is actually suffering, so comes the break down and cry."
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											"He sees his childhood sweetheart, his first love around and about and it takes him straight back to where they used to ‘hang out’ together and what would his life be like if he was still with her and if he stares too long he thinks he would have been happier so he can feel the tears building up so he has to look away to keep his composure."
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 2,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 481720,
+						"pinned": false,
+						"share_url": "https://genius.com/481720",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/481720/Guns-n-roses-sweet-child-o-mine/Now-and-then-when-i-see-her-face-she-takes-me-away-to-that-special-place-and-if-i-stared-too-long-id-probably-break-down-and-cry",
+						"verified": false,
+						"votes_total": 102,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.45833333333333337,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/2074706",
+									"avatar": {
+										"tiny": {
+											"url": "https://assets.genius.com/images/default_avatar_16.png?1762532798",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://assets.genius.com/images/default_avatar_32.png?1762532798",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://assets.genius.com/images/default_avatar_100.png?1762532798",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+									"human_readable_role_for_display": null,
+									"id": 2074706,
+									"iq": 250,
+									"login": "BigDudeUK",
+									"name": "BigDudeUK",
+									"role_for_display": null,
+									"url": "https://genius.com/BigDudeUK",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.2986111111111111,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/3990358",
+									"avatar": {
+										"tiny": {
+											"url": "https://assets.genius.com/images/default_avatar_16.png?1762532798",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://assets.genius.com/images/default_avatar_32.png?1762532798",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://assets.genius.com/images/default_avatar_100.png?1762532798",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+									"human_readable_role_for_display": null,
+									"id": 3990358,
+									"iq": 194,
+									"login": "zipeitang",
+									"name": "zipeitang",
+									"role_for_display": null,
+									"url": "https://genius.com/zipeitang",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.1875,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/42460",
+									"avatar": {
+										"tiny": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/tiny/sBGKX9dSlmSJXdMuOIgQ.jpg",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/thumb/sBGKX9dSlmSJXdMuOIgQ.jpg",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/small/sBGKX9dSlmSJXdMuOIgQ.jpg",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://s3.amazonaws.com/rapgenius/avatars/medium/sBGKX9dSlmSJXdMuOIgQ.jpg",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://s3.amazonaws.com/rapgenius/avatars/medium/sBGKX9dSlmSJXdMuOIgQ.jpg",
+									"human_readable_role_for_display": "Contributor",
+									"id": 42460,
+									"iq": 440,
+									"login": "AtomicGhost",
+									"name": "AtomicGhost",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/AtomicGhost",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.05555555555555555,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1553",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+									"human_readable_role_for_display": "Editor",
+									"id": 1553,
+									"iq": 534651,
+									"login": "Avi",
+									"name": "Avi",
+									"role_for_display": "editor",
+									"url": "https://genius.com/Avi",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			},
+			{
+				"_type": "referent",
+				"annotator_id": 5634,
+				"annotator_login": "Mike_C",
+				"api_path": "/referents/102414",
+				"classification": "accepted",
+				"fragment": "She’s got a smile that it seems to me\n Reminds me of childhood memories\n Where everything was as fresh as the bright blue sky",
+				"id": 102414,
+				"is_description": false,
+				"path": "/102414/Guns-n-roses-sweet-child-o-mine/Shes-got-a-smile-that-it-seems-to-me-reminds-me-of-childhood-memories-where-everything-was-as-fresh-as-the-bright-blue-sky",
+				"range": {
+					"content": "She's got a smile that it seems to me\n Reminds me of childhood memories\n Where everything was as fresh as the bright blue sky"
+				},
+				"song_id": 1470,
+				"url": "https://genius.com/102414/Guns-n-roses-sweet-child-o-mine/Shes-got-a-smile-that-it-seems-to-me-reminds-me-of-childhood-memories-where-everything-was-as-fresh-as-the-bright-blue-sky",
+				"verified_annotator_ids": [],
+				"annotatable": {
+					"api_path": "/songs/1470",
+					"client_timestamps": {
+						"updated_by_human_at": 1755532615,
+						"lyrics_updated_at": 1754295391
+					},
+					"context": "Guns N' Roses",
+					"id": 1470,
+					"image_url": "https://images.genius.com/a8dbbb16d6f02f2d27b86e60d11b1476.1000x1000x1.jpg",
+					"link_title": "Sweet Child O’ Mine by Guns N’ Roses",
+					"title": "Sweet Child O' Mine",
+					"type": "Song",
+					"url": "https://genius.com/Guns-n-roses-sweet-child-o-mine-lyrics"
+				},
+				"annotations": [
+					{
+						"api_path": "/annotations/102414",
+						"body": {
+							"dom": {
+								"tag": "root",
+								"children": [
+									{
+										"tag": "p",
+										"children": [
+											"When he thinks of her smile it reminds him of the time in his life where he was happy and everything was good. The child-like smile is the intuition of all human. We lost it in the cruel egoistic society. The girl’s smile reminds him of the instinct of pure happiness, just like “fresh sky.”"
+										]
+									},
+									"",
+									{
+										"tag": "p",
+										"children": [
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "https://genius.com/artists/Axl-rose",
+													"rel": "noopener"
+												},
+												"data": {
+													"api_path": "/artists/101616"
+												},
+												"children": ["Axl Rose"]
+											},
+											" had a traumatic childhood and suffered from ",
+											{
+												"tag": "a",
+												"attributes": {
+													"href": "https://www.rollingstone.com/music/music-features/axl-rose-the-rolling-stone-interview-99204/",
+													"rel": "noopener nofollow"
+												},
+												"children": ["molestation and abuse."]
+											},
+											" This line is especially significant as it symbolizes how her smile reminds him of the few joyful childhood memories he has."
+										]
+									}
+								]
+							}
+						},
+						"comment_count": 2,
+						"community": true,
+						"custom_preview": null,
+						"has_voters": true,
+						"id": 102414,
+						"pinned": false,
+						"share_url": "https://genius.com/102414",
+						"source": null,
+						"state": "accepted",
+						"url": "https://genius.com/102414/Guns-n-roses-sweet-child-o-mine/Shes-got-a-smile-that-it-seems-to-me-reminds-me-of-childhood-memories-where-everything-was-as-fresh-as-the-bright-blue-sky",
+						"verified": false,
+						"votes_total": 168,
+						"current_user_metadata": {
+							"permissions": [],
+							"excluded_permissions": [
+								"vote",
+								"edit",
+								"cosign",
+								"uncosign",
+								"destroy",
+								"accept",
+								"reject",
+								"see_unreviewed",
+								"clear_votes",
+								"propose_edit_to",
+								"pin_to_profile",
+								"unpin_from_profile",
+								"update_source",
+								"edit_custom_preview",
+								"report_as_abusive",
+								"create_comment"
+							],
+							"interactions": {
+								"cosign": false,
+								"pyong": false,
+								"vote": null
+							},
+							"iq_by_action": {}
+						},
+						"authors": [
+							{
+								"attribution": 0.3870967741935484,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/3990358",
+									"avatar": {
+										"tiny": {
+											"url": "https://assets.genius.com/images/default_avatar_16.png?1762532798",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://assets.genius.com/images/default_avatar_32.png?1762532798",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://assets.genius.com/images/default_avatar_100.png?1762532798",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+									"human_readable_role_for_display": null,
+									"id": 3990358,
+									"iq": 194,
+									"login": "zipeitang",
+									"name": "zipeitang",
+									"role_for_display": null,
+									"url": "https://genius.com/zipeitang",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.3010752688172043,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/4624897",
+									"avatar": {
+										"tiny": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://filepicker-images.genius.com/ylicy5gx9w",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://filepicker-images.genius.com/nyup308v1e9",
+									"human_readable_role_for_display": "Editor",
+									"id": 4624897,
+									"iq": 268054,
+									"login": "velociraptigor",
+									"name": "velociraptigor",
+									"role_for_display": "editor",
+									"url": "https://genius.com/velociraptigor",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.24731182795698925,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/5634",
+									"avatar": {
+										"tiny": {
+											"url": "https://assets.genius.com/images/default_avatar_16.png?1762532798",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://assets.genius.com/images/default_avatar_32.png?1762532798",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://assets.genius.com/images/default_avatar_100.png?1762532798",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://assets.genius.com/images/default_avatar_300.png?1762532798",
+									"human_readable_role_for_display": "Contributor",
+									"id": 5634,
+									"iq": 605,
+									"login": "Mike_C",
+									"name": "Mike_C",
+									"role_for_display": "contributor",
+									"url": "https://genius.com/Mike_C",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							},
+							{
+								"attribution": 0.06451612903225806,
+								"pinned_role": null,
+								"user": {
+									"api_path": "/users/1553",
+									"avatar": {
+										"tiny": {
+											"url": "https://images.genius.com/avatars/tiny/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 16,
+												"height": 16
+											}
+										},
+										"thumb": {
+											"url": "https://images.genius.com/avatars/thumb/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 32,
+												"height": 32
+											}
+										},
+										"small": {
+											"url": "https://images.genius.com/avatars/small/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 100,
+												"height": 100
+											}
+										},
+										"medium": {
+											"url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+											"bounding_box": {
+												"width": 300,
+												"height": 400
+											}
+										}
+									},
+									"header_image_url": "https://images.genius.com/avatars/medium/e6bc971ca551f876d6b3e7237a069b95",
+									"human_readable_role_for_display": "Editor",
+									"id": 1553,
+									"iq": 534651,
+									"login": "Avi",
+									"name": "Avi",
+									"role_for_display": "editor",
+									"url": "https://genius.com/Avi",
+									"current_user_metadata": {
+										"permissions": [],
+										"excluded_permissions": ["follow"],
+										"interactions": {
+											"following": false
+										}
+									}
+								}
+							}
+						],
+						"cosigned_by": [],
+						"rejection_comment": null,
+						"verified_by": null
+					}
+				]
+			}
+		]
+	}
+}

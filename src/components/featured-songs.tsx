@@ -3,7 +3,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { prisma } from '@/lib/prisma'
-import { FeaturedSong, GeniusSongInfo } from '@/types'
+import { FeaturedSong } from '@/types'
+import { GeniusSongInfo } from '@/types/songsAPI'
 
 const getFeaturedSongs = async (): Promise<FeaturedSong[]> => {
 	'use cache'

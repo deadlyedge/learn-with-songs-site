@@ -1,9 +1,6 @@
 import { GENIUS_API_BASE } from '@/constants'
-import type {
-	GeniusSongHit,
-	GeniusSongInfoRaw,
-	NormalizedSong,
-} from '@/types'
+import type { GeniusSongHit, NormalizedSong } from '@/types'
+import type { GeniusSongInfoRaw } from '@/types/songsAPI'
 
 const ensureToken = () => {
 	const token = process.env.GENIUS_API_TOKEN

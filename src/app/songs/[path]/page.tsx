@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Iridescence from '@/components/ui/effects/iridescence'
 import Markdown from 'react-markdown'
-import { GeniusSongInfo } from '@/types'
+import { GeniusSongInfo } from '@/types/songsAPI'
 
 type SongPageProps = {
 	params: Promise<{
