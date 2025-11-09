@@ -1,5 +1,6 @@
 import { GENIUS_API_BASE } from '@/constants'
 import type { GeniusSongHit, NormalizedSong } from '@/types'
+import { Referent } from '@/types/referentsAPI'
 import type { GeniusSongInfoRaw } from '@/types/songsAPI'
 
 const ensureToken = () => {
@@ -104,4 +105,52 @@ export async function fetchGeniusSongDetails(
 	}
 
 	return song
+}
+
+export async function fetchGeniusReferents(
+	songId: number | string
+): Promise<Referent[]> {
+	const token = ensureToken()
+	const idValue =
+		typeof songId === 'number'
+			? Math.trunc(songId)
+			: Number.parseInt(String(songId).trim(), 10)
+
+	if (!Number.isFinite(idValue)) {
+		throw new Error(`Invalid Genius song id: ${songId}`)
+	}
+
+	const id = idValue.toString()
+
+	const response = await fetch(`${GENIUS_API_BASE}/referents?song_id=${id}`, {
+		headers: {
+			Accept: 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		next: {
+			revalidate: 0,
+		},
+	})
+
+	if (!response.ok) {
+		throw new Error(
+			`Genius song referents fetch failed with status ${response.status}`
+		)
+	}
+
+	const payload = (await response.json()) as {
+		response?: {
+			referents?: Referent[]
+		}
+	}
+
+	const referents = payload.response?.referents ?? []
+
+	if (!referents) {
+		throw new Error(
+			'Genius song referents payload did not include referent data.'
+		)
+	}
+
+	return referents
 }

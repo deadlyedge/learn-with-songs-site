@@ -1,19 +1,18 @@
 import { Suspense } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { fonts } from '@/lib/utils'
 // import { notFound } from 'next/navigation'
-import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { ensureSongDetails } from '@/lib/song-details'
 import { cn, hexToRgb01 } from '@/lib/utils'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import Iridescence from '@/components/ui/effects/iridescence'
 import Markdown from 'react-markdown'
 import { GeniusSongInfo } from '@/types/songsAPI'
+
+import { Header } from '@/components/songs-page/header'
+import { Lyric } from '@/components/songs-page/lyric'
 
 type SongPageProps = {
 	params: Promise<{
@@ -112,177 +111,54 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 	const details = (song.details ?? null) as GeniusSongInfo | null
-	const description = details?.description
-	const stats = details?.stats
+	const description = details?.description as string
 	const colorArray = details?.song_art_primary_color
 		? hexToRgb01(details.song_art_primary_color)
 		: ([0.5, 0.1, 0.2] as [number, number, number])
+	const headerContents = {
+		title: song.title,
+		artist: song.artist,
+		album: song.album as string,
+		releaseDate: details?.release_date_for_display as string,
+		description: details?.description as string,
+		language: song.language as string,
+		contributors: String(details?.stats?.contributors),
+		pageviews: String(details?.stats?.pageviews),
+		url: song.url as string,
+		artworkUrl: song.artworkUrl as string,
+		backgroundColor: colorArray,
+	}
 
 	return (
 		<article className="space-y-6 pb-6 relative">
-			<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
-				<div className="absolute inset-0 top-0 z-[-2]">
-					<Iridescence
-						color={colorArray}
-						mouseReact={false}
-						amplitude={0.1}
-						speed={0.2}
-					/>
-				</div>
+			<Header headerContents={headerContents} />
 
-				<Link
-					href="/"
-					className="text-sm font-medium text-secondary underline-offset-4 hover:underline">
-					← 返回搜索
-				</Link>
-				<h1 className={cn('text-2xl font-semibold', fonts.uncial)}>
-					{song.title}
-				</h1>
-				<div className="flex flex-col md:flex-row gap-4">
-					<div className="flex justify-between w-full md:w-1/2">
-						<div className="flex flex-col justify-between flex-2">
-							<div className="flex flex-col">
-								<p className={cn('text-lg text-secondary', fonts.uncial)}>
-									{song.artist}
-								</p>
-								<div className="flex flex-wrap gap-2 gap-x-3 mt-1.5 text-sm">
-									{song.album ? <span>专辑：{song.album}</span> : null}
-									{song.releaseDate ? (
-										<time dateTime={song.releaseDate.toISOString()}>
-											发行：
-											{details?.release_date_for_display ??
-												song.releaseDate.getFullYear()}
-										</time>
-									) : null}
-									{song.language ? <span>语言：{song.language}</span> : null}
-									{stats?.contributors ? (
-										<span className="flex">
-											<EditIcon />
-											{stats.contributors}
-										</span>
-									) : null}
-									{stats?.pageviews ? (
-										<span className="flex">
-											<EyeIcon />
-											{stats.pageviews}
-										</span>
-									) : null}
-								</div>
-							</div>
-							<div className="flex flex-col items-end px-2 gap-1">
-								<div className="flex text-xs justify-end gap-1">
-									<Badge
-										variant="buttonLike"
-										className="hover:cursor-pointer border-0">
-										<ShareIcon />
-										分享
-									</Badge>
-									<Badge
-										variant="buttonLike"
-										className="hover:cursor-pointer border-0">
-										<HeartIcon />
-										收藏
-									</Badge>
-								</div>
-								{song.url ? (
-									<Link
-										href={song.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="">
-										<Button size="sm" className="rounded-full text-xs">
-											在 Genius 上查看
-											<Outdent />
-										</Button>
-									</Link>
-								) : null}
-							</div>
-						</div>
-						{song.artworkUrl ? (
-							<div className="h-48 w-48 shrink-0 overflow-hidden rounded-xl border border-border/60 shadow-sm">
-								<Image
-									src={song.artworkUrl}
-									alt={`${song.title} 封面`}
-									className="object-cover"
-									sizes="192px"
-									width={192}
-									height={192}
-									priority
-								/>
-							</div>
-						) : null}
-					</div>
-					<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-amber-100/80 p-2 text-sm text-shadow-none">
-						{description ? (
-							<div
-								id="md"
-								className={cn(
-									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none text-sm text-foreground',
-									fonts.sans
-								)}>
-								<Markdown>{description}</Markdown>
-							</div>
-						) : (
-							<p className="text-sm text-muted-foreground">歌曲详情加载中。</p>
-						)}
-					</div>
-				</div>
-			</div>
+			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
-			<section className="space-y-2">
-				<h2 className="text-xl font-semibold px-2">歌词 Lyrics</h2>
-				<div className="p-4 md:p-6">
-					{lyricsError ? (
-						<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-							{lyricsError}
+			<div
+				id="float-annoted"
+				className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 p-2 backdrop-blur-sm overflow-y-auto">
+				{lyricRecord ? (
+					<div className=" text-xs">
+						<p className="text-sm text-muted-foreground">
+							歌词提供者：{lyricRecord.provider}
 						</p>
-					) : (
-						<div className="w-full mb-80">
-							{lyricLines.length > 0 ? (
-								<ul className="space-y-3">
-									{lyricLines.map((line, index) =>
-										line === '' ? (
-											<li key={`spacer-${index}`} className="h-3" />
-										) : (
-											<li key={`${index}-${line}`} className="leading-4">
-												{line}
-											</li>
-										)
-									)}
-								</ul>
-							) : (
-								<p className="text-sm text-muted-foreground">
-									歌词加载中或暂不可用。
-								</p>
-							)}
-						</div>
-					)}
-					<div
-						id="float-annoted"
-						className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 p-2 backdrop-blur-sm overflow-y-auto">
-						{lyricRecord ? (
-							<div className=" text-xs">
-								<p className="text-sm text-muted-foreground">
-									歌词提供者：{lyricRecord.provider}
-								</p>
-								<p className="text-sm text-muted-foreground">
-									歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
-								</p>
-							</div>
-						) : null}
-						{description && (
-							<div
-								id="md"
-								className={cn(
-									'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
-									fonts.sans
-								)}>
-								<Markdown>{description}</Markdown>
-							</div>
-						)}
+						<p className="text-sm text-muted-foreground">
+							歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
+						</p>
 					</div>
-				</div>
-			</section>
+				) : null}
+				{description && (
+					<div
+						id="md"
+						className={cn(
+							'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
+							fonts.sans
+						)}>
+						<Markdown>{description}</Markdown>
+					</div>
+				)}
+			</div>
 		</article>
 	)
 }
