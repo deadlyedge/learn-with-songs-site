@@ -1,18 +1,17 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { fonts } from '@/lib/utils'
 // import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { ensureSongDetails } from '@/lib/song-details'
-import { cn, hexToRgb01 } from '@/lib/utils'
+import { hexToRgb01 } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
-import Markdown from 'react-markdown'
 import { GeniusSongInfo } from '@/types/songsAPI'
 
 import { Header } from '@/components/songs-page/header'
 import { Lyric } from '@/components/songs-page/lyric'
+import { FloatAnnotations } from '@/components/float-annotations'
 
 type SongPageProps = {
 	params: Promise<{
@@ -111,7 +110,6 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 	const details = (song.details ?? null) as GeniusSongInfo | null
-	const description = details?.description as string
 	const colorArray = details?.song_art_primary_color
 		? hexToRgb01(details.song_art_primary_color)
 		: ([0.5, 0.1, 0.2] as [number, number, number])
@@ -135,30 +133,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
-			<div
-				id="float-annoted"
-				className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-1/2 md:min-h-80 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 p-2 backdrop-blur-sm overflow-y-auto">
-				{lyricRecord ? (
-					<div className=" text-xs">
-						<p className="text-sm text-muted-foreground">
-							歌词提供者：{lyricRecord.provider}
-						</p>
-						<p className="text-sm text-muted-foreground">
-							歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
-						</p>
-					</div>
-				) : null}
-				{description && (
-					<div
-						id="md"
-						className={cn(
-							'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
-							fonts.sans
-						)}>
-						<Markdown>{description}</Markdown>
-					</div>
-				)}
-			</div>
+			<FloatAnnotations />
 		</article>
 	)
 }

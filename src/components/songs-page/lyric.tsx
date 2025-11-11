@@ -1,3 +1,5 @@
+'use client'
+
 type LyricProps = { error: string | null; lyricLines: string[] }
 
 export const Lyric = ({ error, lyricLines }: LyricProps) => {
@@ -18,7 +20,7 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 										<li key={`spacer-${index}`} className="h-3" />
 									) : (
 										<li key={`${index}-${line}`} className="leading-4">
-											{line}
+											<span className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">{line}</span>
 										</li>
 									)
 								)}
