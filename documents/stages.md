@@ -32,7 +32,7 @@
 
 1. **歌词注解显示**
     - make the dom parser more versatile.
-    - Genius referents/annotations结构化展示，对应到歌词段落高亮（支持点击查看解释）。参考 referentsAPIResponse.json
+    - 在float-annotations中获取Genius referents/annotations，使用tabs列出~~设法对应到歌词段落高亮（支持点击查看解释）~~。参考 referentsAPIResponse.json
 2. **词汇/短语分析**
     - 使用openrouter/google/gemini-2.0-flash-001
     - 支持歌词段选中，弹窗显示词义/句式语法分析/例句。

@@ -20,7 +20,9 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 										<li key={`spacer-${index}`} className="h-3" />
 									) : (
 										<li key={`${index}-${line}`} className="leading-4">
-											<span className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">{line}</span>
+											<span className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
+												{line}
+											</span>
 										</li>
 									)
 								)}

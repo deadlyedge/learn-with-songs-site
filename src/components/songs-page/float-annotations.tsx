@@ -1,7 +1,7 @@
 import { cn, fonts } from '@/lib/utils'
-import { Card, CardContent } from './ui/card'
-import { ScrollArea } from './ui/scroll-area'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { Card, CardContent } from '../ui/card'
+import { ScrollArea } from '../ui/scroll-area'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import Markdown from 'react-markdown'
 
 const tabs = [
@@ -25,7 +25,13 @@ const tabs = [
 	},
 ]
 
-export const FloatAnnotations = async () => {
+type FloatAnnotationsProps = {
+	lyricLines: string[]
+}
+
+export const FloatAnnotations = async ({
+	lyricLines,
+}: FloatAnnotationsProps) => {
 	return (
 		<Card
 			id="float-annotations"
@@ -45,35 +51,16 @@ export const FloatAnnotations = async () => {
 					{tabs.map((tab) => (
 						<TabsContent key={tab.value} value={tab.value}>
 							<ScrollArea
-								className={cn('h-64 md:h-80 md:min-h-80 w-full', fonts.sans)}>
-								<p className="text-muted-foreground p-4 text-sm">
-									<Markdown>{tab.content}</Markdown>
-								</p>
+								className={cn(
+									'h-64 md:h-80 md:min-h-80 w-full p-2',
+									fonts.sans
+								)}>
+								<Markdown>{tab.content}</Markdown>
 							</ScrollArea>
 						</TabsContent>
 					))}
 				</Tabs>
 			</CardContent>
-			{/* {lyricRecord ? (
-				<div className=" text-xs">
-					<p className="text-sm text-muted-foreground">
-						歌词提供者：{lyricRecord.provider}
-					</p>
-					<p className="text-sm text-muted-foreground">
-						歌词拉取时间：{lyricRecord.fetchedAt.toLocaleString()}
-					</p>
-				</div>
-			) : null}
-			{description && (
-				<div
-					id="md"
-					className={cn(
-						'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none',
-						fonts.sans
-					)}>
-					<Markdown>{description}</Markdown>
-				</div>
-			)} */}
 		</Card>
 	)
 }

@@ -11,7 +11,7 @@ import { GeniusSongInfo } from '@/types/songsAPI'
 
 import { Header } from '@/components/songs-page/header'
 import { Lyric } from '@/components/songs-page/lyric'
-import { FloatAnnotations } from '@/components/float-annotations'
+import { FloatAnnotations } from '@/components/songs-page/float-annotations'
 
 type SongPageProps = {
 	params: Promise<{
@@ -133,7 +133,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
-			<FloatAnnotations />
+			<FloatAnnotations lyricLines={lyricLines} />
 		</article>
 	)
 }
