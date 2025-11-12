@@ -6,6 +6,18 @@ import {
 	GeniusSongInfoRaw,
 } from '@/types/songsAPI'
 
+const BLOCK_LEVEL_TAGS = new Set([
+	'root',
+	'div',
+	'section',
+	'article',
+	'figure',
+	'header',
+	'footer',
+	'aside',
+	'nav',
+])
+
 const renderChildrenToMarkdown = (children?: Array<string | GeniusDomNode>) => {
 	if (!children || children.length === 0) {
 		return ''
@@ -28,6 +40,13 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 	const trimmed = content.trim()
 
 	switch (tag) {
+		case 'span':
+		case 'article':
+		case 'header':
+		case 'footer':
+		case 'aside':
+		case 'nav':
+		case 'figure':
 		case 'root':
 		case 'div':
 		case 'section':
@@ -44,15 +63,41 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 			return trimmed ? `*${trimmed}*` : ''
 		case 'u':
 			return trimmed ? `_${trimmed}_` : ''
+		case 'del':
+		case 's':
+		case 'strike':
+			return trimmed ? `~~${trimmed}~~` : ''
 		case 'code':
 			return trimmed ? `\`${trimmed}\`` : ''
 		case 'pre':
 			return trimmed ? `\n\`\`\`\n${trimmed}\n\`\`\`\n\n` : '\n'
+		case 'sup':
+			return trimmed ? `<sup>${trimmed}</sup>` : ''
+		case 'sub':
+			return trimmed ? `<sub>${trimmed}</sub>` : ''
+		case 'mark':
+			return trimmed ? `<mark>${trimmed}</mark>` : ''
 		case 'a': {
 			const href = node.attributes?.href ?? node.data?.api_path ?? ''
 			const label = trimmed || href
 
 			return href ? `[${label}](${href})` : label
+		}
+		case 'img': {
+			const src =
+				node.attributes?.src?.toString() ??
+				node.data?.src?.toString() ??
+				''
+			if (!src) {
+				return ''
+			}
+
+			const alt =
+				node.attributes?.alt?.toString() ??
+				node.data?.title?.toString() ??
+				node.data?.alt?.toString() ??
+				''
+			return `![${alt}](${src})`
 		}
 		case 'blockquote': {
 			const lines = trimmed
@@ -97,6 +142,9 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 			return value
 		}
 		default: {
+			if (BLOCK_LEVEL_TAGS.has(tag)) {
+				return content
+			}
 			if (tag.startsWith('h')) {
 				const level = Number.parseInt(tag.slice(1), 10)
 				const prefix = '#'.repeat(Number.isFinite(level) ? level : 1)
@@ -108,7 +156,9 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 	}
 }
 
-const convertDomToMarkdown = (dom?: GeniusDomNode | null): string | null => {
+export const convertDomToMarkdown = (
+	dom?: GeniusDomNode | null
+): string | null => {
 	if (!dom) {
 		return null
 	}

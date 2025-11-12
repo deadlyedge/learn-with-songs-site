@@ -1,65 +1,190 @@
 import { cn, fonts } from '@/lib/utils'
+import type { NormalizedReferent } from '@/lib/referents'
 import { Card, CardContent } from '../ui/card'
 import { ScrollArea } from '../ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import Markdown from 'react-markdown'
 
-const tabs = [
-	{
-		name: 'Home',
-		value: 'home',
-		content:
-			'Welcome to the Home tab! Here, you can explore the latest updates, news, and highlights. Stay informed about what&apos;s happening and never miss out on important announcements.',
-	},
-	{
-		name: 'Profile',
-		value: 'profile',
-		content:
-			'This is your Profile tab. Manage your personal information, update your account details, and customize your settings to make your experience unique.',
-	},
-	{
-		name: 'Messages',
-		value: 'messages',
-		content:
-			'Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.Messages: Check your recent messages, start new conversations, and stay connected with your friends and contacts. Manage your chat history and keep the communication flowing.',
-	},
-]
-
 type FloatAnnotationsProps = {
 	lyricLines: string[]
+	referents: NormalizedReferent[]
 }
 
-export const FloatAnnotations = async ({
+const formatTabLabel = (referent: NormalizedReferent, index: number) => {
+	const fragment = referent.fragment?.trim() ?? ''
+
+	if (fragment.length > 0) {
+		return fragment.length > 20 ? `${fragment.slice(0, 19)}...` : fragment
+	}
+
+	return `Annotation ${index + 1}`
+}
+
+const normalizeLyricsLine = (line: string) =>
+	line.toLowerCase().replace(/\s+/g, ' ').trim()
+
+const normalizeFragment = (fragment: string) =>
+	fragment
+		.toLowerCase()
+		.replace(/\s+/g, ' ')
+		.replace(/[\[\]]/g, '')
+		.trim()
+
+const buildLyricContext = (fragment: string, lyricLines: string[]) => {
+	const normalizedFragment = normalizeFragment(fragment)
+
+	if (!normalizedFragment) {
+		return null
+	}
+
+	let matchIndex = lyricLines.findIndex((line) =>
+		normalizeLyricsLine(line).includes(normalizedFragment)
+	)
+
+	if (matchIndex === -1) {
+		matchIndex = lyricLines.findIndex((line) =>
+			normalizeLyricsLine(line).includes(
+				normalizedFragment.replace(/[^a-z0-9\s']/g, '')
+			)
+		)
+	}
+
+	if (matchIndex === -1) {
+		return null
+	}
+
+	const start = Math.max(0, matchIndex - 1)
+	const end = Math.min(lyricLines.length, matchIndex + 2)
+	return lyricLines.slice(start, end).join('\n')
+}
+
+export const FloatAnnotations = ({
 	lyricLines,
+	referents,
 }: FloatAnnotationsProps) => {
+	const hasReferents = referents.length > 0
+	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
+
 	return (
 		<Card
 			id="float-annotations"
 			className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-96 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 py-2 px-0 backdrop-blur-sm">
-			<CardContent>
-				<Tabs defaultValue={tabs[0].value} className="w-full">
-					<TabsList className="w-full bg-transparent justify-start rounded-none border-b p-0">
-						{tabs.map((tab) => (
-							<TabsTrigger
-								key={tab.value}
-								value={tab.value}
-								className="data-[state=active]:border-b-primary data-[state=active]:bg-transparent h-full rounded-none border-b-2 border-transparent data-[state=active]:shadow-none">
-								{tab.name}
-							</TabsTrigger>
-						))}
-					</TabsList>
-					{tabs.map((tab) => (
-						<TabsContent key={tab.value} value={tab.value}>
-							<ScrollArea
-								className={cn(
-									'h-64 md:h-80 md:min-h-80 w-full p-2',
-									fonts.sans
-								)}>
-								<Markdown>{tab.content}</Markdown>
-							</ScrollArea>
-						</TabsContent>
-					))}
-				</Tabs>
+			<CardContent className="h-full">
+				{hasReferents ? (
+					<Tabs defaultValue={firstTabValue} className="flex h-full flex-col">
+						<TabsList className="w-full bg-transparent justify-start rounded-none border-b p-0 overflow-x-auto">
+							{referents.map((referent, index) => {
+								const value = `referent-${referent.id}`
+
+								return (
+									<TabsTrigger
+										key={value}
+										value={value}
+										className="data-[state=active]:border-b-primary data-[state=active]:bg-transparent h-full rounded-none border-b-2 border-transparent data-[state=active]:shadow-none whitespace-nowrap px-3 py-2 text-sm">
+										{formatTabLabel(referent, index)}
+									</TabsTrigger>
+								)
+							})}
+						</TabsList>
+						{referents.map((referent) => {
+							const value = `referent-${referent.id}`
+							const lyricContext = buildLyricContext(
+								referent.rangeContent ?? referent.fragment,
+								lyricLines
+							)
+							console.log('lyricContext', lyricContext)
+
+							return (
+								<TabsContent key={value} value={value} className="mt-0 flex-1">
+									{/* <ScrollArea className={cn('h-64 md:h-80 md:min-h-80 w-full p-2', fonts.sans)}> */}
+									{/* <div className="space-y-4"> */}
+									{/* <header className="space-y-1 text-sm">
+												<p className="text-xs uppercase tracking-wide text-muted-foreground">
+													{referent.classification}
+												</p>
+												<h3 className="text-base font-semibold">
+													{referent.rangeContent ?? referent.fragment}
+												</h3>
+											</header>
+											{lyricContext && (
+												<pre className="rounded-lg border border-border/30 bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap font-mono">
+													{lyricContext}
+												</pre>
+											)} */}
+									<div>
+										{referent.annotations.length > 0 ? (
+											referent.annotations.map((annotation) => (
+												<ScrollArea
+													key={annotation.id}
+													className={cn(
+														'h-64 md:h-80 md:min-h-80 w-full p-2',
+														fonts.sans
+													)}>
+													<header className="space-y-1 text-sm">
+														<h3 className="text-base font-semibold">
+															{referent.rangeContent ?? referent.fragment}
+														</h3>
+													</header>
+													{annotation.body ? (
+														<Markdown>{annotation.body}</Markdown>
+													) : (
+														<p className="text-sm text-muted-foreground">
+															No explanation available for this annotation yet.
+														</p>
+													)}
+													{/* {annotation.authors.length > 0 && (
+																<p className="mt-2 text-xs text-muted-foreground">
+																	Authored by{' '}
+																	{annotation.authors
+																		.map(
+																			(author) =>
+																				author.name ??
+																				author.login ??
+																				`#${author.id}`
+																		)
+																		.join(', ')}
+																</p>
+															)} */}
+													{/* <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+																<span>
+																	{annotation.verified
+																		? 'Verified annotation'
+																		: 'Community contribution'}
+																</span>
+																<div className="flex items-center gap-3">
+																	<span>Votes: {annotation.votesTotal}</span>
+																	<a
+																		href={annotation.url}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="font-medium text-primary hover:underline">
+																		View on Genius
+																	</a>
+																</div>
+															</footer> */}
+												</ScrollArea>
+											))
+										) : (
+											<p className="rounded-md border border-dashed border-border/70 bg-background/70 px-3 py-4 text-sm text-muted-foreground">
+												No Genius annotations are available for this fragment
+												yet.
+											</p>
+										)}
+									</div>
+									{/* </div> */}
+									{/* </ScrollArea> */}
+								</TabsContent>
+							)
+						})}
+					</Tabs>
+				) : (
+					<div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-background/60 px-4 py-8 text-sm text-muted-foreground text-center">
+						<p>
+							Genius annotations for this song are not available right now.
+							Please try again later or open the song on Genius directly.
+						</p>
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	)

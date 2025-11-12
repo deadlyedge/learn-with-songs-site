@@ -3,8 +3,10 @@ import Link from 'next/link'
 // import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
+import { fetchGeniusReferents } from '@/lib/genius'
 import { ensureSongDetails } from '@/lib/song-details'
 import { hexToRgb01 } from '@/lib/utils'
+import { normalizeReferents, type NormalizedReferent } from '@/lib/referents'
 
 import { Button } from '@/components/ui/button'
 import { GeniusSongInfo } from '@/types/songsAPI'
@@ -85,6 +87,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 	let lyricRecord = song.lyrics
 	let lyricsError: string | null = null
+	let referents: NormalizedReferent[] = []
 
 	if (!lyricRecord) {
 		try {
@@ -110,6 +113,19 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 	const details = (song.details ?? null) as GeniusSongInfo | null
+	const referentsTargetId =
+		song.geniusId ??
+		(typeof details?.id === 'number' ? details.id : undefined)
+
+	if (referentsTargetId) {
+		try {
+			const referentsResponse = await fetchGeniusReferents(referentsTargetId)
+			referents = normalizeReferents(referentsResponse)
+		} catch (error) {
+			console.error('Failed to fetch Genius referents', error)
+		}
+	}
+
 	const colorArray = details?.song_art_primary_color
 		? hexToRgb01(details.song_art_primary_color)
 		: ([0.5, 0.1, 0.2] as [number, number, number])
@@ -133,7 +149,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 
 			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
-			<FloatAnnotations lyricLines={lyricLines} />
+			<FloatAnnotations lyricLines={lyricLines} referents={referents} />
 		</article>
 	)
 }

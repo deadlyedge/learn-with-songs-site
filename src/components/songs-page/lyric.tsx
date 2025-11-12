@@ -17,9 +17,17 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 							<ul className="space-y-3">
 								{lyricLines.map((line, index) =>
 									line === '' ? (
-										<li key={`spacer-${index}`} className="h-3" />
+										// <li key={`spacer-${index}`} className="h-3" />
+										<span
+											key={`spacer-${index}`}
+											className="text-xs -ml-2 mr-1 text-gray-500 font-thin italic">
+											{index + 1}
+										</span>
 									) : (
 										<li key={`${index}-${line}`} className="leading-4">
+											<span className="text-xs -ml-2 mr-1 text-gray-500 font-thin italic">
+												{index + 1}
+											</span>
 											<span className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
 												{line}
 											</span>
