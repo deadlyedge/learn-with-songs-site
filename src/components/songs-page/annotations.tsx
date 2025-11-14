@@ -5,7 +5,7 @@ import { ScrollArea } from '../ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import Markdown from 'react-markdown'
 
-type FloatAnnotationsProps = {
+type AnnotationsProps = {
 	lyricLines: string[]
 	referents: NormalizedReferent[]
 }
@@ -58,10 +58,7 @@ const buildLyricContext = (fragment: string, lyricLines: string[]) => {
 	return lyricLines.slice(start, end).join('\n')
 }
 
-export const FloatAnnotations = ({
-	lyricLines,
-	referents,
-}: FloatAnnotationsProps) => {
+export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 	const hasReferents = referents.length > 0
 	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
 
@@ -96,21 +93,6 @@ export const FloatAnnotations = ({
 
 							return (
 								<TabsContent key={value} value={value} className="mt-0 flex-1">
-									{/* <ScrollArea className={cn('h-64 md:h-80 md:min-h-80 w-full p-2', fonts.sans)}> */}
-									{/* <div className="space-y-4"> */}
-									{/* <header className="space-y-1 text-sm">
-												<p className="text-xs uppercase tracking-wide text-muted-foreground">
-													{referent.classification}
-												</p>
-												<h3 className="text-base font-semibold">
-													{referent.rangeContent ?? referent.fragment}
-												</h3>
-											</header>
-											{lyricContext && (
-												<pre className="rounded-lg border border-border/30 bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap font-mono">
-													{lyricContext}
-												</pre>
-											)} */}
 									<div>
 										{referent.annotations.length > 0 ? (
 											referent.annotations.map((annotation) => (
@@ -132,36 +114,6 @@ export const FloatAnnotations = ({
 															No explanation available for this annotation yet.
 														</p>
 													)}
-													{/* {annotation.authors.length > 0 && (
-																<p className="mt-2 text-xs text-muted-foreground">
-																	Authored by{' '}
-																	{annotation.authors
-																		.map(
-																			(author) =>
-																				author.name ??
-																				author.login ??
-																				`#${author.id}`
-																		)
-																		.join(', ')}
-																</p>
-															)} */}
-													{/* <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-																<span>
-																	{annotation.verified
-																		? 'Verified annotation'
-																		: 'Community contribution'}
-																</span>
-																<div className="flex items-center gap-3">
-																	<span>Votes: {annotation.votesTotal}</span>
-																	<a
-																		href={annotation.url}
-																		target="_blank"
-																		rel="noopener noreferrer"
-																		className="font-medium text-primary hover:underline">
-																		View on Genius
-																	</a>
-																</div>
-															</footer> */}
 												</ScrollArea>
 											))
 										) : (
@@ -171,8 +123,6 @@ export const FloatAnnotations = ({
 											</p>
 										)}
 									</div>
-									{/* </div> */}
-									{/* </ScrollArea> */}
 								</TabsContent>
 							)
 						})}
