@@ -97,7 +97,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 				update: {
 					content: fetchedLyrics,
 					provider: 'lyrics.zick.me',
-					fetchedAt: new Date(),
+					updatedAt: new Date(),
 				},
 				create: {
 					songId: song.id,

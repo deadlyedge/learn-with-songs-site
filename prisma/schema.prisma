@@ -26,22 +26,27 @@ model User {
 }
 
 model Song {
-  id               String    @id @default(uuid())
-  geniusId         String?   @unique
-  geniusPath       String?   @unique
-  title            String
-  artist           String
-  album            String?
-  releaseDate      DateTime?
-  artworkUrl       String?
-  language         String? // e.g. 'en'
-  url              String? // canonical song url
-  details          Json?
-  detailsFetchedAt DateTime?
+  id          String    @id @default(uuid())
+  geniusId    String?   @unique
+  geniusPath  String?   @unique
+  title       String
+  artist      String
+  album       String?
+  releaseDate DateTime?
+  artworkUrl  String?
+  language    String? // e.g. 'en'
+  url         String? // canonical song url
+
+  details             Json?
+  detailsFetchedAt    DateTime?
+  detailsUpdatePeriod UpdatePeriod @default(HALF_YEAR)
 
   lyrics    Lyric?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  referents Referent[]
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  updatePeriod UpdatePeriod @default(YEARLY)
 
   @@index([title, artist])
   @@index([artist])
@@ -49,11 +54,37 @@ model Song {
 }
 
 model Lyric {
-  id        String   @id @default(uuid())
-  songId    String   @unique
-  content   String   @db.Text
-  provider  String?
-  fetchedAt DateTime @default(now())
+  id       String  @id @default(uuid())
+  songId   String  @unique
+  content  String  @db.Text
+  provider String?
+  summary  String? @db.Text
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  updatePeriod UpdatePeriod @default(HALF_YEAR)
 
   song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+}
+
+model Referent {
+  id       String  @id @default(uuid())
+  songId   String  @unique
+  fragment String
+  content  String  @db.Text
+  provider String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+}
+
+enum UpdatePeriod {
+  YEARLY
+  HALF_YEAR
+  THREE_MONTHS
+  MONTHLY
 }

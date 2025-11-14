@@ -6,5 +6,5 @@ export const DB_REFRESH_STRATEGY = {
 	SONG: 'year',
 	SONG_DETAILS: 'half-year',
 	LYRICS: 'half-year',
-	REFERENTS: '3month',
+	REFERENTS: '3months',
 }
