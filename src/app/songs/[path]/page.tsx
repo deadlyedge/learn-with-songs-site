@@ -9,8 +9,9 @@ import { hexToRgb01 } from '@/lib/utils'
 import {
 	cacheReferentsForSong,
 	mapDbReferentsToNormalized,
-} from '@/lib/referents-storage'
-import { normalizeReferents, type NormalizedReferent } from '@/lib/referents'
+	normalizeReferents,
+	type NormalizedReferent,
+} from '@/lib/referents'
 
 import { Button } from '@/components/ui/button'
 import { GeniusSongInfo } from '@/types/songsAPI'
@@ -125,8 +126,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 	const lyricLines = lyricRecord ? splitLyrics(lyricRecord.content) : []
 	const details = (song.details ?? null) as GeniusSongInfo | null
 	const referentsTargetId =
-		song.geniusId ??
-		(typeof details?.id === 'number' ? details.id : undefined)
+		song.geniusId ?? (typeof details?.id === 'number' ? details.id : undefined)
 
 	const cachedReferents = songRecord.referents ?? []
 	const hasCachedReferents = cachedReferents.length > 0

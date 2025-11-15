@@ -37,10 +37,11 @@ model Song {
   language    String? // e.g. 'en'
   url         String? // canonical song url
 
-  details             Json?
-  detailsFetchedAt    DateTime?
-  detailsUpdatePeriod UpdatePeriod @default(HALF_YEAR)
-  referentsFetchedAt  DateTime?
+  details               Json?
+  detailsFetchedAt      DateTime?
+  detailsUpdatePeriod   UpdatePeriod @default(HALF_YEAR)
+  referentsFetchedAt    DateTime?
+  referentsUpdatePeriod UpdatePeriod @default(THREE_MONTHS)
 
   lyrics    Lyric?
   referents Referent[]
@@ -93,10 +94,10 @@ model Referent {
 }
 
 model ReferentAnnotation {
-  id           String   @id @default(uuid())
-  annotationId Int      @unique
+  id           String  @id @default(uuid())
+  annotationId Int     @unique
   referentId   String
-  body         String?  @db.Text
+  body         String? @db.Text
   url          String
   votesTotal   Int
   verified     Boolean
