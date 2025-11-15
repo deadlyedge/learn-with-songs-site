@@ -125,9 +125,8 @@ export const Header = ({ headerContents }: HeaderProps) => {
 				<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-amber-100/80 p-2 text-sm text-shadow-none">
 					{headerContents.description ? (
 						<div
-							id="md"
 							className={cn(
-								'prose prose-a:text-gray-600 prose-a:hover:text-gray-500 max-w-none text-sm text-foreground',
+								'markdown max-w-none text-sm text-foreground',
 								fonts.sans
 							)}>
 							<Markdown>{headerContents.description}</Markdown>

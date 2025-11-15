@@ -109,7 +109,7 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 												{referent.rangeContent ?? referent.fragment}
 											</span>
 										</AccordionTrigger>
-										<AccordionContent className={cn("flex flex-col markdown", fonts.sans)}>
+										<AccordionContent className={cn("flex flex-col markdown leading-snug", fonts.sans)}>
 											{referent.annotations.length > 0 ? (
 												referent.annotations.map((annotation) => (
 													<Markdown key={annotation.id}>
