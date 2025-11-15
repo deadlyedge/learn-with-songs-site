@@ -15,6 +15,48 @@ type AnnotationsProps = {
 	referents: NormalizedReferent[]
 }
 
+const normalizeAnnotationBody = (body: string | null) => {
+	if (!body) return null
+
+	const lines = body.split(/\r?\n/)
+	const normalizedLines: string[] = []
+	let consecutiveBlank = 0
+
+	for (const line of lines) {
+		const isBlank = line.trim() === ''
+
+		if (isBlank) {
+			consecutiveBlank += 1
+
+			if (consecutiveBlank === 1) {
+				normalizedLines.push('')
+			}
+
+			continue
+		}
+
+		consecutiveBlank = 0
+		normalizedLines.push(line)
+	}
+
+	while (normalizedLines.length > 0 && normalizedLines[0].trim() === '') {
+		normalizedLines.shift()
+	}
+
+	while (
+		normalizedLines.length > 0 &&
+		normalizedLines[normalizedLines.length - 1].trim() === ''
+	) {
+		normalizedLines.pop()
+	}
+
+	if (normalizedLines.length === 0) {
+		return null
+	}
+
+	return normalizedLines.join('\n')
+}
+
 export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 	const hasReferents = referents.length > 0
 	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
@@ -32,6 +74,30 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 							defaultValue={firstTabValue}
 							className="w-full h-80">
 							{referents.map((referent) => {
+								const normalizedAnnotations = referent.annotations
+									.map((annotation) => {
+										const normalizedBody = normalizeAnnotationBody(
+											annotation.body
+										)
+
+										if (!normalizedBody) {
+											return null
+										}
+
+										return {
+											id: annotation.id,
+											body: normalizedBody,
+										}
+									})
+									.filter(
+										(
+											value
+										): value is {
+											id: number
+											body: string
+										} => Boolean(value)
+									)
+
 								const value = `referent-${referent.id}`
 
 								return (
@@ -42,8 +108,8 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 											</span>
 										</AccordionTrigger>
 										<AccordionContent className="flex flex-col markdown leading-snug text-sm">
-											{referent.annotations.length > 0 ? (
-												referent.annotations.map((annotation) => (
+											{normalizedAnnotations.length > 0 ? (
+												normalizedAnnotations.map((annotation) => (
 													<Markdown key={annotation.id}>
 														{annotation.body}
 													</Markdown>
