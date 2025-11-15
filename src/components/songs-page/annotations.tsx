@@ -110,7 +110,15 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 										<AccordionContent className="flex flex-col markdown leading-snug text-sm">
 											{normalizedAnnotations.length > 0 ? (
 												normalizedAnnotations.map((annotation) => (
-													<Markdown key={annotation.id}>
+													<Markdown
+														key={annotation.id}
+														components={{
+															p: ({ children }) => (
+																<p className="mb-1 last:mb-0 leading-snug">
+																	{children}
+																</p>
+															),
+														}}>
 														{annotation.body}
 													</Markdown>
 												))
