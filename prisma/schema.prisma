@@ -40,6 +40,7 @@ model Song {
   details             Json?
   detailsFetchedAt    DateTime?
   detailsUpdatePeriod UpdatePeriod @default(HALF_YEAR)
+  referentsFetchedAt  DateTime?
 
   lyrics    Lyric?
   referents Referent[]
@@ -70,16 +71,44 @@ model Lyric {
 }
 
 model Referent {
-  id       String  @id @default(uuid())
-  songId   String  @unique
-  fragment String
-  content  String  @db.Text
-  provider String?
+  id             String  @id @default(uuid())
+  geniusId       Int     @unique
+  songId         String
+  fragment       String
+  content        String? @db.Text
+  provider       String?
+  classification String
+  rangeContent   String?
+  path           String?
+  url            String?
+
+  annotations ReferentAnnotation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+}
+
+model ReferentAnnotation {
+  id           String   @id @default(uuid())
+  annotationId Int      @unique
+  referentId   String
+  body         String?  @db.Text
+  url          String
+  votesTotal   Int
+  verified     Boolean
+  source       String?
+  authors      Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  referent Referent @relation(fields: [referentId], references: [id], onDelete: Cascade)
+
+  @@index([referentId])
 }
 
 enum UpdatePeriod {

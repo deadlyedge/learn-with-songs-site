@@ -6,6 +6,10 @@ import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { fetchGeniusReferents } from '@/lib/genius'
 import { ensureSongDetails } from '@/lib/song-details'
 import { hexToRgb01 } from '@/lib/utils'
+import {
+	cacheReferentsForSong,
+	mapDbReferentsToNormalized,
+} from '@/lib/referents-storage'
 import { normalizeReferents, type NormalizedReferent } from '@/lib/referents'
 
 import { Button } from '@/components/ui/button'
@@ -54,7 +58,14 @@ async function SongDetailContent({ params }: SongPageProps) {
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },
-		include: { lyrics: true },
+		include: {
+			lyrics: true,
+			referents: {
+				include: {
+					annotations: true,
+				},
+			},
+		},
 	})
 
 	if (!songRecord) {
@@ -117,10 +128,17 @@ async function SongDetailContent({ params }: SongPageProps) {
 		song.geniusId ??
 		(typeof details?.id === 'number' ? details.id : undefined)
 
-	if (referentsTargetId) {
+	const cachedReferents = songRecord.referents ?? []
+	const hasCachedReferents = cachedReferents.length > 0
+	const hasFetchedReferents = Boolean(songRecord.referentsFetchedAt)
+
+	if (hasCachedReferents) {
+		referents = mapDbReferentsToNormalized(cachedReferents)
+	} else if (referentsTargetId && !hasFetchedReferents) {
 		try {
 			const referentsResponse = await fetchGeniusReferents(referentsTargetId)
 			referents = normalizeReferents(referentsResponse)
+			await cacheReferentsForSong(song.id, referents)
 		} catch (error) {
 			console.error('Failed to fetch Genius referents', error)
 		}
