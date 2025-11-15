@@ -72,7 +72,7 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 		<Card
 			id="float-annotations"
 			className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-96 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 py-2 px-0 backdrop-blur-sm">
-			<CardContent className="h-full">
+			<CardContent className={cn('h-full', fonts.sans)}>
 				{hasReferents ? (
 					<ScrollArea>
 						<Accordion
@@ -105,11 +105,11 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 								return (
 									<AccordionItem key={value} value={value}>
 										<AccordionTrigger>
-											<span className="w-96 truncate">
+											<span className="w-96 truncate font-bold">
 												{referent.rangeContent ?? referent.fragment}
 											</span>
 										</AccordionTrigger>
-										<AccordionContent className={cn("flex flex-col markdown leading-snug", fonts.sans)}>
+										<AccordionContent className="flex flex-col markdown leading-snug text-sm">
 											{referent.annotations.length > 0 ? (
 												referent.annotations.map((annotation) => (
 													<Markdown key={annotation.id}>
