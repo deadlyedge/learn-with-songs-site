@@ -8,7 +8,7 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 	return (
 		<section className="space-y-2 w-full md:w-1/2">
 			<h2 className="text-xl font-semibold px-2">歌词 Lyrics</h2>
-			<div className="p-4 md:p-6">
+			<div id="lyrics" className="p-4 md:p-6">
 				{error ? (
 					<p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
 						{error}
@@ -31,7 +31,9 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic">
 												{index + 1}
 											</span>
-											<span className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
+											<span
+												data-line-text={line}
+												className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
 												{line}
 											</span>
 										</li>

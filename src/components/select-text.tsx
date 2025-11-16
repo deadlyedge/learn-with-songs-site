@@ -1,56 +1,191 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
-export const SelectText = () => {
-	const [selection, setSelection] = useState<string>()
-	const [position, setPosition] = useState<Record<string, number>>()
+type SelectionInfo = {
+	word: string
+	line: string
+}
 
-	function onLearning(text?: string) {
-		const textToLearn = text || selection
-		console.log('text', textToLearn)
+type Position = {
+	x: number
+	y: number
+	width: number
+	height: number
+}
+
+type SelectTextProps = {
+	containerId?: string
+}
+
+const DEFAULT_CONTAINER_ID = 'lyrics'
+const MAX_SELECTION_LENGTH = 400
+
+const isWhitespace = (char?: string) => {
+	return !char || /\s/.test(char)
+}
+
+const expandToFullWords = (text: string, start: number, end: number) => {
+	if (start >= end) {
+		return null
 	}
 
+	let expandedStart = start
+	let expandedEnd = end
+
+	while (expandedStart < text.length && isWhitespace(text[expandedStart])) {
+		expandedStart++
+	}
+	while (expandedStart > 0 && !isWhitespace(text[expandedStart - 1])) {
+		expandedStart--
+	}
+
+	while (expandedEnd > expandedStart && isWhitespace(text[expandedEnd - 1])) {
+		expandedEnd--
+	}
+	while (expandedEnd < text.length && !isWhitespace(text[expandedEnd])) {
+		expandedEnd++
+	}
+
+	if (expandedStart >= expandedEnd) {
+		return null
+	}
+
+	const normalized = text.slice(expandedStart, expandedEnd).trim()
+	return normalized.length ? normalized : null
+}
+
+const findLineElement = (node: Node | null) => {
+	if (!node) {
+		return null
+	}
+
+	if (node.nodeType === Node.TEXT_NODE) {
+		return (node as Text).parentElement?.closest<HTMLElement>('[data-line-text]') ?? null
+	}
+
+	if (node instanceof HTMLElement) {
+		return node.closest<HTMLElement>('[data-line-text]')
+	}
+
+	return null
+}
+
+export const SelectText = ({ containerId }: SelectTextProps) => {
+	const [selection, setSelection] = useState<SelectionInfo | null>(null)
+	const [position, setPosition] = useState<Position | null>(null)
+
 	useEffect(() => {
-		function onSelectStart() {
-			setSelection(undefined)
+		const targetContainer =
+			document.getElementById(containerId ?? DEFAULT_CONTAINER_ID) ?? undefined
+
+		if (!targetContainer) {
+			return
 		}
 
-		function onSelectEnd() {
-			const activeSelection = document.getSelection()
-			const text = activeSelection?.toString()
+		const resetSelection = () => {
+			setSelection(null)
+			setPosition(null)
+		}
 
-			// validate selection, need more
-			if (
-				!activeSelection ||
-				!text ||
-				text?.length > 30 ||
-				text.includes('\n')
-			) {
-				setSelection(undefined)
+		const onSelectStart = () => {
+			resetSelection()
+		}
+
+		const onSelectEnd = () => {
+			if (!targetContainer) {
+				resetSelection()
 				return
 			}
 
-			setSelection(text)
+			const activeSelection = document.getSelection()
+			if (!activeSelection || activeSelection.isCollapsed) {
+				resetSelection()
+				return
+			}
 
-			const rect = activeSelection.getRangeAt(0).getBoundingClientRect()
+			const { anchorNode, focusNode } = activeSelection
+			if (
+				!anchorNode ||
+				!focusNode ||
+				!targetContainer.contains(anchorNode) ||
+				!targetContainer.contains(focusNode)
+			) {
+				resetSelection()
+				return
+			}
+
+			const range = activeSelection.getRangeAt(0)
+			const startLine = findLineElement(range.startContainer)
+			const endLine = findLineElement(range.endContainer)
+
+			if (!startLine || !endLine || startLine !== endLine) {
+				resetSelection()
+				return
+			}
+
+			if (
+				range.startContainer.nodeType !== Node.TEXT_NODE ||
+				range.endContainer.nodeType !== Node.TEXT_NODE
+			) {
+				resetSelection()
+				return
+			}
+
+			if (range.startContainer !== range.endContainer) {
+				resetSelection()
+				return
+			}
+
+			const textNode = range.startContainer as Text
+			const start = Math.min(range.startOffset, range.endOffset)
+			const end = Math.max(range.startOffset, range.endOffset)
+
+			const word = expandToFullWords(textNode.wholeText, start, end)
+			if (!word || word.length > MAX_SELECTION_LENGTH) {
+				resetSelection()
+				return
+			}
+
+			const rect = range.getBoundingClientRect()
+			setSelection({
+				word,
+				line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
+			})
 
 			setPosition({
-				x: rect.left + rect.width / 2 - 80 / 2 - 12,
+				x: rect.left + rect.width / 2 - 40 - 12,
 				y: rect.top + window.scrollY - 30 - 12,
 				width: rect.width,
 				height: rect.height,
 			})
 		}
+
 		document.addEventListener('selectstart', onSelectStart)
 		document.addEventListener('mouseup', onSelectEnd)
+
 		return () => {
 			document.removeEventListener('selectstart', onSelectStart)
 			document.removeEventListener('mouseup', onSelectEnd)
 		}
-	}, [])
+	}, [containerId])
+
+	function onLearning(text?: SelectionInfo) {
+		const textToLearn = text ?? selection
+		if (!textToLearn) {
+			return
+		}
+		console.log('text', textToLearn)
+	}
+
+	const previewText = selection
+		? selection.word.length > 20
+			? `${selection.word.slice(0, 20)}...`
+			: selection.word
+		: ''
 
 	return (
-		// eslint-disable-next-line jsx-a11y/role-supports-aria-props
-		<div role="dialog" aria-labelledby="share" aria-haspopup="dialog">
+		<div role="dialog" aria-labelledby="share">
 			{selection && position && (
 				<p
 					className="
@@ -65,8 +200,7 @@ export const SelectText = () => {
 						onClick={() => onLearning()}>
 						<span id="share" className="text-xs">
 							Learn&nbsp;
-							{selection.substring(0, 20) +
-								(selection.length > 20 ? '...' : '')}
+							{previewText}
 						</span>
 					</button>
 				</p>
