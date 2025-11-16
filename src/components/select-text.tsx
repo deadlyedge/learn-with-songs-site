@@ -1,6 +1,9 @@
 'use client'
 
+import { learnWordInLine } from '@/lib/openrouter'
 import { useEffect, useState } from 'react'
+import Markdown from 'react-markdown'
+import { Spinner } from './ui/spinner'
 
 type SelectionInfo = {
 	word: string
@@ -61,7 +64,10 @@ const findLineElement = (node: Node | null) => {
 	}
 
 	if (node.nodeType === Node.TEXT_NODE) {
-		return (node as Text).parentElement?.closest<HTMLElement>('[data-line-text]') ?? null
+		return (
+			(node as Text).parentElement?.closest<HTMLElement>('[data-line-text]') ??
+			null
+		)
 	}
 
 	if (node instanceof HTMLElement) {
@@ -74,6 +80,7 @@ const findLineElement = (node: Node | null) => {
 export const SelectText = ({ containerId }: SelectTextProps) => {
 	const [selection, setSelection] = useState<SelectionInfo | null>(null)
 	const [position, setPosition] = useState<Position | null>(null)
+	const [result, setResult] = useState('')
 
 	useEffect(() => {
 		const targetContainer =
@@ -86,6 +93,7 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 		const resetSelection = () => {
 			setSelection(null)
 			setPosition(null)
+			setResult('')
 		}
 
 		const onSelectStart = () => {
@@ -154,7 +162,7 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 			})
 
 			setPosition({
-				x: rect.left + rect.width / 2 - 40 - 12,
+				x: rect.left + rect.width,
 				y: rect.top + window.scrollY - 30 - 12,
 				width: rect.width,
 				height: rect.height,
@@ -170,40 +178,58 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 		}
 	}, [containerId])
 
-	function onLearning(text?: SelectionInfo) {
-		const textToLearn = text ?? selection
-		if (!textToLearn) {
-			return
-		}
-		console.log('text', textToLearn)
-	}
+	useEffect(() => {
+		async function onLearning(text?: SelectionInfo) {
+			const textToLearn = text ?? selection
+			if (!textToLearn) {
+				return
+			}
+			// console.log('text', textToLearn)
 
-	const previewText = selection
-		? selection.word.length > 20
-			? `${selection.word.slice(0, 20)}...`
-			: selection.word
-		: ''
+			const markdownString = await learnWordInLine(
+				textToLearn.word,
+				textToLearn.line
+			)
+
+			setResult(markdownString)
+		}
+		if (!selection) return
+		onLearning()
+	}, [selection])
+
+	// const previewText = selection
+	// 	? selection.word.length > 20
+	// 		? `${selection.word.slice(0, 20)}...`
+	// 		: selection.word
+	// 	: ''
 
 	return (
 		<div role="dialog" aria-labelledby="share">
 			{selection && position && (
-				<p
+				<div
 					className="
-            absolute -top-14 left-0 bg-yellow-200 text-card-foreground rounded m-0 p-3
-            after:absolute after:top-full after:left-1/2 after:-translate-x-2 after:h-0 after:w-0 after:border-x-[6px] after:border-x-transparent after:border-b-8 after:border-b-yellow-200 after:rotate-180 shadow
+            absolute -top-14 left-20 bg-yellow-200 text-card-foreground rounded m-0 p-3 shadow max-w-1/2
           "
 					style={{
 						transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
 					}}>
-					<button
+					{/* <button
 						className="flex w-full h-full justify-between items-center px-2"
 						onClick={() => onLearning()}>
 						<span id="share" className="text-xs">
 							Learn&nbsp;
 							{previewText}
 						</span>
-					</button>
-				</p>
+					</button> */}
+					{result ? (
+						<Markdown>{result}</Markdown>
+					) : (
+						<div className="flex items-center justify-center">
+							<Spinner />
+							AI working...
+						</div>
+					)}
+				</div>
 			)}
 		</div>
 	)
