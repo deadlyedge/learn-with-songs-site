@@ -28,8 +28,8 @@ export default function RootLayout({
 
 							<Navbar />
 							{children}
-							<Footer />
 						</main>
+						<Footer />
 					</body>
 				</html>
 			</ClerkProvider>

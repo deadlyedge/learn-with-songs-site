@@ -164,10 +164,12 @@ async function SongDetailContent({ params }: SongPageProps) {
 	return (
 		<article className="space-y-6 pb-6 relative">
 			<Header headerContents={headerContents} />
-
+			<section id='contents' className='flex flex-col md:flex-row gap-4'>
 			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
 			<Annotations lyricLines={lyricLines} referents={referents} />
+
+			</section>
 		</article>
 	)
 }
