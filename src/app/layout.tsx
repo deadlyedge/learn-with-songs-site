@@ -7,6 +7,7 @@ import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
 import { Suspense } from 'react'
 import { Loader } from 'lucide-react'
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata: Metadata = {
 	title: 'Learn English with Songs',
@@ -30,6 +31,7 @@ export default function RootLayout({
 							{children}
 						</main>
 						<Footer />
+						<Toaster />
 					</body>
 				</html>
 			</ClerkProvider>

@@ -1,28 +1,40 @@
 'use client'
 
-import { learnWordInLine } from '@/lib/openrouter'
 import { useEffect, useState } from 'react'
+import { learnWordInLine } from '@/lib/openrouter'
 import Markdown from 'react-markdown'
+
 import { Spinner } from './ui/spinner'
+import { toast } from 'sonner'
+import {
+	Dialog,
+	// DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from './ui/dialog'
+import { Button } from './ui/button'
 
 type SelectionInfo = {
 	word: string
 	line: string
 }
 
-type Position = {
-	x: number
-	y: number
-	width: number
-	height: number
-}
+// type Position = {
+// 	x: number
+// 	y: number
+// 	width: number
+// 	height: number
+// }
 
 type SelectTextProps = {
 	containerId?: string
 }
 
 const DEFAULT_CONTAINER_ID = 'lyrics'
-const MAX_SELECTION_LENGTH = 400
+const MAX_SELECTION_LENGTH = 24
 
 const isWhitespace = (char?: string) => {
 	return !char || /\s/.test(char)
@@ -79,8 +91,17 @@ const findLineElement = (node: Node | null) => {
 
 export const SelectText = ({ containerId }: SelectTextProps) => {
 	const [selection, setSelection] = useState<SelectionInfo | null>(null)
-	const [position, setPosition] = useState<Position | null>(null)
+	// const [position, setPosition] = useState<Position | null>(null)
 	const [result, setResult] = useState('')
+	const [openDialog, setOpenDialog] = useState(false)
+
+	const resetSelection = () => {
+		setSelection(null)
+		// setPosition(null)
+		setResult('')
+		setOpenDialog(false)
+		// document.getSelection().empty()
+	}
 
 	useEffect(() => {
 		const targetContainer =
@@ -88,12 +109,6 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 
 		if (!targetContainer) {
 			return
-		}
-
-		const resetSelection = () => {
-			setSelection(null)
-			setPosition(null)
-			setResult('')
 		}
 
 		const onSelectStart = () => {
@@ -150,23 +165,30 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 			const end = Math.max(range.startOffset, range.endOffset)
 
 			const word = expandToFullWords(textNode.wholeText, start, end)
-			if (!word || word.length > MAX_SELECTION_LENGTH) {
+			if (!word) {
 				resetSelection()
 				return
 			}
+			if (word.length > MAX_SELECTION_LENGTH) {
+				resetSelection()
+				toast.error('请不要选择大量词语')
+				return
+			}
 
-			const rect = range.getBoundingClientRect()
+			// const rect = range.getBoundingClientRect()
 			setSelection({
 				word,
 				line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
 			})
 
-			setPosition({
-				x: rect.left + rect.width,
-				y: rect.top + window.scrollY - 30 - 12,
-				width: rect.width,
-				height: rect.height,
-			})
+			setOpenDialog(true)
+
+			// setPosition({
+			// 	x: rect.left + rect.width,
+			// 	y: rect.top + window.scrollY - 30 - 12,
+			// 	width: rect.width,
+			// 	height: rect.height,
+			// })
 		}
 
 		document.addEventListener('selectstart', onSelectStart)
@@ -204,23 +226,15 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 	// 	: ''
 
 	return (
-		<div role="dialog" aria-labelledby="share">
-			{selection && position && (
-				<div
-					className="
-            absolute -top-14 left-20 bg-yellow-200 text-card-foreground rounded m-0 p-3 shadow max-w-1/2
-          "
-					style={{
-						transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-					}}>
-					{/* <button
-						className="flex w-full h-full justify-between items-center px-2"
-						onClick={() => onLearning()}>
-						<span id="share" className="text-xs">
-							Learn&nbsp;
-							{previewText}
-						</span>
-					</button> */}
+		<Dialog open={openDialog}>
+			{selection && (
+				<DialogContent showCloseButton={false}>
+					<DialogHeader>
+						<DialogTitle>{`Word${
+							selection.word.includes(' ') ? 's' : ''
+						}: ${selection.word.slice(0, 20)}`}</DialogTitle>
+						<DialogDescription>{`In line: ${selection.line}`}</DialogDescription>
+					</DialogHeader>
 					{result ? (
 						<Markdown>{result}</Markdown>
 					) : (
@@ -229,8 +243,47 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 							AI working...
 						</div>
 					)}
-				</div>
+					<DialogFooter>
+						<Button>加入我的生词本</Button>
+						{/* <DialogClose asChild>
+							<Button
+								type="button"
+								variant="secondary"
+								onClick={resetSelection}>
+								Close
+							</Button>
+						</DialogClose> */}
+					</DialogFooter>
+				</DialogContent>
 			)}
-		</div>
+		</Dialog>
+		// <div role="dialog" aria-labelledby="share">
+		// 	{selection && position && (
+		// 		<div
+		// 			className="
+		//         absolute -top-14 left-20 bg-yellow-200 text-card-foreground rounded m-0 p-3 shadow max-w-1/2
+		//       "
+		// 			style={{
+		// 				transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+		// 			}}>
+		// 			{/* <button
+		// 				className="flex w-full h-full justify-between items-center px-2"
+		// 				onClick={() => onLearning()}>
+		// 				<span id="share" className="text-xs">
+		// 					Learn&nbsp;
+		// 					{previewText}
+		// 				</span>
+		// 			</button> */}
+		// 			{result ? (
+		// 				<Markdown>{result}</Markdown>
+		// 			) : (
+		// 				<div className="flex items-center justify-center">
+		// 					<Spinner />
+		// 					AI working...
+		// 				</div>
+		// 			)}
+		// 		</div>
+		// 	)}
+		// </div>
 	)
 }

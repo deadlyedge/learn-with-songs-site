@@ -23,12 +23,12 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 										// <li key={`spacer-${index}`} className="h-3" />
 										<span
 											key={`spacer-${index}`}
-											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic">
+											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
 											{index + 1}
 										</span>
 									) : (
 										<li key={`${index}-${line}`} className="leading-4">
-											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic">
+											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
 												{index + 1}
 											</span>
 											<span
