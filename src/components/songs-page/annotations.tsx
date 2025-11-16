@@ -1,4 +1,4 @@
-import { cn, fonts } from '@/lib/utils'
+import { fonts } from '@/lib/utils'
 import type { NormalizedReferent } from '@/lib/referents'
 // import { Card, CardContent } from '../ui/card'
 // import { ScrollArea } from '../ui/scroll-area'
@@ -11,7 +11,6 @@ import {
 } from '../ui/accordion'
 
 type AnnotationsProps = {
-	lyricLines?: string[]
 	referents: NormalizedReferent[]
 }
 
@@ -57,10 +56,9 @@ const normalizeAnnotationBody = (body: string | null) => {
 	return normalizedLines.join('\n')
 }
 
-export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
+export const Annotations = ({ referents }: AnnotationsProps) => {
 	const hasReferents = referents.length > 0
 	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
-	console.log('lyricLines', lyricLines)
 
 	return (
 		<div className='w-full md:w-1/2 border-l pl-2'>
@@ -78,7 +76,7 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 						type="single"
 						collapsible
 						defaultValue={firstTabValue}
-						className={cn("w-full", fonts.sans)}>
+						className={fonts.sans}>
 						{referents.map((referent) => {
 							const normalizedAnnotations = referent.annotations
 								.map((annotation) => {
@@ -109,7 +107,7 @@ export const Annotations = ({ lyricLines, referents }: AnnotationsProps) => {
 							return (
 								<AccordionItem key={value} value={value}>
 									<AccordionTrigger>
-										<span className="w-3/4 truncate font-bold">
+										<span className="font-bold">
 											{referent.rangeContent ?? referent.fragment}
 										</span>
 									</AccordionTrigger>

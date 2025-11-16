@@ -167,7 +167,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 			<section id='contents' className='flex flex-col md:flex-row gap-4'>
 			<Lyric error={lyricsError} lyricLines={lyricLines} />
 
-			<Annotations lyricLines={lyricLines} referents={referents} />
+			<Annotations referents={referents} />
 
 			</section>
 		</article>

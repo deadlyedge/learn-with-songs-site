@@ -1,5 +1,7 @@
 'use client'
 
+import { SelectText } from "../select-text";
+
 type LyricProps = { error: string | null; lyricLines: string[] }
 
 export const Lyric = ({ error, lyricLines }: LyricProps) => {
@@ -15,6 +17,7 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 					<div className="w-full mb-40">
 						{lyricLines.length > 0 ? (
 							<ul className="space-y-2">
+								<SelectText />
 								{lyricLines.map((line, index) =>
 									line === '' ? (
 										// <li key={`spacer-${index}`} className="h-3" />
