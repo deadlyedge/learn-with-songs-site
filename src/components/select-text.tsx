@@ -8,7 +8,7 @@ import { Spinner } from './ui/spinner'
 import { toast } from 'sonner'
 import {
 	Dialog,
-	// DialogClose,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -99,8 +99,11 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 		setSelection(null)
 		// setPosition(null)
 		setResult('')
+	}
+
+	const closeAndReset = () => {
 		setOpenDialog(false)
-		// document.getSelection().empty()
+		resetSelection()
 	}
 
 	useEffect(() => {
@@ -191,12 +194,12 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 			// })
 		}
 
-		document.addEventListener('selectstart', onSelectStart)
-		document.addEventListener('mouseup', onSelectEnd)
+		targetContainer.addEventListener('selectstart', onSelectStart)
+		targetContainer.addEventListener('mouseup', onSelectEnd)
 
 		return () => {
-			document.removeEventListener('selectstart', onSelectStart)
-			document.removeEventListener('mouseup', onSelectEnd)
+			targetContainer.removeEventListener('selectstart', onSelectStart)
+			targetContainer.removeEventListener('mouseup', onSelectEnd)
 		}
 	}, [containerId])
 
@@ -245,14 +248,11 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 					)}
 					<DialogFooter>
 						<Button>加入我的生词本</Button>
-						{/* <DialogClose asChild>
-							<Button
-								type="button"
-								variant="secondary"
-								onClick={resetSelection}>
+						<DialogClose asChild>
+							<Button type="button" variant="secondary" onClick={closeAndReset}>
 								Close
 							</Button>
-						</DialogClose> */}
+						</DialogClose>
 					</DialogFooter>
 				</DialogContent>
 			)}
