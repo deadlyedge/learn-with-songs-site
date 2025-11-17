@@ -8,3 +8,6 @@ export const DB_REFRESH_STRATEGY = {
 	LYRICS: 'half-year',
 	REFERENTS: '3months',
 }
+
+export const DEFAULT_CONTAINER_ID = 'lyrics'
+export const MAX_SELECTION_LENGTH = 24

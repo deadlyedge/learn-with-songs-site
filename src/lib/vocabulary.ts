@@ -64,7 +64,9 @@ export const createVocabularyEntry = (data: {
 	})
 }
 
-export const validateVocabularyPayload = (payload: Partial<VocabularyPayload>): VocabularyPayload => {
+export const validateVocabularyPayload = (
+	payload: Partial<VocabularyPayload>
+): VocabularyPayload => {
 	if (
 		!payload.word ||
 		!payload.line ||
@@ -81,7 +83,9 @@ export const validateVocabularyPayload = (payload: Partial<VocabularyPayload>): 
 		lineNumber: payload.lineNumber ?? null,
 		result: payload.result,
 		songId: payload.songId,
-		songPath: payload.songPath.startsWith('/') ? payload.songPath : `/${payload.songPath}`,
+		songPath: payload.songPath.startsWith('/')
+			? payload.songPath
+			: `/${payload.songPath}`,
 	}
 }
 
@@ -93,7 +97,9 @@ export const ensureVocabularyUser = async () => {
 	return user
 }
 
-export const addVocabularyEntry = async (payload: Partial<VocabularyPayload>) => {
+export const addVocabularyEntry = async (
+	payload: Partial<VocabularyPayload>
+) => {
 	const validPayload = validateVocabularyPayload(payload)
 	const user = await ensureVocabularyUser()
 
@@ -127,7 +133,9 @@ export type VocabularyExistsPayload = {
 	songId: string
 }
 
-export const validateExistsPayload = (payload: Partial<VocabularyExistsPayload>) => {
+export const validateExistsPayload = (
+	payload: Partial<VocabularyExistsPayload>
+) => {
 	if (!payload.word || !payload.line || !payload.songId) {
 		throw new VocabularyPayloadError('缺少必要字段')
 	}
@@ -148,7 +156,9 @@ export type VocabularyEntryData = {
 	songPath: string
 }
 
-export const getVocabularyEntry = async (payload: Partial<VocabularyExistsPayload>) => {
+export const getVocabularyEntry = async (
+	payload: Partial<VocabularyExistsPayload>
+) => {
 	const validPayload = validateExistsPayload(payload)
 	const user = await ensureVocabularyUser()
 
@@ -161,7 +171,9 @@ export const getVocabularyEntry = async (payload: Partial<VocabularyExistsPayloa
 	})
 }
 
-export const vocabularyEntryExists = async (payload: Partial<VocabularyExistsPayload>) => {
+export const vocabularyEntryExists = async (
+	payload: Partial<VocabularyExistsPayload>
+) => {
 	const entry = await getVocabularyEntry(payload)
 	if (!entry) {
 		return { exists: false }

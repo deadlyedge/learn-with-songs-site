@@ -48,7 +48,7 @@ export default async function VocabularyPage() {
 					这里展示你收藏的单词/短语，点击复习即可重新打开选中位置
 				</p>
 			</header>
-			<div className="grid gap-4 sm:grid-cols-2">
+			<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 				{vocabulary.map((entry) => (
 					<VocabularyCard
 						key={entry.id}

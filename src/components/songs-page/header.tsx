@@ -3,10 +3,9 @@ import Image from 'next/image'
 import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
 import { cn, fonts } from '@/lib/utils'
 
-// import Iridescence from '../ui/effects/iridescence'
-import Silk from '../ui/effects/silk'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
+import Iridescence from '../ui/effects/iridescence'
 
 import Markdown from 'react-markdown'
 
@@ -30,18 +29,11 @@ export const Header = ({ headerContents }: HeaderProps) => {
 	return (
 		<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 			<div className="absolute inset-0 top-0 z-[-2]">
-				{/* <Iridescence
+				<Iridescence
 					color={headerContents.backgroundColor}
 					mouseReact={false}
 					amplitude={0.1}
 					speed={0.2}
-				/> */}
-				<Silk
-					speed={3}
-					scale={1}
-					color={headerContents.backgroundColor}
-					noiseIntensity={1.5}
-					rotation={0}
 				/>
 			</div>
 

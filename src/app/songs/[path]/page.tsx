@@ -164,16 +164,15 @@ async function SongDetailContent({ params }: SongPageProps) {
 	return (
 		<article className="space-y-6 pb-6 relative">
 			<Header headerContents={headerContents} />
-			<section id='contents' className='flex flex-col md:flex-row gap-4'>
-			<Lyric
-				error={lyricsError}
-				lyricLines={lyricLines}
-				songId={song.id}
-				songPath={song.geniusPath ?? geniusPath}
-			/>
+			<section id="contents" className="flex flex-col md:flex-row gap-4">
+				<Lyric
+					error={lyricsError}
+					lyricLines={lyricLines}
+					songId={song.id}
+					songPath={song.geniusPath ?? geniusPath}
+				/>
 
-			<Annotations referents={referents} />
-
+				<Annotations referents={referents} />
 			</section>
 		</article>
 	)

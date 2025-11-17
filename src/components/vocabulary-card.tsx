@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import Markdown from 'react-markdown'
 
+import { FileSearchCornerIcon, ThumbsUpIcon } from 'lucide-react'
 import {
 	Dialog,
 	DialogClose,
@@ -15,6 +16,14 @@ import {
 	DialogTitle,
 } from './ui/dialog'
 import { Button } from './ui/button'
+import {
+	Card,
+	CardAction,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from './ui/card'
 
 export type VocabularyEntryCardProps = {
 	entry: {
@@ -37,45 +46,62 @@ export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
 	const songHref = `/songs${normalizedPath}`
 
 	return (
-		<article className="flex flex-col gap-3 rounded-xl border border-border bg-background p-4 shadow-sm">
-			<div className="flex items-center gap-3">
-				{entry.songArtworkUrl ? (
-					<Image
-						src={entry.songArtworkUrl}
-						alt={entry.songTitle}
-						width={64}
-						height={64}
-						className="h-16 w-16 rounded-md object-cover"
-					/>
-				) : (
-					<div className="h-16 w-16 rounded-md bg-muted" />
-				)}
-				<div className="flex flex-col">
+		<Card className="w-full flex flex-col justify-between">
+			<CardHeader>
+				<CardTitle className="text-lg font-semibold">{entry.word}</CardTitle>
+				<CardDescription className="text-sm text-muted-foreground leading-snug">
+					{entry.line}
+				</CardDescription>
+				<CardAction className="ml-auto text-xs text-muted-foreground"></CardAction>
+			</CardHeader>
+			<CardFooter className="w-full flex flex-col items-start gap-2">
+				<div className="flex items-center gap-2">
+					{entry.songArtworkUrl ? (
+						<Image
+							src={entry.songArtworkUrl}
+							alt={entry.songTitle}
+							width={64}
+							height={64}
+							className="h-16 w-16 rounded-md object-cover"
+						/>
+					) : (
+						<div className="h-16 w-16 rounded-md bg-muted" />
+					)}
+					<div className="flex flex-col">
+						<Link
+							href={songHref}
+							className="text-sm font-semibold text-primary hover:underline">
+							{entry.songTitle}
+						</Link>
+						{entry.lineNumber !== null && (
+							<span className="text-xs text-muted-foreground">
+								第 {entry.lineNumber} 行
+							</span>
+						)}
+					</div>
+				</div>
+				<div className="w-full flex items-center justify-between">
+					<Button
+						size="sm"
+						variant="outline"
+						type="button"
+						onClick={() => setOpen(true)}>
+						<FileSearchCornerIcon />
+						复习
+					</Button>{' '}
+					<Button size="sm" variant="destructive" type="button">
+						<ThumbsUpIcon />
+						已掌握
+					</Button>
+				</div>
+				{/* <Button size="sm" variant="secondary" type="button">
 					<Link
 						href={songHref}
-						className="text-sm font-semibold text-primary hover:underline">
-						{entry.songTitle}
+						className="text-xs font-medium text-primary hover:underline">
+						打开歌词
 					</Link>
-					{entry.lineNumber !== null && (
-						<span className="text-xs text-muted-foreground">
-							第 {entry.lineNumber} 行
-						</span>
-					)}
-				</div>
-				<span className="ml-auto text-xs text-muted-foreground">已加入</span>
-			</div>
-			<div>
-				<p className="text-lg font-semibold">{entry.word}</p>
-				<p className="text-sm text-muted-foreground leading-snug">{entry.line}</p>
-			</div>
-			<div className="flex items-center justify-between">
-				<Button size="sm" variant="outline" type="button" onClick={() => setOpen(true)}>
-					复习
-				</Button>
-				<Link href={songHref} className="text-xs font-medium text-primary hover:underline">
-					打开歌词
-				</Link>
-			</div>
+				</Button> */}
+			</CardFooter>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-lg" showCloseButton={false}>
 					<DialogHeader>
@@ -106,6 +132,6 @@ export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-		</article>
+		</Card>
 	)
 }

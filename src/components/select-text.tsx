@@ -27,6 +27,8 @@ import {
 } from './ui/dialog'
 import { Button } from './ui/button'
 
+import { DEFAULT_CONTAINER_ID, MAX_SELECTION_LENGTH } from '@/constants'
+
 type SelectionInfo = {
 	word: string
 	line: string
@@ -38,9 +40,6 @@ type SelectTextProps = {
 	songId?: string
 	songPath?: string
 }
-
-const DEFAULT_CONTAINER_ID = 'lyrics'
-const MAX_SELECTION_LENGTH = 24
 
 const isWhitespace = (char?: string) => {
 	return !char || /\s/.test(char)
@@ -392,14 +391,15 @@ export const SelectText = ({
 							</Button>
 						) : (
 							<SignInButton mode="modal">
-								<Button
+								{/* <Button
 									asChild
 									type="button"
 									variant="secondary"
 									className="w-full sm:w-auto"
 									onClick={closeAndReset}>
-									<span>加入我的生词本</span>
-								</Button>
+									加入我的生词本
+								</Button> */}
+								<Button onClick={closeAndReset}>登录开启生词本</Button>
 							</SignInButton>
 						)}
 						{/* <Button>复习</Button> */}
