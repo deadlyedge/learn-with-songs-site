@@ -213,14 +213,56 @@ export const SelectText = ({
 		}
 	}, [containerId])
 
-useEffect(() => {
-		if (!selection || duplicateExists) {
+	useEffect(() => {
+		if (!selection) {
 			return
 		}
 
 		let cancelled = false
 
 		const fetchResult = async () => {
+			setDuplicateChecking(true)
+			setDuplicateError(null)
+			setDuplicateExists(false)
+
+			if (isSignedIn) {
+				try {
+					const { exists, entry } = await vocabularyEntryExistsAction({
+						word: selection.word,
+						line: selection.line,
+						lineNumber: selection.lineNumber,
+						songId,
+					})
+
+					if (cancelled) {
+						return
+					}
+
+					setDuplicateExists(exists)
+					if (exists && entry?.result) {
+						setResult(entry.result)
+						setDuplicateChecking(false)
+						return
+					}
+				} catch (error) {
+					if (cancelled) {
+						return
+					}
+					if (error instanceof VocabularyUnauthorizedError) {
+						setDuplicateExists(false)
+					} else if (error instanceof VocabularyPayloadError) {
+						setDuplicateError(error.message)
+					} else {
+						setDuplicateError(
+							error instanceof Error ? error.message : '检查重复失败'
+						)
+						setDuplicateExists(false)
+					}
+					setDuplicateChecking(false)
+					return
+				}
+			}
+
 			const markdownString = await learnWordInLine(
 				selection.word,
 				selection.line
@@ -228,7 +270,9 @@ useEffect(() => {
 			if (cancelled) {
 				return
 			}
+
 			setResult(markdownString)
+			setDuplicateChecking(false)
 		}
 
 		setResult('')
@@ -237,77 +281,7 @@ useEffect(() => {
 		return () => {
 			cancelled = true
 		}
-	}, [selection, duplicateExists])
-
-	useEffect(() => {
-		if (!selection || !songId) {
-			setDuplicateExists(false)
-			setDuplicateError(null)
-			setDuplicateChecking(false)
-			return
-		}
-
-		let cancelled = false
-		const params = new URLSearchParams({
-			word: selection.word,
-			line: selection.line,
-			songId,
-		})
-
-		if (selection.lineNumber !== null) {
-			params.set('lineNumber', selection.lineNumber.toString())
-		}
-
-		const checkDuplicate = async () => {
-			setDuplicateChecking(true)
-			setDuplicateError(null)
-
-			try {
-				const { exists, entry } = await vocabularyEntryExistsAction({
-					word: selection.word,
-					line: selection.line,
-					lineNumber: selection.lineNumber,
-					songId,
-				})
-
-				if (cancelled) {
-					return
-				}
-
-				setDuplicateExists(exists)
-				if (exists && entry?.result) {
-					setResult(entry.result)
-				}
-			} catch (error) {
-				if (cancelled) {
-					return
-				}
-				if (error instanceof VocabularyUnauthorizedError) {
-					setDuplicateExists(false)
-					return
-				}
-				if (error instanceof VocabularyPayloadError) {
-					setDuplicateError(error.message)
-					return
-				}
-				setDuplicateError(
-					error instanceof Error ? error.message : '检查重复失败'
-				)
-				setDuplicateExists(false)
-			} finally {
-				if (cancelled) {
-					return
-				}
-				setDuplicateChecking(false)
-			}
-		}
-
-		checkDuplicate()
-
-		return () => {
-			cancelled = true
-		}
-	}, [selection, songId])
+	}, [selection, songId, isSignedIn])
 
 	const handleAddToVocabulary = async () => {
 		if (!selection || !result) {
