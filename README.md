@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Learn English with Songs
 
-## Getting Started
+Learn English with Songs is a learning hub built on Next.js App Router. It surfaces lyrics from Genius, surfaces Genius annotations, and lets learners gather vocabulary notes while they explore songs. Every search hyphenates a local cache with Genius as a fallback, and authenticated learners can collect AI explanations for any highlighted line.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Song search + fallback:** searches the PostgreSQL-backed catalog first and only hits Genius when local rows are sparse. The same API powers the featured song widgets.
+- **Song detail page:** lyrics, metadata, artwork, annotated referents, and a lyric selection tool that passes the context to OpenRouter to return a markdown tip before saving a vocabulary card.
+- **Vocabulary tracker:** every saved word is tied to a song and line, and the list is scoped to the signed-in Clerk user.
+- **Clerk + Prisma:** Clerk handles authentication, Prisma persists users, songs, lyrics, and vocabulary, and the webhook keeps Clerk users in sync with the local user table.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technology
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js **App Router** (v16.x) with React 19 server and client components.
+- Clerk for authentication, Prisma for PostgreSQL access.
+- Genius API and a lyrics proxy (`lyrics.zick.me`) for metadata and content, OpenRouter for LLML explanations, and the Sonner toaster for notifications.
+- Tailwind CSS (v4) plus Lucide UI primitives and shadcn/ui components for layout.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Getting started
 
-## Learn More
+1. Install dependencies:
+   ```bash
+   bun install   # or npm install / pnpm install if you prefer
+   ```
+2. Copy `.env.production.example` to `.env` and provide real values for:
+   - `DATABASE_URL` (PostgreSQL)
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY`
+   - `GENIUS_API_TOKEN`
+   - `OPENROUTER_API_KEY`
+   - `LYRICS_ENDPOINT` + `LYRICS_API_TOKEN` (the lyrics proxy used by `fetchLyricsFromPath`)
+3. Generate the Prisma client if needed:
+   ```bash
+   bun run db:generate
+   ```
+4. Apply schema changes to the database:
+   ```bash
+   bun run db:push
+   ```
+5. Run the dev server:
+   ```bash
+   bun run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+> You can also run the equivalent `npm run …` scripts when not using Bun.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tests & linting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run lint` runs ESLint over the app.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use `npm run build` / `bun run build` followed by `next start` (or let Vercel handle it). Ensure the same environment variables listed above are set in production.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is covered by the [MIT License](LICENSE).
