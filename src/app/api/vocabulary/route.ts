@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 
+import { ensureClerkUserRecord } from '@/lib/ensure-clerk-user'
 import { prisma } from '@/lib/prisma'
 
 type Body = {
@@ -12,10 +12,65 @@ type Body = {
 	songPath: string
 }
 
-export async function POST(req: Request) {
-	const { userId } = await auth()
+const findDuplicateEntry = (options: {
+	userId: string
+	word: string
+	line: string
+	lineNumber: number | null
+	songId: string
+}) => {
+	return prisma.vocabularyEntry.findFirst({
+		where: {
+			userId: options.userId,
+			word: options.word,
+			line: options.line,
+			lineNumber: options.lineNumber ?? null,
+			songId: options.songId,
+		},
+	})
+}
 
-	if (!userId) {
+export async function GET(req: Request) {
+	const user = await ensureClerkUserRecord()
+
+	if (!user) {
+		return NextResponse.json({ error: '未授权' }, { status: 401 })
+	}
+
+	const url = new URL(req.url)
+	const word = url.searchParams.get('word')
+	const line = url.searchParams.get('line')
+	const songId = url.searchParams.get('songId')
+	const lineNumberParam = url.searchParams.get('lineNumber')
+
+	if (!word || !line || !songId) {
+		return NextResponse.json({ error: '缺少必要字段' }, { status: 400 })
+	}
+
+	const lineNumber =
+		lineNumberParam !== null && lineNumberParam !== ''
+			? Number(lineNumberParam)
+			: null
+
+	if (lineNumberParam !== null && lineNumberParam !== '' && Number.isNaN(lineNumber)) {
+		return NextResponse.json({ error: 'lineNumber 格式无效' }, { status: 400 })
+	}
+
+	const existing = await findDuplicateEntry({
+		userId: user.id,
+		word,
+		line,
+		lineNumber,
+		songId,
+	})
+
+	return NextResponse.json({ exists: Boolean(existing) })
+}
+
+export async function POST(req: Request) {
+	const user = await ensureClerkUserRecord()
+
+	if (!user) {
 		return NextResponse.json({ error: '未授权' }, { status: 401 })
 	}
 
@@ -32,15 +87,22 @@ export async function POST(req: Request) {
 		return NextResponse.json({ error: '缺少必要字段' }, { status: 400 })
 	}
 
-	const user = await prisma.user.findUnique({
-		where: { clerkId: userId },
+	const normalizedSongPath = songPath.startsWith('/') ? songPath : `/${songPath}`
+
+	const existing = await findDuplicateEntry({
+		userId: user.id,
+		word,
+		line,
+		lineNumber,
+		songId,
 	})
 
-	if (!user) {
-		return NextResponse.json({ error: '用户尚未同步' }, { status: 404 })
+	if (existing) {
+		return NextResponse.json(
+			{ error: '该片段已经在生词本中了' },
+			{ status: 409 }
+		)
 	}
-
-	const normalizedSongPath = songPath.startsWith('/') ? songPath : `/${songPath}`
 
 	await prisma.vocabularyEntry.create({
 		data: {

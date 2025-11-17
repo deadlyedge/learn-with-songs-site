@@ -95,6 +95,9 @@ export const SelectText = ({
 	const [result, setResult] = useState('')
 	const [openDialog, setOpenDialog] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
+	const [duplicateChecking, setDuplicateChecking] = useState(false)
+	const [duplicateExists, setDuplicateExists] = useState(false)
+	const [duplicateError, setDuplicateError] = useState<string | null>(null)
 	const { isSignedIn } = useUser()
 
 	const resetSelection = () => {
@@ -188,6 +191,7 @@ export const SelectText = ({
 					? null
 					: Number(startLine.dataset.lineIndex),
 			})
+
 			setOpenDialog(true)
 		}
 
@@ -226,6 +230,81 @@ export const SelectText = ({
 		}
 	}, [selection])
 
+	useEffect(() => {
+		if (!selection || !songId) {
+			setDuplicateExists(false)
+			setDuplicateError(null)
+			setDuplicateChecking(false)
+			return
+		}
+
+		let cancelled = false
+		const params = new URLSearchParams({
+			word: selection.word,
+			line: selection.line,
+			songId,
+		})
+
+		if (selection.lineNumber !== null) {
+			params.set('lineNumber', selection.lineNumber.toString())
+		}
+
+		const checkDuplicate = async () => {
+			setDuplicateChecking(true)
+			setDuplicateError(null)
+
+			const response = await fetch('/api/vocabulary/exists', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					word: selection.word,
+					line: selection.line,
+					lineNumber: selection.lineNumber,
+					songId,
+				}),
+				cache: 'no-store',
+			})
+
+			const data = await response.json().catch(() => ({}))
+			if (cancelled) {
+				return
+			}
+
+			if (!response.ok) {
+				if (response.status === 401) {
+					setDuplicateExists(false)
+					return
+				}
+				throw new Error(data?.error ?? '检查重复失败')
+			}
+
+			setDuplicateExists(Boolean(data?.exists))
+		}
+
+		checkDuplicate()
+			.catch((error) => {
+				if (cancelled) {
+					return
+				}
+				setDuplicateError(
+					error instanceof Error ? error.message : '检查重复失败'
+				)
+				setDuplicateExists(false)
+			})
+			.finally(() => {
+				if (cancelled) {
+					return
+				}
+				setDuplicateChecking(false)
+			})
+
+		return () => {
+			cancelled = true
+		}
+	}, [selection, songId])
+
 	const handleAddToVocabulary = async () => {
 		if (!selection || !result) {
 			toast.error('等待结果生成后再加入生词本')
@@ -234,6 +313,11 @@ export const SelectText = ({
 
 		if (!songId || !songPath) {
 			toast.error('缺少歌曲信息，无法加入生词本')
+			return
+		}
+
+		if (duplicateExists) {
+			toast.error('该片段已经在生词本中了')
 			return
 		}
 
@@ -274,6 +358,12 @@ export const SelectText = ({
 		}
 	}
 
+	const previewText = selection
+		? selection.word.length > 20
+			? `${selection.word.slice(0, 20)}...`
+			: selection.word
+		: ''
+
 	return (
 		<Dialog open={openDialog}>
 			{selection && (
@@ -283,7 +373,7 @@ export const SelectText = ({
 							<span className="select-none italic text-xs text-muted-foreground font-light">
 								word{selection.word.includes(' ') ? 's' : ''}:
 							</span>{' '}
-							{selection.word.slice(0, 20)}
+							{previewText}
 						</DialogTitle>
 						<DialogDescription>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
@@ -302,25 +392,39 @@ export const SelectText = ({
 							AI working...
 						</div>
 					)}
+					{duplicateChecking && (
+						<p className="text-xs text-muted-foreground">正在检查是否已存在</p>
+					)}
+					{duplicateExists && (
+						<p className="text-xs text-destructive">该片段已经在生词本中了</p>
+					)}
+					{duplicateError && (
+						<p className="text-xs text-destructive">{duplicateError}</p>
+					)}
 					<DialogFooter className="gap-2">
 						{isSignedIn ? (
 							<Button
 								type="button"
 								className="w-full sm:w-auto"
 								onClick={handleAddToVocabulary}
-								disabled={!result || isSaving}>
+								disabled={
+									!result || isSaving || duplicateExists || duplicateChecking
+								}>
 								{isSaving ? '加入中...' : '加入我的生词本'}
 							</Button>
 						) : (
 							<SignInButton mode="modal">
 								<Button
+									asChild
 									type="button"
 									variant="secondary"
-									className="w-full sm:w-auto">
-									加入我的生词本
+									className="w-full sm:w-auto"
+									onClick={closeAndReset}>
+									<span>加入我的生词本</span>
 								</Button>
 							</SignInButton>
 						)}
+						{/* <Button>复习</Button> */}
 						<DialogClose asChild>
 							<Button type="button" variant="secondary" onClick={closeAndReset}>
 								Close
