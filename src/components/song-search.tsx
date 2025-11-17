@@ -176,33 +176,49 @@ export const SongSearch = () => {
 			<ul className="grid gap-3">
 				{results.map((song) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
+					const songHref = song.path ? `/songs${song.path}` : null
+
+					const cardBody = (
+						<>
+							<div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+								<div>
+									<h3 className="text-lg font-semibold group-hover:text-primary">
+										{song.title}
+									</h3>
+									<p className="text-sm text-muted-foreground">{song.artist}</p>
+								</div>
+								{releaseYear ? (
+									<time
+										className="text-xs text-muted-foreground"
+										dateTime={song.releaseDate ?? undefined}
+									>
+										发行：{releaseYear}
+									</time>
+								) : null}
+							</div>
+							{song.album ? (
+								<p className="text-xs text-muted-foreground">专辑：{song.album}</p>
+							) : null}
+						</>
+					)
 
 					return (
 						<li
 							key={song.id}
 							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5"
 						>
-							<Link href={`/songs${song.path}`} className="block space-y-2">
-								<div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-									<div>
-										<h3 className="text-lg font-semibold group-hover:text-primary">
-											{song.title}
-										</h3>
-										<p className="text-sm text-muted-foreground">{song.artist}</p>
-									</div>
-									{releaseYear ? (
-										<time
-											className="text-xs text-muted-foreground"
-											dateTime={song.releaseDate ?? undefined}
-										>
-											发行：{releaseYear}
-										</time>
-									) : null}
+							{songHref ? (
+								<Link href={songHref} className="block space-y-2">
+									{cardBody}
+								</Link>
+							) : (
+								<div className="block space-y-2">
+									{cardBody}
+									<p className="text-xs text-muted-foreground/80">
+										该歌曲暂无歌词页可跳转
+									</p>
 								</div>
-								{song.album ? (
-									<p className="text-xs text-muted-foreground">专辑：{song.album}</p>
-								) : null}
-							</Link>
+							)}
 						</li>
 					)
 				})}

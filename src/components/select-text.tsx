@@ -262,10 +262,21 @@ export const SelectText = ({
 				}
 			}
 
-			const markdownString = await learnWordInLine(
-				selection.word,
-				selection.line
-			)
+			let markdownString = ''
+
+			try {
+				markdownString = await learnWordInLine(selection.word, selection.line)
+			} catch (error) {
+				if (cancelled) {
+					return
+				}
+				setDuplicateError(
+					error instanceof Error ? error.message : 'AI 解释生成失败'
+				)
+				setDuplicateChecking(false)
+				return
+			}
+
 			if (cancelled) {
 				return
 			}
@@ -335,6 +346,34 @@ export const SelectText = ({
 		}
 	}
 
+	const handleRefetch = async () => {
+		if (!selection) {
+			return
+		}
+
+		setResult('')
+		setDuplicateChecking(true)
+		setDuplicateError(null)
+		setDuplicateExists(false)
+
+		let markdownString = ''
+
+		try {
+			markdownString = await learnWordInLine(selection.word, selection.line)
+		} catch (error) {
+			if (error instanceof Error) {
+				setDuplicateError(error.message)
+			} else {
+				setDuplicateError('AI 解释生成失败')
+			}
+			setDuplicateChecking(false)
+			return
+		}
+
+		setResult(markdownString)
+		setDuplicateChecking(false)
+	}
+
 	const previewText = selection
 		? selection.word.length > 20
 			? `${selection.word.slice(0, 20)}...`
@@ -361,24 +400,34 @@ export const SelectText = ({
 							{selection.line}
 						</DialogDescription>
 					</DialogHeader>
-					{result ? (
-						<Markdown>{result}</Markdown>
-					) : (
-						<div className="flex items-center justify-center">
-							<Spinner />
-							AI working...
-						</div>
-					)}
-					{duplicateChecking && (
-						<p className="text-xs text-muted-foreground">正在检查是否已存在</p>
-					)}
-					{duplicateExists && (
-						<p className="text-xs text-destructive">该片段已经在生词本中了</p>
-					)}
-					{duplicateError && (
-						<p className="text-xs text-destructive">{duplicateError}</p>
-					)}
+					<div className="w-full">
+						{result ? (
+							<Markdown>{result}</Markdown>
+						) : (
+							<div className="flex items-center justify-center">
+								<Spinner />
+								AI working...
+							</div>
+						)}
+						{duplicateChecking && (
+							<p className="text-xs text-muted-foreground">
+								正在检查是否已存在
+							</p>
+						)}
+						{duplicateExists && (
+							<p className="text-xs text-destructive">该片段已经在生词本中了</p>
+						)}
+						{duplicateError && (
+							<p className="text-xs text-destructive">{duplicateError}</p>
+						)}
+					</div>
 					<DialogFooter className="gap-2">
+						<Button
+							type="button"
+							onClick={handleRefetch}
+							disabled={!result || isSaving}>
+							重新询问AI
+						</Button>
 						{isSignedIn ? (
 							<Button
 								type="button"

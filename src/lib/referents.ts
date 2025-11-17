@@ -148,21 +148,26 @@ export async function cacheReferentsForSong(
 	songId: string,
 	referents: NormalizedReferent[]
 ) {
-	const deleteWhere =
-		referents.length > 0
-			? {
-					songId,
-					geniusId: { notIn: referents.map((referent) => referent.id) },
-			  }
-			: { songId }
-
 	const baseNow = new Date()
 
-	await prisma.referent.deleteMany({
-		where: deleteWhere,
+	if (referents.length === 0) {
+		await prisma.song.update({
+			where: { id: songId },
+			data: { referentsFetchedAt: baseNow },
+		})
+		return
+	}
+
+	const existing = await prisma.referent.findFirst({
+		where: { songId },
+		select: { id: true },
 	})
 
-	for (const referent of referents) {
+	if (existing) {
+		return
+	}
+
+	const createOperations = referents.map((referent) => {
 		const annotationRecords = referent.annotations.map((annotation) => ({
 			annotationId: annotation.id,
 			body: annotation.body,
@@ -173,9 +178,8 @@ export async function cacheReferentsForSong(
 			source: annotation.source ?? null,
 		}))
 
-		await prisma.referent.upsert({
-			where: { geniusId: referent.id },
-			create: {
+		return prisma.referent.create({
+			data: {
 				songId,
 				geniusId: referent.id,
 				fragment: referent.fragment,
@@ -188,21 +192,10 @@ export async function cacheReferentsForSong(
 					create: annotationRecords,
 				},
 			},
-			update: {
-				fragment: referent.fragment,
-				classification: referent.classification,
-				rangeContent: referent.rangeContent ?? null,
-				path: referent.path,
-				url: referent.url,
-				provider: 'genius',
-				annotations: {
-					deleteMany: {},
-					create: annotationRecords,
-				},
-				updatedAt: baseNow,
-			},
 		})
-	}
+	})
+
+	await prisma.$transaction(createOperations)
 
 	await prisma.song.update({
 		where: { id: songId },
