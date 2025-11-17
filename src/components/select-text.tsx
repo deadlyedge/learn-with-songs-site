@@ -22,13 +22,6 @@ type SelectionInfo = {
 	line: string
 }
 
-// type Position = {
-// 	x: number
-// 	y: number
-// 	width: number
-// 	height: number
-// }
-
 type SelectTextProps = {
 	containerId?: string
 }
@@ -91,13 +84,11 @@ const findLineElement = (node: Node | null) => {
 
 export const SelectText = ({ containerId }: SelectTextProps) => {
 	const [selection, setSelection] = useState<SelectionInfo | null>(null)
-	// const [position, setPosition] = useState<Position | null>(null)
 	const [result, setResult] = useState('')
 	const [openDialog, setOpenDialog] = useState(false)
 
 	const resetSelection = () => {
 		setSelection(null)
-		// setPosition(null)
 		setResult('')
 	}
 
@@ -178,20 +169,12 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 				return
 			}
 
-			// const rect = range.getBoundingClientRect()
 			setSelection({
 				word,
 				line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
 			})
 
 			setOpenDialog(true)
-
-			// setPosition({
-			// 	x: rect.left + rect.width,
-			// 	y: rect.top + window.scrollY - 30 - 12,
-			// 	width: rect.width,
-			// 	height: rect.height,
-			// })
 		}
 
 		targetContainer.addEventListener('selectstart', onSelectStart)
@@ -222,21 +205,23 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 		onLearning()
 	}, [selection])
 
-	// const previewText = selection
-	// 	? selection.word.length > 20
-	// 		? `${selection.word.slice(0, 20)}...`
-	// 		: selection.word
-	// 	: ''
-
 	return (
 		<Dialog open={openDialog}>
 			{selection && (
 				<DialogContent showCloseButton={false}>
 					<DialogHeader>
-						<DialogTitle>{`Word${
-							selection.word.includes(' ') ? 's' : ''
-						}: ${selection.word.slice(0, 20)}`}</DialogTitle>
-						<DialogDescription>{`In line: ${selection.line}`}</DialogDescription>
+						<DialogTitle>
+							<span className="select-none italic text-xs text-muted-foreground font-light">
+								word{selection.word.includes(' ') ? 's' : ''}:
+							</span>{' '}
+							{selection.word.slice(0, 20)}
+						</DialogTitle>
+						<DialogDescription>
+							<span className="select-none italic text-xs text-muted-foreground font-light">
+								in line:
+							</span>{' '}
+							{selection.line}
+						</DialogDescription>
 					</DialogHeader>
 					{result ? (
 						<Markdown>{result}</Markdown>
@@ -257,33 +242,5 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 				</DialogContent>
 			)}
 		</Dialog>
-		// <div role="dialog" aria-labelledby="share">
-		// 	{selection && position && (
-		// 		<div
-		// 			className="
-		//         absolute -top-14 left-20 bg-yellow-200 text-card-foreground rounded m-0 p-3 shadow max-w-1/2
-		//       "
-		// 			style={{
-		// 				transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-		// 			}}>
-		// 			{/* <button
-		// 				className="flex w-full h-full justify-between items-center px-2"
-		// 				onClick={() => onLearning()}>
-		// 				<span id="share" className="text-xs">
-		// 					Learn&nbsp;
-		// 					{previewText}
-		// 				</span>
-		// 			</button> */}
-		// 			{result ? (
-		// 				<Markdown>{result}</Markdown>
-		// 			) : (
-		// 				<div className="flex items-center justify-center">
-		// 					<Spinner />
-		// 					AI working...
-		// 				</div>
-		// 			)}
-		// 		</div>
-		// 	)}
-		// </div>
 	)
 }
