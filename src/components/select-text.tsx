@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
+import {
+	vocabularyEntryExistsAction,
+	addVocabularyEntryAction,
+} from '@/app/actions/vocabulary'
+import {
+	VocabularyDuplicateError,
+	VocabularyPayloadError,
+	VocabularyUnauthorizedError,
+} from '@/lib/vocabulary'
 import { learnWordInLine } from '@/lib/openrouter'
 import Markdown from 'react-markdown'
 
@@ -204,8 +213,8 @@ export const SelectText = ({
 		}
 	}, [containerId])
 
-	useEffect(() => {
-		if (!selection) {
+useEffect(() => {
+		if (!selection || duplicateExists) {
 			return
 		}
 
@@ -228,7 +237,7 @@ export const SelectText = ({
 		return () => {
 			cancelled = true
 		}
-	}, [selection])
+	}, [selection, duplicateExists])
 
 	useEffect(() => {
 		if (!selection || !songId) {
@@ -253,52 +262,47 @@ export const SelectText = ({
 			setDuplicateChecking(true)
 			setDuplicateError(null)
 
-			const response = await fetch('/api/vocabulary/exists', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
+			try {
+				const { exists, entry } = await vocabularyEntryExistsAction({
 					word: selection.word,
 					line: selection.line,
 					lineNumber: selection.lineNumber,
 					songId,
-				}),
-				cache: 'no-store',
-			})
+				})
 
-			const data = await response.json().catch(() => ({}))
-			if (cancelled) {
-				return
-			}
+				if (cancelled) {
+					return
+				}
 
-			if (!response.ok) {
-				if (response.status === 401) {
+				setDuplicateExists(exists)
+				if (exists && entry?.result) {
+					setResult(entry.result)
+				}
+			} catch (error) {
+				if (cancelled) {
+					return
+				}
+				if (error instanceof VocabularyUnauthorizedError) {
 					setDuplicateExists(false)
 					return
 				}
-				throw new Error(data?.error ?? '检查重复失败')
-			}
-
-			setDuplicateExists(Boolean(data?.exists))
-		}
-
-		checkDuplicate()
-			.catch((error) => {
-				if (cancelled) {
+				if (error instanceof VocabularyPayloadError) {
+					setDuplicateError(error.message)
 					return
 				}
 				setDuplicateError(
 					error instanceof Error ? error.message : '检查重复失败'
 				)
 				setDuplicateExists(false)
-			})
-			.finally(() => {
+			} finally {
 				if (cancelled) {
 					return
 				}
 				setDuplicateChecking(false)
-			})
+			}
+		}
+
+		checkDuplicate()
 
 		return () => {
 			cancelled = true
@@ -328,28 +332,28 @@ export const SelectText = ({
 		setIsSaving(true)
 
 		try {
-			const response = await fetch('/api/vocabulary', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					word: selection.word,
-					line: selection.line,
-					lineNumber: selection.lineNumber,
-					result,
-					songId,
-					songPath: normalizedSongPath,
-				}),
+			await addVocabularyEntryAction({
+				word: selection.word,
+				line: selection.line,
+				lineNumber: selection.lineNumber,
+				result,
+				songId,
+				songPath: normalizedSongPath,
 			})
-
-			if (!response.ok) {
-				const body = await response.json().catch(() => null)
-				throw new Error(body?.error ?? '加入生词本失败')
-			}
-
 			toast.success('已加入我的生词本')
 		} catch (error) {
+			if (error instanceof VocabularyDuplicateError) {
+				toast.error(error.message)
+				return
+			}
+			if (error instanceof VocabularyUnauthorizedError) {
+				toast.error(error.message)
+				return
+			}
+			if (error instanceof VocabularyPayloadError) {
+				toast.error(error.message)
+				return
+			}
 			toast.error(
 				error instanceof Error ? error.message : '加入生词本失败，请稍后重试'
 			)
