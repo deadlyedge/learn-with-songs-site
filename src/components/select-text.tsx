@@ -20,6 +20,7 @@ import { Button } from './ui/button'
 type SelectionInfo = {
 	word: string
 	line: string
+	lineNumber: number | null
 }
 
 type SelectTextProps = {
@@ -172,6 +173,9 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 			setSelection({
 				word,
 				line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
+				lineNumber: Number.isNaN(Number(startLine.dataset.lineIndex))
+					? null
+					: Number(startLine.dataset.lineIndex),
 			})
 
 			setOpenDialog(true)
@@ -208,7 +212,7 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 	return (
 		<Dialog open={openDialog}>
 			{selection && (
-				<DialogContent showCloseButton={false}>
+				<DialogContent className="sm:max-w-lg" showCloseButton={false}>
 					<DialogHeader>
 						<DialogTitle>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
@@ -218,7 +222,9 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 						</DialogTitle>
 						<DialogDescription>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
-								in line:
+								{`in line${
+									selection.lineNumber ? ` ${selection.lineNumber}` : ''
+								}:`}
 							</span>{' '}
 							{selection.line}
 						</DialogDescription>

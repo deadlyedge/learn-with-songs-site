@@ -1,6 +1,6 @@
 'use client'
 
-import { SelectText } from "../select-text";
+import { SelectText } from '../select-text'
 
 type LyricProps = { error: string | null; lyricLines: string[] }
 
@@ -33,6 +33,7 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 											</span>
 											<span
 												data-line-text={line}
+												data-line-index={index + 1}
 												className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
 												{line}
 											</span>
