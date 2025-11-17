@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import { learnWordInLine } from '@/lib/openrouter'
 import Markdown from 'react-markdown'
 
@@ -25,6 +26,8 @@ type SelectionInfo = {
 
 type SelectTextProps = {
 	containerId?: string
+	songId?: string
+	songPath?: string
 }
 
 const DEFAULT_CONTAINER_ID = 'lyrics'
@@ -83,14 +86,21 @@ const findLineElement = (node: Node | null) => {
 	return null
 }
 
-export const SelectText = ({ containerId }: SelectTextProps) => {
+export const SelectText = ({
+	containerId,
+	songId,
+	songPath,
+}: SelectTextProps) => {
 	const [selection, setSelection] = useState<SelectionInfo | null>(null)
 	const [result, setResult] = useState('')
 	const [openDialog, setOpenDialog] = useState(false)
+	const [isSaving, setIsSaving] = useState(false)
+	const { isSignedIn } = useUser()
 
 	const resetSelection = () => {
 		setSelection(null)
 		setResult('')
+		setOpenDialog(false)
 	}
 
 	const closeAndReset = () => {
@@ -164,9 +174,10 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 				resetSelection()
 				return
 			}
+
 			if (word.length > MAX_SELECTION_LENGTH) {
+				toast.error('请选择更短的片段')
 				resetSelection()
-				toast.error('请不要选择大量词语')
 				return
 			}
 
@@ -177,7 +188,6 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 					? null
 					: Number(startLine.dataset.lineIndex),
 			})
-
 			setOpenDialog(true)
 		}
 
@@ -191,23 +201,78 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 	}, [containerId])
 
 	useEffect(() => {
-		async function onLearning(text?: SelectionInfo) {
-			const textToLearn = text ?? selection
-			if (!textToLearn) {
+		if (!selection) {
+			return
+		}
+
+		let cancelled = false
+
+		const fetchResult = async () => {
+			const markdownString = await learnWordInLine(
+				selection.word,
+				selection.line
+			)
+			if (cancelled) {
 				return
 			}
-			// console.log('text', textToLearn)
-
-			const markdownString = await learnWordInLine(
-				textToLearn.word,
-				textToLearn.line
-			)
-
 			setResult(markdownString)
 		}
-		if (!selection) return
-		onLearning()
+
+		setResult('')
+		fetchResult()
+
+		return () => {
+			cancelled = true
+		}
 	}, [selection])
+
+	const handleAddToVocabulary = async () => {
+		if (!selection || !result) {
+			toast.error('等待结果生成后再加入生词本')
+			return
+		}
+
+		if (!songId || !songPath) {
+			toast.error('缺少歌曲信息，无法加入生词本')
+			return
+		}
+
+		const normalizedSongPath = songPath.startsWith('/')
+			? songPath
+			: `/${songPath}`
+
+		setIsSaving(true)
+
+		try {
+			const response = await fetch('/api/vocabulary', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					word: selection.word,
+					line: selection.line,
+					lineNumber: selection.lineNumber,
+					result,
+					songId,
+					songPath: normalizedSongPath,
+				}),
+			})
+
+			if (!response.ok) {
+				const body = await response.json().catch(() => null)
+				throw new Error(body?.error ?? '加入生词本失败')
+			}
+
+			toast.success('已加入我的生词本')
+		} catch (error) {
+			toast.error(
+				error instanceof Error ? error.message : '加入生词本失败，请稍后重试'
+			)
+		} finally {
+			setIsSaving(false)
+		}
+	}
 
 	return (
 		<Dialog open={openDialog}>
@@ -237,8 +302,25 @@ export const SelectText = ({ containerId }: SelectTextProps) => {
 							AI working...
 						</div>
 					)}
-					<DialogFooter>
-						<Button>加入我的生词本</Button>
+					<DialogFooter className="gap-2">
+						{isSignedIn ? (
+							<Button
+								type="button"
+								className="w-full sm:w-auto"
+								onClick={handleAddToVocabulary}
+								disabled={!result || isSaving}>
+								{isSaving ? '加入中...' : '加入我的生词本'}
+							</Button>
+						) : (
+							<SignInButton mode="modal">
+								<Button
+									type="button"
+									variant="secondary"
+									className="w-full sm:w-auto">
+									加入我的生词本
+								</Button>
+							</SignInButton>
+						)}
 						<DialogClose asChild>
 							<Button type="button" variant="secondary" onClick={closeAndReset}>
 								Close

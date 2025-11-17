@@ -2,9 +2,14 @@
 
 import { SelectText } from '../select-text'
 
-type LyricProps = { error: string | null; lyricLines: string[] }
+type LyricProps = {
+	error: string | null
+	lyricLines: string[]
+	songId: string
+	songPath: string
+}
 
-export const Lyric = ({ error, lyricLines }: LyricProps) => {
+export const Lyric = ({ error, lyricLines, songId, songPath }: LyricProps) => {
 	return (
 		<section className="space-y-2 w-full md:w-1/2">
 			<h2 className="text-xl font-semibold px-2">歌词 Lyrics</h2>
@@ -17,7 +22,7 @@ export const Lyric = ({ error, lyricLines }: LyricProps) => {
 					<div className="w-full mb-40">
 						{lyricLines.length > 0 ? (
 							<ul className="space-y-2">
-								<SelectText />
+								<SelectText songId={songId} songPath={songPath} />
 								{lyricLines.map((line, index) =>
 									line === '' ? (
 										// <li key={`spacer-${index}`} className="h-3" />

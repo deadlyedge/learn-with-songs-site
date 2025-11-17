@@ -5,3 +5,8 @@
 2. 当鼠标选择并非完整词汇，实际选择应为完整词汇，比如在'welcome to the jungle'中，即使我用鼠标只框选了'o the ju'，实际选择应为'to the jungle'而非仅仅'o the ju'
 3. 选择词汇后应该同时提供整个行，如上例，选择后应该同时提供词汇和整行: {word:'to the jungle',line:'welcome to the jungle'}
 4. 整理代码
+
+
+接下来请实现‘加入生词本’功能。
+1. 当用户点击‘加入我的生词本’，如果用户未登录，让用户登录/注册，然后将SelectionInfo和result和songId、songPath一起存入用户的vocabulary list
+2. vocabulary list中的每个card应该显示word，line，歌曲图片和名字（点击打开歌曲页面），和一个复习按钮，点击显示类似selectText/Dialog。
