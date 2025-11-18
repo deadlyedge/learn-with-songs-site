@@ -28,15 +28,28 @@ type SearchResponse = {
 	autoContinued?: boolean
 }
 
+type SearchState = {
+	results: SongResult[]
+	source: Source | null
+	hasSearched: boolean
+	error: string | null
+	canSearchGenius: boolean
+	autoContinued: boolean
+}
+
+const initialSearchState: SearchState = {
+	results: [],
+	source: null,
+	hasSearched: false,
+	error: null,
+	canSearchGenius: false,
+	autoContinued: false,
+}
+
 export const SongSearch = () => {
 	const [query, setQuery] = useState('')
-	const [results, setResults] = useState<SongResult[]>([])
-	const [source, setSource] = useState<Source | null>(null)
+	const [searchState, setSearchState] = useState<SearchState>(initialSearchState)
 	const [lastQuery, setLastQuery] = useState('')
-	const [hasSearched, setHasSearched] = useState(false)
-	const [error, setError] = useState<string | null>(null)
-	const [canSearchGenius, setCanSearchGenius] = useState(false)
-	const [autoContinued, setAutoContinued] = useState(false)
 	const [isPending, startTransition] = useTransition()
 
 	const getReleaseYear = (value?: string | null) => {
@@ -48,6 +61,15 @@ export const SongSearch = () => {
 		return Number.isNaN(parsed.getTime()) ? null : parsed.getFullYear()
 	}
 
+	const resetSearchState = () => ({
+		...initialSearchState,
+		hasSearched: true,
+	})
+
+	const updateSearchState = (updates: Partial<SearchState>) => {
+		setSearchState((prevState) => ({ ...prevState, ...updates }))
+	}
+
 	const requestSearch = async (searchParams: URLSearchParams) => {
 		const currentQuery = searchParams.get('q')?.trim() ?? ''
 
@@ -55,10 +77,7 @@ export const SongSearch = () => {
 			setLastQuery(currentQuery)
 		}
 
-		setHasSearched(true)
-		setError(null)
-		setCanSearchGenius(false)
-		setAutoContinued(false)
+		setSearchState(resetSearchState())
 
 		try {
 			const response = await fetch(`/api/songs?${searchParams.toString()}`, {
@@ -72,17 +91,18 @@ export const SongSearch = () => {
 				throw new Error(payload.error ?? '搜索失败，请稍后重试。')
 			}
 
-			setResults(payload.songs)
-			setSource(payload.source ?? null)
-			setCanSearchGenius(payload.canSearchGenius ?? false)
-			setAutoContinued(Boolean(payload.autoContinued))
+			updateSearchState({
+				results: payload.songs,
+				source: payload.source ?? null,
+				canSearchGenius: payload.canSearchGenius ?? false,
+				autoContinued: Boolean(payload.autoContinued),
+			})
 		} catch (fetchError) {
 			console.error(fetchError)
-			setResults([])
-			setSource(null)
-			setCanSearchGenius(false)
-			setAutoContinued(false)
-			setError((fetchError as Error).message)
+			setSearchState({
+				...resetSearchState(),
+				error: (fetchError as Error).message,
+			})
 		}
 	}
 
@@ -91,7 +111,7 @@ export const SongSearch = () => {
 		const trimmed = query.trim()
 
 		if (!trimmed) {
-			setError('请输入歌曲名或艺人名后再搜索。')
+			updateSearchState({ error: '请输入歌曲名或艺人名后再搜索。', hasSearched: false })
 			return
 		}
 
@@ -132,31 +152,31 @@ export const SongSearch = () => {
 				</Button>
 			</form>
 
-			{error ? (
+			{searchState.error ? (
 				<p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-					{error}
+					{searchState.error}
 				</p>
 			) : null}
 
-			{hasSearched && results.length === 0 && !isPending ? (
+			{searchState.hasSearched && searchState.results.length === 0 && !isPending ? (
 				<p className="text-sm text-muted-foreground">
 					暂无匹配结果...<Spinner />
 				</p>
 			) : null}
 
-			{source || canSearchGenius ? (
+			{searchState.source || searchState.canSearchGenius ? (
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-					{source ? (
+					{searchState.source ? (
 						<p className="text-xs uppercase tracking-wide text-muted-foreground">
 							数据来源：
-							{source === 'database'
+							{searchState.source === 'database'
 								? '本地缓存'
-								: source === 'genius'
+								: searchState.source === 'genius'
 								? 'Genius API'
 								: '本地缓存 + Genius'}
 						</p>
 					) : null}
-					{canSearchGenius ? (
+					{searchState.canSearchGenius ? (
 						<Button
 							type="button"
 							variant="outline"
@@ -169,14 +189,14 @@ export const SongSearch = () => {
 				</div>
 			) : null}
 
-			{autoContinued ? (
+			{searchState.autoContinued ? (
 				<p className="text-xs text-muted-foreground">
 					本地结果较少，已自动通过 Genius 扩展搜索。
 				</p>
 			) : null}
 
 			<ul className="grid sm:grid-cols-2 gap-3">
-				{results.map((song) => {
+				{searchState.results.map((song: SongResult) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
 					const songHref = song.path ? `/song${song.path}` : null
 
