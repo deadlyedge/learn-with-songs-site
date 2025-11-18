@@ -77,7 +77,7 @@ export async function FeaturedSongs() {
 				{featuredSongs.map((song) => (
 					<Link
 						key={song.id}
-						href={`/songs${song.geniusPath}`}
+						href={`/song${song.geniusPath}`}
 						className="group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3 transition hover:border-primary/60 hover:bg-primary/5">
 						{song.artworkUrl ? (
 							<Image

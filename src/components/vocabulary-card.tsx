@@ -43,7 +43,7 @@ export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
 	const normalizedPath = entry.songPath.startsWith('/')
 		? entry.songPath
 		: `/${entry.songPath}`
-	const songHref = `/songs${normalizedPath}`
+	const songHref = `/song${normalizedPath}`
 
 	return (
 		<Card className="w-full flex flex-col justify-between">
@@ -55,31 +55,31 @@ export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
 				<CardAction className="ml-auto text-xs text-muted-foreground"></CardAction>
 			</CardHeader>
 			<CardFooter className="w-full flex flex-col items-start gap-2">
-				<div className="flex items-center gap-2">
-					{entry.songArtworkUrl ? (
-						<Image
-							src={entry.songArtworkUrl}
-							alt={entry.songTitle}
-							width={64}
-							height={64}
-							className="h-16 w-16 rounded-md object-cover"
-						/>
-					) : (
-						<div className="h-16 w-16 rounded-md bg-muted" />
-					)}
-					<div className="flex flex-col">
-						<Link
-							href={songHref}
-							className="text-sm font-semibold text-primary hover:underline">
-							{entry.songTitle}
-						</Link>
-						{entry.lineNumber !== null && (
-							<span className="text-xs text-muted-foreground">
-								第 {entry.lineNumber} 行
-							</span>
+				<Link
+					href={songHref}
+					className="text-sm font-semibold text-primary hover:underline">
+					<div className="flex items-center gap-2">
+						{entry.songArtworkUrl ? (
+							<Image
+								src={entry.songArtworkUrl}
+								alt={entry.songTitle}
+								width={64}
+								height={64}
+								className="h-16 w-16 rounded-md object-cover"
+							/>
+						) : (
+							<div className="h-16 w-16 rounded-md bg-muted" />
 						)}
+						<div className="flex flex-col">
+							{entry.songTitle}
+							{entry.lineNumber !== null && (
+								<span className="text-xs text-muted-foreground">
+									第 {entry.lineNumber} 行
+								</span>
+							)}
+						</div>
 					</div>
-				</div>
+				</Link>
 				<div className="w-full flex items-center justify-between">
 					<Button
 						size="sm"

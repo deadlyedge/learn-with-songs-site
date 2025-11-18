@@ -4,7 +4,7 @@ import { currentUser } from '@clerk/nextjs/server'
 
 import { prisma } from '@/lib/prisma'
 
-export async function ensureClerkUserRecord() {
+export async function initialUser() {
 	const clerkUser = await currentUser()
 	if (!clerkUser) {
 		return null

@@ -1,8 +1,9 @@
-import { convertDomToMarkdown } from './dom-to-markdown'
-import type { Referent } from '@/types/referentsAPI'
-
 import { prisma } from '@/lib/prisma'
+import { convertDomToMarkdown } from './dom-to-markdown'
+
+import type { DomNode, Referent } from '@/types/referentsAPI'
 import type { Prisma } from '@/generated/prisma/client'
+import type { GeniusDomNode } from '@/types/songsAPI'
 
 export type NormalizedReferentAnnotation = {
 	id: number
@@ -47,8 +48,8 @@ const normalizeAnnotationAuthors = (
 }
 
 const convertReferentsDomToGenius = (
-	dom?: import('@/types/referentsAPI').DomNode | null
-): import('@/types/songsAPI').GeniusDomNode | null => {
+	dom?: DomNode | null
+): GeniusDomNode | null => {
 	if (!dom) return null
 
 	const mappedAttributes = dom.attributes
@@ -77,9 +78,7 @@ const convertReferentsDomToGenius = (
 		tag: dom.tag,
 		attributes: mappedAttributes as Record<string, string> | undefined,
 		data: mappedData as Record<string, string> | undefined,
-		children: mappedChildren as
-			| Array<string | import('@/types/songsAPI').GeniusDomNode>
-			| undefined,
+		children: mappedChildren as Array<string | GeniusDomNode> | undefined,
 	}
 }
 

@@ -1,7 +1,7 @@
-import { ensureClerkUserRecord } from '@/lib/ensure-clerk-user'
+import { initialUser } from '@/lib/clerk-auth'
 
 export const EnsureClerkUser = async () => {
-	await ensureClerkUserRecord()
+	await initialUser()
 
 	return null
 }

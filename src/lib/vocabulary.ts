@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { ensureClerkUserRecord } from '@/lib/ensure-clerk-user'
+import { initialUser } from '@/lib/clerk-auth'
 
 type DuplicateOptions = {
 	userId: string
@@ -9,9 +9,9 @@ type DuplicateOptions = {
 	songId: string
 }
 
-export async function getVocabularyUser() {
-	return ensureClerkUserRecord()
-}
+// export async function getVocabularyUser() {
+// 	return initialUser()
+// }
 
 export class VocabularyError extends Error {}
 
@@ -91,7 +91,7 @@ export const validateVocabularyPayload = (
 }
 
 export const ensureVocabularyUser = async () => {
-	const user = await getVocabularyUser()
+	const user = await initialUser()
 	if (!user) {
 		throw new VocabularyUnauthorizedError('未授权')
 	}

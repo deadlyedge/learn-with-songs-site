@@ -16,9 +16,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { GeniusSongInfo } from '@/types/songsAPI'
 
-import { Header } from '@/components/songs-page/header'
-import { Lyric } from '@/components/songs-page/lyric'
-import { Annotations } from '@/components/songs-page/annotations'
+import { Header } from '@/components/song-page/header'
+import { Lyric } from '@/components/song-page/lyric'
+import { Annotations } from '@/components/song-page/annotations'
 
 type SongPageProps = {
 	params: Promise<{

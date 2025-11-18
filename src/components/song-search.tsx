@@ -176,7 +176,7 @@ export const SongSearch = () => {
 			<ul className="grid gap-3">
 				{results.map((song) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
-					const songHref = song.path ? `/songs${song.path}` : null
+					const songHref = song.path ? `/song${song.path}` : null
 
 					const cardBody = (
 						<>

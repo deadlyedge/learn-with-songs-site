@@ -6,7 +6,8 @@ import { searchGeniusSongs } from '@/lib/genius'
 
 const parseSearchParams = (request: NextRequest) => {
 	const url = new URL(request.url)
-	const requestedSource = url.searchParams.get('source')?.trim().toLowerCase() ?? null
+	const requestedSource =
+		url.searchParams.get('source')?.trim().toLowerCase() ?? null
 
 	return {
 		query: url.searchParams.get('q')?.trim() ?? '',
@@ -130,7 +131,8 @@ export async function GET(request: NextRequest) {
 
 			return NextResponse.json(
 				{
-					error: (error as Error).message ?? 'Failed to fetch songs from Genius.',
+					error:
+						(error as Error).message ?? 'Failed to fetch songs from Genius.',
 				},
 				{ status: 502 }
 			)

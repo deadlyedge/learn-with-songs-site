@@ -47,7 +47,6 @@ export const fonts = {
 	sans: notoSans.className,
 }
 
-
 const isWhitespace = (char?: string) => {
 	return !char || /\s/.test(char)
 }
