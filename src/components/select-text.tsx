@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
 import {
 	vocabularyEntryExistsAction,
@@ -29,6 +29,11 @@ import {
 import { Button } from './ui/button'
 
 import { DEFAULT_CONTAINER_ID, MAX_SELECTION_LENGTH } from '@/constants'
+import {
+	expandToFullWords,
+	findLineElement,
+	normalizeSongPath,
+} from '@/lib/utils'
 
 type SelectionInfo = {
 	word: string
@@ -42,57 +47,86 @@ type SelectTextProps = {
 	songPath?: string
 }
 
-const isWhitespace = (char?: string) => {
-	return !char || /\s/.test(char)
+type State = {
+	selection: SelectionInfo | null
+	result: string
+	openDialog: boolean
+	isSaving: boolean
+	duplicateChecking: boolean
+	duplicateExists: boolean
+	duplicateError: string | null
 }
 
-const expandToFullWords = (text: string, start: number, end: number) => {
-	if (start >= end) {
-		return null
-	}
+type Action =
+	| { type: 'SET_SELECTION'; payload: SelectionInfo }
+	| { type: 'RESET' }
+	| { type: 'SET_RESULT'; payload: string }
+	| { type: 'SET_DUPLICATE_CHECKING'; payload: boolean }
+	| { type: 'SET_DUPLICATE_EXISTS'; payload: boolean; result?: string }
+	| { type: 'SET_DUPLICATE_ERROR'; payload: string | null }
+	| { type: 'SET_SAVING'; payload: boolean }
+	| { type: 'CLOSE_DIALOG' }
 
-	let expandedStart = start
-	let expandedEnd = end
-
-	while (expandedStart < text.length && isWhitespace(text[expandedStart])) {
-		expandedStart++
-	}
-	while (expandedStart > 0 && !isWhitespace(text[expandedStart - 1])) {
-		expandedStart--
-	}
-
-	while (expandedEnd > expandedStart && isWhitespace(text[expandedEnd - 1])) {
-		expandedEnd--
-	}
-	while (expandedEnd < text.length && !isWhitespace(text[expandedEnd])) {
-		expandedEnd++
-	}
-
-	if (expandedStart >= expandedEnd) {
-		return null
-	}
-
-	const normalized = text.slice(expandedStart, expandedEnd).trim()
-	return normalized.length ? normalized : null
+const initialState: State = {
+	selection: null,
+	result: '',
+	openDialog: false,
+	isSaving: false,
+	duplicateChecking: false,
+	duplicateExists: false,
+	duplicateError: null,
 }
 
-const findLineElement = (node: Node | null) => {
-	if (!node) {
-		return null
+const reducer = (state: State, action: Action): State => {
+	switch (action.type) {
+		case 'SET_SELECTION':
+			return {
+				...state,
+				selection: action.payload,
+				openDialog: true,
+				result: '',
+				duplicateChecking: true,
+				duplicateError: null,
+				duplicateExists: false,
+			}
+		case 'RESET':
+			return initialState
+		case 'SET_RESULT':
+			return {
+				...state,
+				result: action.payload,
+				duplicateChecking: false,
+			}
+		case 'SET_DUPLICATE_CHECKING':
+			return {
+				...state,
+				duplicateChecking: action.payload,
+			}
+		case 'SET_DUPLICATE_EXISTS':
+			return {
+				...state,
+				duplicateExists: action.payload,
+				result: action.result ?? state.result,
+			}
+		case 'SET_DUPLICATE_ERROR':
+			return {
+				...state,
+				duplicateError: action.payload,
+				duplicateChecking: false,
+			}
+		case 'SET_SAVING':
+			return {
+				...state,
+				isSaving: action.payload,
+			}
+		case 'CLOSE_DIALOG':
+			return {
+				...state,
+				openDialog: false,
+			}
+		default:
+			return state
 	}
-
-	if (node.nodeType === Node.TEXT_NODE) {
-		return (
-			(node as Text).parentElement?.closest<HTMLElement>('[data-line-text]') ??
-			null
-		)
-	}
-
-	if (node instanceof HTMLElement) {
-		return node.closest<HTMLElement>('[data-line-text]')
-	}
-
-	return null
 }
 
 export const SelectText = ({
@@ -100,24 +134,16 @@ export const SelectText = ({
 	songId,
 	songPath,
 }: SelectTextProps) => {
-	const [selection, setSelection] = useState<SelectionInfo | null>(null)
-	const [result, setResult] = useState('')
-	const [openDialog, setOpenDialog] = useState(false)
-	const [isSaving, setIsSaving] = useState(false)
-	const [duplicateChecking, setDuplicateChecking] = useState(false)
-	const [duplicateExists, setDuplicateExists] = useState(false)
-	const [duplicateError, setDuplicateError] = useState<string | null>(null)
+	const [state, dispatch] = useReducer(reducer, initialState)
 	const { isSignedIn } = useUser()
 
-	const resetSelection = () => {
-		setSelection(null)
-		setResult('')
-		setOpenDialog(false)
-	}
+	// const resetSelection = () => {
+	// 	dispatch({ type: 'RESET' })
+	// }
 
 	const closeAndReset = () => {
-		setOpenDialog(false)
-		resetSelection()
+		dispatch({ type: 'CLOSE_DIALOG' })
+		dispatch({ type: 'RESET' })
 	}
 
 	useEffect(() => {
@@ -129,18 +155,18 @@ export const SelectText = ({
 		}
 
 		const onSelectStart = () => {
-			resetSelection()
+			dispatch({ type: 'RESET' })
 		}
 
 		const onSelectEnd = () => {
 			if (!targetContainer) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
 			const activeSelection = document.getSelection()
 			if (!activeSelection || activeSelection.isCollapsed) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
@@ -151,7 +177,7 @@ export const SelectText = ({
 				!targetContainer.contains(anchorNode) ||
 				!targetContainer.contains(focusNode)
 			) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
@@ -160,7 +186,7 @@ export const SelectText = ({
 			const endLine = findLineElement(range.endContainer)
 
 			if (!startLine || !endLine || startLine !== endLine) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
@@ -168,12 +194,12 @@ export const SelectText = ({
 				range.startContainer.nodeType !== Node.TEXT_NODE ||
 				range.endContainer.nodeType !== Node.TEXT_NODE
 			) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
 			if (range.startContainer !== range.endContainer) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
@@ -183,25 +209,26 @@ export const SelectText = ({
 
 			const word = expandToFullWords(textNode.wholeText, start, end)
 			if (!word) {
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
 			if (word.length > MAX_SELECTION_LENGTH) {
 				toast.error('请选择更短的片段')
-				resetSelection()
+				dispatch({ type: 'RESET' })
 				return
 			}
 
-			setSelection({
-				word,
-				line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
-				lineNumber: Number.isNaN(Number(startLine.dataset.lineIndex))
-					? null
-					: Number(startLine.dataset.lineIndex),
+			dispatch({
+				type: 'SET_SELECTION',
+				payload: {
+					word,
+					line: startLine.dataset.lineText?.trim() ?? textNode.wholeText.trim(),
+					lineNumber: Number.isNaN(Number(startLine.dataset.lineIndex))
+						? null
+						: Number(startLine.dataset.lineIndex),
+				},
 			})
-
-			setOpenDialog(true)
 		}
 
 		targetContainer.addEventListener('selectstart', onSelectStart)
@@ -214,23 +241,23 @@ export const SelectText = ({
 	}, [containerId])
 
 	useEffect(() => {
-		if (!selection) {
+		if (!state.selection) {
 			return
 		}
 
 		let cancelled = false
 
 		const fetchResult = async () => {
-			setDuplicateChecking(true)
-			setDuplicateError(null)
-			setDuplicateExists(false)
+			dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: true })
+			dispatch({ type: 'SET_DUPLICATE_ERROR', payload: null })
+			dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: false })
 
 			if (isSignedIn) {
 				try {
 					const { exists, entry } = await vocabularyEntryExistsAction({
-						word: selection.word,
-						line: selection.line,
-						lineNumber: selection.lineNumber,
+						word: state.selection!.word,
+						line: state.selection!.line,
+						lineNumber: state.selection!.lineNumber,
 						songId,
 					})
 
@@ -238,10 +265,14 @@ export const SelectText = ({
 						return
 					}
 
-					setDuplicateExists(exists)
+					dispatch({
+						type: 'SET_DUPLICATE_EXISTS',
+						payload: exists,
+						result: entry?.result,
+					})
 					if (exists && entry?.result) {
-						setResult(entry.result)
-						setDuplicateChecking(false)
+						dispatch({ type: 'SET_RESULT', payload: entry.result })
+						dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
 						return
 					}
 				} catch (error) {
@@ -249,16 +280,17 @@ export const SelectText = ({
 						return
 					}
 					if (error instanceof VocabularyUnauthorizedError) {
-						setDuplicateExists(false)
+						dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: false })
 					} else if (error instanceof VocabularyPayloadError) {
-						setDuplicateError(error.message)
+						dispatch({ type: 'SET_DUPLICATE_ERROR', payload: error.message })
 					} else {
-						setDuplicateError(
-							error instanceof Error ? error.message : '检查重复失败'
-						)
-						setDuplicateExists(false)
+						dispatch({
+							type: 'SET_DUPLICATE_ERROR',
+							payload: error instanceof Error ? error.message : '检查重复失败',
+						})
+						dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: false })
 					}
-					setDuplicateChecking(false)
+					dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
 					return
 				}
 			}
@@ -266,15 +298,19 @@ export const SelectText = ({
 			let markdownString = ''
 
 			try {
-				markdownString = await learnWordInLine(selection.word, selection.line)
+				markdownString = await learnWordInLine(
+					state.selection!.word,
+					state.selection!.line
+				)
 			} catch (error) {
 				if (cancelled) {
 					return
 				}
-				setDuplicateError(
-					error instanceof Error ? error.message : 'AI 解释生成失败'
-				)
-				setDuplicateChecking(false)
+				dispatch({
+					type: 'SET_DUPLICATE_ERROR',
+					payload: error instanceof Error ? error.message : 'AI 解释生成失败',
+				})
+				dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
 				return
 			}
 
@@ -282,24 +318,20 @@ export const SelectText = ({
 				return
 			}
 
-			setResult(markdownString)
-			setDuplicateChecking(false)
-
-			// if (hadExistingEntry) {
-			// 	setDuplicateExists(true)
-			// }
+			dispatch({ type: 'SET_RESULT', payload: markdownString })
+			dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
 		}
 
-		setResult('')
+		dispatch({ type: 'SET_RESULT', payload: '' })
 		fetchResult()
 
 		return () => {
 			cancelled = true
 		}
-	}, [selection, songId, isSignedIn])
+	}, [state.selection, songId, isSignedIn])
 
 	const handleAddToVocabulary = async () => {
-		if (!selection || !result) {
+		if (!state.selection || !state.result) {
 			toast.error('等待结果生成后再加入生词本')
 			return
 		}
@@ -309,25 +341,23 @@ export const SelectText = ({
 			return
 		}
 
-		if (duplicateExists) {
+		if (state.duplicateExists) {
 			toast.error('该片段已经在生词本中了')
 			return
 		}
 
-		const normalizedSongPath = songPath.startsWith('/')
-			? songPath
-			: `/${songPath}`
+		const normalizedSongPath = normalizeSongPath(songPath)
 
-		setIsSaving(true)
+		dispatch({ type: 'SET_SAVING', payload: true })
 
 		try {
 			await addVocabularyEntryAction({
-				word: selection.word,
-				line: selection.line,
-				lineNumber: selection.lineNumber,
-				result,
+				word: state.selection.word,
+				line: state.selection.line,
+				lineNumber: state.selection.lineNumber,
+				result: state.result,
 				songId,
-				songPath: normalizedSongPath,
+				songPath: normalizedSongPath!,
 			})
 			toast.success('已加入我的生词本')
 		} catch (error) {
@@ -347,114 +377,114 @@ export const SelectText = ({
 				error instanceof Error ? error.message : '加入生词本失败，请稍后重试'
 			)
 		} finally {
-			setIsSaving(false)
+			dispatch({ type: 'SET_SAVING', payload: false })
 		}
 	}
 
 	const handleRefetch = async () => {
-			if (!selection) {
-				return
-			}
-
-			const hadExistingEntry = duplicateExists
-
-			setResult('')
-			setDuplicateChecking(true)
-			setDuplicateError(null)
-			setDuplicateExists(false)
-
-			let markdownString = ''
-
-			try {
-				markdownString = await learnWordInLine(selection.word, selection.line)
-			} catch (error) {
-				if (error instanceof Error) {
-					setDuplicateError(error.message)
-				} else {
-					setDuplicateError('AI 解释生成失败')
-				}
-				setDuplicateChecking(false)
-				return
-			}
-
-			setResult(markdownString)
-			setDuplicateChecking(false)
-
-			if (hadExistingEntry && songId && songPath) {
-				const normalizedSongPath = songPath.startsWith('/')
-					? songPath
-					: `/${songPath}`
-
-				try {
-					await updateVocabularyEntryAction({
-						word: selection.word,
-						line: selection.line,
-						lineNumber: selection.lineNumber,
-						result: markdownString,
-						songId,
-						songPath: normalizedSongPath,
-					})
-					toast.success('已更新生词本内容')
-				} catch (error) {
-					toast.error(
-						error instanceof Error ? error.message : '更新生词本失败'
-					)
-				}
-			}
+		if (!state.selection) {
+			return
 		}
 
-	const previewText = selection
-		? selection.word.length > 20
-			? `${selection.word.slice(0, 20)}...`
-			: selection.word
+		const hadExistingEntry = state.duplicateExists
+
+		dispatch({ type: 'SET_RESULT', payload: '' })
+		dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: true })
+		dispatch({ type: 'SET_DUPLICATE_ERROR', payload: null })
+		dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: false })
+
+		let markdownString = ''
+
+		try {
+			markdownString = await learnWordInLine(
+				state.selection.word,
+				state.selection.line
+			)
+		} catch (error) {
+			dispatch({
+				type: 'SET_DUPLICATE_ERROR',
+				payload: error instanceof Error ? error.message : 'AI 解释生成失败',
+			})
+			dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
+			return
+		}
+
+		dispatch({ type: 'SET_RESULT', payload: markdownString })
+		dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
+
+		if (hadExistingEntry && songId && songPath) {
+			const normalizedSongPath = normalizeSongPath(songPath)
+
+			try {
+				await updateVocabularyEntryAction({
+					word: state.selection.word,
+					line: state.selection.line,
+					lineNumber: state.selection.lineNumber,
+					result: markdownString,
+					songId,
+					songPath: normalizedSongPath!,
+				})
+				toast.success('已更新生词本内容')
+			} catch (error) {
+				toast.error(error instanceof Error ? error.message : '更新生词本失败')
+			}
+		}
+	}
+
+	const previewText = state.selection
+		? state.selection.word.length > 20
+			? `${state.selection.word.slice(0, 20)}...`
+			: state.selection.word
 		: ''
 
 	return (
-		<Dialog open={openDialog}>
-			{selection && (
+		<Dialog open={state.openDialog}>
+			{state.selection && (
 				<DialogContent className="sm:max-w-lg" showCloseButton={false}>
 					<DialogHeader>
 						<DialogTitle>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
-								word{selection.word.includes(' ') ? 's' : ''}:
+								word{state.selection.word.includes(' ') ? 's' : ''}:
 							</span>{' '}
 							{previewText}
 						</DialogTitle>
 						<DialogDescription>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
 								{`in line${
-									selection.lineNumber ? ` ${selection.lineNumber}` : ''
+									state.selection.lineNumber
+										? ` ${state.selection.lineNumber}`
+										: ''
 								}:`}
 							</span>{' '}
-							{selection.line}
+							{state.selection.line}
 						</DialogDescription>
 					</DialogHeader>
 					<div>
-						{result ? (
-							<Markdown>{result}</Markdown>
+						{state.result ? (
+							<Markdown>{state.result}</Markdown>
 						) : (
 							<div className="flex items-center justify-center">
 								<Spinner />
 								AI working...
 							</div>
 						)}
-						{duplicateChecking && (
+						{state.duplicateChecking && (
 							<p className="text-xs text-muted-foreground">
 								正在检查是否已存在
 							</p>
 						)}
-						{duplicateExists && (
+						{state.duplicateExists && (
 							<p className="text-xs text-destructive">该片段已经在生词本中了</p>
 						)}
-						{duplicateError && (
-							<p className="text-xs text-destructive">{duplicateError}</p>
+						{state.duplicateError && (
+							<p className="text-xs text-destructive">{state.duplicateError}</p>
 						)}
 					</div>
 					<DialogFooter className="gap-2 w-full">
 						<Button
 							type="button"
 							onClick={handleRefetch}
-							disabled={!result || isSaving}>
+							disabled={!state.result || state.isSaving}>
 							重新询问AI
 						</Button>
 						{isSignedIn ? (
@@ -463,24 +493,18 @@ export const SelectText = ({
 								className="w-full sm:w-auto"
 								onClick={handleAddToVocabulary}
 								disabled={
-									!result || isSaving || duplicateExists || duplicateChecking
+									!state.result ||
+									state.isSaving ||
+									state.duplicateExists ||
+									state.duplicateChecking
 								}>
-								{isSaving ? '加入中...' : '加入我的生词本'}
+								{state.isSaving ? '加入中...' : '加入我的生词本'}
 							</Button>
 						) : (
 							<SignInButton mode="modal">
-								{/* <Button
-									asChild
-									type="button"
-									variant="secondary"
-									className="w-full sm:w-auto"
-									onClick={closeAndReset}>
-									加入我的生词本
-								</Button> */}
 								<Button onClick={closeAndReset}>登录开启生词本</Button>
 							</SignInButton>
 						)}
-						{/* <Button>复习</Button> */}
 						<DialogClose asChild>
 							<Button type="button" variant="secondary" onClick={closeAndReset}>
 								Close

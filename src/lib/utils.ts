@@ -46,3 +46,62 @@ export const fonts = {
 	uncial: uncialAntiqua.className,
 	sans: notoSans.className,
 }
+
+
+const isWhitespace = (char?: string) => {
+	return !char || /\s/.test(char)
+}
+
+export const normalizeSongPath = (songPath?: string): string | undefined => {
+	if (!songPath) return undefined
+	return songPath.startsWith('/') ? songPath : `/${songPath}`
+}
+
+export const expandToFullWords = (text: string, start: number, end: number) => {
+	if (start >= end) {
+		return null
+	}
+
+	let expandedStart = start
+	let expandedEnd = end
+
+	while (expandedStart < text.length && isWhitespace(text[expandedStart])) {
+		expandedStart++
+	}
+	while (expandedStart > 0 && !isWhitespace(text[expandedStart - 1])) {
+		expandedStart--
+	}
+
+	while (expandedEnd > expandedStart && isWhitespace(text[expandedEnd - 1])) {
+		expandedEnd--
+	}
+	while (expandedEnd < text.length && !isWhitespace(text[expandedEnd])) {
+		expandedEnd++
+	}
+
+	if (expandedStart >= expandedEnd) {
+		return null
+	}
+
+	const normalized = text.slice(expandedStart, expandedEnd).trim()
+	return normalized.length ? normalized : null
+}
+
+export const findLineElement = (node: Node | null) => {
+	if (!node) {
+		return null
+	}
+
+	if (node.nodeType === Node.TEXT_NODE) {
+		return (
+			(node as Text).parentElement?.closest<HTMLElement>('[data-line-text]') ??
+			null
+		)
+	}
+
+	if (node instanceof HTMLElement) {
+		return node.closest<HTMLElement>('[data-line-text]')
+	}
+
+	return null
+}
