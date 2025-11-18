@@ -4,6 +4,7 @@ import { FormEvent, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Spinner } from './ui/spinner'
 
 type SongResult = {
 	id: string
@@ -100,7 +101,7 @@ export const SongSearch = () => {
 			const params = new URLSearchParams({ q: trimmed })
 			void requestSearch(params)
 		})
-}
+	}
 
 	const handleGeniusSearch = () => {
 		if (!lastQuery) {
@@ -114,7 +115,7 @@ export const SongSearch = () => {
 	}
 
 	return (
-		<section className="space-y-6">
+		<section className="space-y-6 px-1.5">
 			<form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
 				<label className="sr-only" htmlFor="search">
 					歌曲或艺人
@@ -138,42 +139,43 @@ export const SongSearch = () => {
 			) : null}
 
 			{hasSearched && results.length === 0 && !isPending ? (
-				<p className="text-sm text-muted-foreground">暂无匹配结果，换个关键词试试。</p>
-			) : null}
-
-	{source || canSearchGenius ? (
-		<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-			{source ? (
-				<p className="text-xs uppercase tracking-wide text-muted-foreground">
-					数据来源：
-					{source === 'database'
-						? '本地缓存'
-						: source === 'genius'
-							? 'Genius API'
-							: '本地缓存 + Genius'}
+				<p className="text-sm text-muted-foreground">
+					暂无匹配结果...<Spinner />
 				</p>
 			) : null}
-			{canSearchGenius ? (
-				<Button
-					type="button"
-					variant="outline"
-					size="sm"
-					onClick={handleGeniusSearch}
-					disabled={isPending}
-				>
-					{isPending ? '搜索中...' : '通过 Genius 继续搜索'}
-				</Button>
+
+			{source || canSearchGenius ? (
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+					{source ? (
+						<p className="text-xs uppercase tracking-wide text-muted-foreground">
+							数据来源：
+							{source === 'database'
+								? '本地缓存'
+								: source === 'genius'
+								? 'Genius API'
+								: '本地缓存 + Genius'}
+						</p>
+					) : null}
+					{canSearchGenius ? (
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={handleGeniusSearch}
+							disabled={isPending}>
+							{isPending ? '搜索中...' : '通过 Genius 继续搜索'}
+						</Button>
+					) : null}
+				</div>
 			) : null}
-		</div>
-	) : null}
 
-	{autoContinued ? (
-		<p className="text-xs text-muted-foreground">
-			本地结果较少，已自动通过 Genius 扩展搜索。
-		</p>
-	) : null}
+			{autoContinued ? (
+				<p className="text-xs text-muted-foreground">
+					本地结果较少，已自动通过 Genius 扩展搜索。
+				</p>
+			) : null}
 
-			<ul className="grid gap-3">
+			<ul className="grid sm:grid-cols-2 gap-3">
 				{results.map((song) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
 					const songHref = song.path ? `/song${song.path}` : null
@@ -190,14 +192,15 @@ export const SongSearch = () => {
 								{releaseYear ? (
 									<time
 										className="text-xs text-muted-foreground"
-										dateTime={song.releaseDate ?? undefined}
-									>
+										dateTime={song.releaseDate ?? undefined}>
 										发行：{releaseYear}
 									</time>
 								) : null}
 							</div>
 							{song.album ? (
-								<p className="text-xs text-muted-foreground">专辑：{song.album}</p>
+								<p className="text-xs text-muted-foreground">
+									专辑：{song.album}
+								</p>
 							) : null}
 						</>
 					)
@@ -205,8 +208,7 @@ export const SongSearch = () => {
 					return (
 						<li
 							key={song.id}
-							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5"
-						>
+							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5">
 							{songHref ? (
 								<Link href={songHref} className="block space-y-2">
 									{cardBody}
