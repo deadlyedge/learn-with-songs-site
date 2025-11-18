@@ -19,6 +19,7 @@ import { GeniusSongInfo } from '@/types/songsAPI'
 import { Header } from '@/components/song-page/header'
 import { Lyric } from '@/components/song-page/lyric'
 import { Annotations } from '@/components/song-page/annotations'
+import { SelectText } from '@/components/select-text'
 
 type SongRecord = NonNullable<
 	Awaited<ReturnType<typeof prisma.song.findUnique>>
@@ -72,7 +73,7 @@ const buildHeaderContents = (
 
 const fetchSongData = async (path: string): Promise<SongData | null> => {
 	'use server'
-	
+
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },
@@ -191,9 +192,11 @@ async function SongDetailContent({ params }: SongPageProps) {
 				<Lyric
 					error={lyricsError}
 					lyricLines={lyricLines}
-					songId={song.id}
-					songPath={song.geniusPath ?? geniusPath}
+					// songId={song.id}
+					// songPath={song.geniusPath ?? geniusPath}
 				/>
+				<SelectText songId={song.id} songPath={song.geniusPath ?? geniusPath} />
+
 				<Annotations referents={referents} />
 			</section>
 		</article>
