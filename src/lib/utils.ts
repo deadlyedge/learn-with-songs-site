@@ -104,3 +104,31 @@ export const findLineElement = (node: Node | null) => {
 
 	return null
 }
+
+export const splitLyrics = (content: string) => {
+	// 保留原始格式：按换行分割并保留每一行的原始内容。
+	// 如果某行（忽略前导空白）以 '[' 开头（通常是节或注释），
+	// 且之前一行不是空行，则在它前面插入一个空行以便视觉分隔。
+	const lines = content.split(/\r?\n/)
+	const normalized: string[] = []
+
+	for (const rawLine of lines) {
+		// 保留行的原始内容，不 trim
+		const line = rawLine
+
+		// 如果当前行（忽略前导空白）以 '[' 开头
+		if (line.trimStart().startsWith('[')) {
+			// 如果前一行存在且不是空行，则插入一个空行作为分隔
+			if (normalized.length > 0 && normalized[normalized.length - 1] !== '') {
+				normalized.push('')
+			}
+			normalized.push(line)
+			continue
+		}
+
+		// 普通行直接保留（包括空字符串）
+		normalized.push(line)
+	}
+
+	return normalized
+}

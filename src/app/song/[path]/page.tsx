@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { fetchGeniusReferents } from '@/lib/genius'
 import { ensureSongDetails } from '@/lib/song-details'
-import { hexToRgb01 } from '@/lib/utils'
+import { hexToRgb01, splitLyrics } from '@/lib/utils'
 import {
 	cacheReferentsForSong,
 	mapDbReferentsToNormalized,
@@ -20,42 +20,59 @@ import { Header } from '@/components/song-page/header'
 import { Lyric } from '@/components/song-page/lyric'
 import { Annotations } from '@/components/song-page/annotations'
 
+type SongRecord = NonNullable<
+	Awaited<ReturnType<typeof prisma.song.findUnique>>
+> // 使用 prisma 生成的类型
+
 type SongPageProps = {
 	params: Promise<{
 		path: string
 	}>
 }
 
-const splitLyrics = (content: string) => {
-	// 保留原始格式：按换行分割并保留每一行的原始内容。
-	// 如果某行（忽略前导空白）以 '[' 开头（通常是节或注释），
-	// 且之前一行不是空行，则在它前面插入一个空行以便视觉分隔。
-	const lines = content.split(/\r?\n/)
-	const normalized: string[] = []
-
-	for (const rawLine of lines) {
-		// 保留行的原始内容，不 trim
-		const line = rawLine
-
-		// 如果当前行（忽略前导空白）以 '[' 开头
-		if (line.trimStart().startsWith('[')) {
-			// 如果前一行存在且不是空行，则插入一个空行作为分隔
-			if (normalized.length > 0 && normalized[normalized.length - 1] !== '') {
-				normalized.push('')
-			}
-			normalized.push(line)
-			continue
-		}
-
-		// 普通行直接保留（包括空字符串）
-		normalized.push(line)
-	}
-
-	return normalized
+type HeaderContents = {
+	title: string
+	artist: string
+	album: string
+	releaseDate: string
+	description: string
+	language: string
+	contributors: string
+	pageviews: string
+	url: string
+	artworkUrl: string
+	backgroundColor: [number, number, number]
 }
 
-async function SongDetailContent({ params }: SongPageProps) {
-	const { path } = await params
+type SongData = {
+	song: SongRecord
+	lyricLines: string[]
+	lyricsError: string | null
+	referents: NormalizedReferent[]
+	headerContents: HeaderContents
+}
+
+const buildHeaderContents = (
+	song: SongRecord,
+	details: GeniusSongInfo | null,
+	colorArray: [number, number, number]
+): HeaderContents => ({
+	title: song.title,
+	artist: song.artist,
+	album: song.album as string,
+	releaseDate: details?.release_date_for_display as string,
+	description: details?.description as string,
+	language: song.language as string,
+	contributors: String(details?.stats?.contributors),
+	pageviews: String(details?.stats?.pageviews),
+	url: song.url as string,
+	artworkUrl: song.artworkUrl as string,
+	backgroundColor: colorArray,
+})
+
+const fetchSongData = async (path: string): Promise<SongData | null> => {
+	'use server'
+	
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },
@@ -70,21 +87,11 @@ async function SongDetailContent({ params }: SongPageProps) {
 	})
 
 	if (!songRecord) {
-		// notFound()
-		return (
-			<div className="flex flex-col items-center justify-center gap-4">
-				<h1 className="text-2xl font-semibold">歌曲未找到</h1>
-				<p className="text-muted-foreground">
-					歌曲不存在或已被删除。请检查路径是否正确。
-				</p>
-				<Button asChild>
-					<Link href="/">返回搜索</Link>
-				</Button>
-			</div>
-		)
+		return null
 	}
 
 	let song = songRecord
+	let lyricsError: string | null = null
 
 	try {
 		const { song: syncedSong } = await ensureSongDetails(songRecord)
@@ -98,9 +105,6 @@ async function SongDetailContent({ params }: SongPageProps) {
 	}
 
 	let lyricRecord = song.lyrics
-	let lyricsError: string | null = null
-	let referents: NormalizedReferent[] = []
-
 	if (!lyricRecord) {
 		try {
 			const fetchedLyrics = await fetchLyricsFromPath(geniusPath)
@@ -118,7 +122,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 				},
 			})
 		} catch (error) {
-			console.error(error)
+			console.error('Failed to fetch lyrics', error)
 			lyricsError = '歌词拉取失败，请稍后再试。'
 		}
 	}
@@ -128,6 +132,7 @@ async function SongDetailContent({ params }: SongPageProps) {
 	const referentsTargetId =
 		song.geniusId ?? (typeof details?.id === 'number' ? details.id : undefined)
 
+	let referents: NormalizedReferent[] = []
 	const cachedReferents = songRecord.referents ?? []
 	const hasCachedReferents = cachedReferents.length > 0
 	const hasFetchedReferents = Boolean(songRecord.referentsFetchedAt)
@@ -147,19 +152,37 @@ async function SongDetailContent({ params }: SongPageProps) {
 	const colorArray = details?.song_art_primary_color
 		? hexToRgb01(details.song_art_primary_color)
 		: ([0.5, 0.1, 0.2] as [number, number, number])
-	const headerContents = {
-		title: song.title,
-		artist: song.artist,
-		album: song.album as string,
-		releaseDate: details?.release_date_for_display as string,
-		description: details?.description as string,
-		language: song.language as string,
-		contributors: String(details?.stats?.contributors),
-		pageviews: String(details?.stats?.pageviews),
-		url: song.url as string,
-		artworkUrl: song.artworkUrl as string,
-		backgroundColor: colorArray,
+	const headerContents = buildHeaderContents(song, details, colorArray)
+
+	return {
+		song,
+		lyricLines,
+		lyricsError,
+		referents,
+		headerContents,
 	}
+}
+
+async function SongDetailContent({ params }: SongPageProps) {
+	const { path } = await params
+	const data = await fetchSongData(path)
+
+	if (!data) {
+		return (
+			<div className="flex flex-col items-center justify-center gap-4">
+				<h1 className="text-2xl font-semibold">歌曲未找到</h1>
+				<p className="text-muted-foreground">
+					歌曲不存在或已被删除。请检查路径是否正确。
+				</p>
+				<Button asChild>
+					<Link href="/">返回搜索</Link>
+				</Button>
+			</div>
+		)
+	}
+
+	const { song, lyricLines, lyricsError, referents, headerContents } = data
+	const geniusPath = `/${path}`
 
 	return (
 		<article className="space-y-6 pb-6 relative">
@@ -171,7 +194,6 @@ async function SongDetailContent({ params }: SongPageProps) {
 					songId={song.id}
 					songPath={song.geniusPath ?? geniusPath}
 				/>
-
 				<Annotations referents={referents} />
 			</section>
 		</article>

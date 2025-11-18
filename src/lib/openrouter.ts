@@ -48,16 +48,16 @@ export const summarizer = async (text: string) => {
 }
 
 export const learnWordInLine = async (word: string, line: string) => {
-	const content = `用户想学习词语"${word}"在句子"${line}"中的用法。请严格按照以下格式输出，不包含任何额外内容，不要包含括号：
+	const content = `用户想学习词语"${word}"在句子"${line}"中的用法。请严格按照以下格式输出，不包含任何额外内容：
 
-**读音:** [音标，如 /ˈɪŋɡlɪʃ/]\n
-**语义:** [*adj.* 准确的汉语含义]\n
-**整句:** [整句"${line}"的中文翻译]\n
+**读音:** 音标，如 /ˈɪŋɡlɪʃ/\n
+**语义:** *adj.* 准确的汉语含义\n
+**整句:** 整句"${line}"的中文翻译\n
 **例句:** \n
-*1.* [使用该词的英文例句]\n
-*2.* [另一个使用该词的英文例句]\n
+*1.* 使用该词的英文例句\n
+*2.* 另一个使用该词的英文例句\n
 
-确保输出是纯Markdown文本，无其他说明。`
+确保输出是纯Markdown文本，无其他说明，不要包含方括号。`
 
 	const response = await openRouter.chat.send({
 		model,
