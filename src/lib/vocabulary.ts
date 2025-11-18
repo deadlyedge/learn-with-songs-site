@@ -20,6 +20,7 @@ export class VocabularyUnauthorizedError extends VocabularyError {}
 export class VocabularyDuplicateError extends VocabularyError {}
 
 export class VocabularyPayloadError extends VocabularyError {}
+export class VocabularyNotFoundError extends VocabularyError {}
 
 export const findDuplicateEntry = (options: DuplicateOptions) => {
 	return prisma.vocabularyEntry.findFirst({
@@ -123,6 +124,33 @@ export const addVocabularyEntry = async (
 		result: validPayload.result,
 		songId: validPayload.songId,
 		songPath: validPayload.songPath,
+	})
+}
+
+export const updateVocabularyEntry = async (
+	payload: Partial<VocabularyPayload>
+) => {
+	const validPayload = validateVocabularyPayload(payload)
+	const user = await ensureVocabularyUser()
+
+	const existing = await findDuplicateEntry({
+		userId: user.id,
+		word: validPayload.word,
+		line: validPayload.line,
+		lineNumber: validPayload.lineNumber,
+		songId: validPayload.songId,
+	})
+
+	if (!existing) {
+		throw new VocabularyNotFoundError('生词本条目未找到')
+	}
+
+	return prisma.vocabularyEntry.update({
+		where: { id: existing.id },
+		data: {
+			result: validPayload.result,
+			songPath: validPayload.songPath,
+		},
 	})
 }
 

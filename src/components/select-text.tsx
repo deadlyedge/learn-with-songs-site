@@ -5,6 +5,7 @@ import { SignInButton, useUser } from '@clerk/nextjs'
 import {
 	vocabularyEntryExistsAction,
 	addVocabularyEntryAction,
+	updateVocabularyEntryAction,
 } from '@/app/actions/vocabulary'
 import {
 	VocabularyDuplicateError,
@@ -283,6 +284,10 @@ export const SelectText = ({
 
 			setResult(markdownString)
 			setDuplicateChecking(false)
+
+			// if (hadExistingEntry) {
+			// 	setDuplicateExists(true)
+			// }
 		}
 
 		setResult('')
@@ -347,32 +352,56 @@ export const SelectText = ({
 	}
 
 	const handleRefetch = async () => {
-		if (!selection) {
-			return
-		}
-
-		setResult('')
-		setDuplicateChecking(true)
-		setDuplicateError(null)
-		setDuplicateExists(false)
-
-		let markdownString = ''
-
-		try {
-			markdownString = await learnWordInLine(selection.word, selection.line)
-		} catch (error) {
-			if (error instanceof Error) {
-				setDuplicateError(error.message)
-			} else {
-				setDuplicateError('AI 解释生成失败')
+			if (!selection) {
+				return
 			}
-			setDuplicateChecking(false)
-			return
-		}
 
-		setResult(markdownString)
-		setDuplicateChecking(false)
-	}
+			const hadExistingEntry = duplicateExists
+
+			setResult('')
+			setDuplicateChecking(true)
+			setDuplicateError(null)
+			setDuplicateExists(false)
+
+			let markdownString = ''
+
+			try {
+				markdownString = await learnWordInLine(selection.word, selection.line)
+			} catch (error) {
+				if (error instanceof Error) {
+					setDuplicateError(error.message)
+				} else {
+					setDuplicateError('AI 解释生成失败')
+				}
+				setDuplicateChecking(false)
+				return
+			}
+
+			setResult(markdownString)
+			setDuplicateChecking(false)
+
+			if (hadExistingEntry && songId && songPath) {
+				const normalizedSongPath = songPath.startsWith('/')
+					? songPath
+					: `/${songPath}`
+
+				try {
+					await updateVocabularyEntryAction({
+						word: selection.word,
+						line: selection.line,
+						lineNumber: selection.lineNumber,
+						result: markdownString,
+						songId,
+						songPath: normalizedSongPath,
+					})
+					toast.success('已更新生词本内容')
+				} catch (error) {
+					toast.error(
+						error instanceof Error ? error.message : '更新生词本失败'
+					)
+				}
+			}
+		}
 
 	const previewText = selection
 		? selection.word.length > 20
@@ -400,7 +429,7 @@ export const SelectText = ({
 							{selection.line}
 						</DialogDescription>
 					</DialogHeader>
-					<div className="w-full">
+					<div>
 						{result ? (
 							<Markdown>{result}</Markdown>
 						) : (
@@ -421,7 +450,7 @@ export const SelectText = ({
 							<p className="text-xs text-destructive">{duplicateError}</p>
 						)}
 					</div>
-					<DialogFooter className="gap-2">
+					<DialogFooter className="gap-2 w-full">
 						<Button
 							type="button"
 							onClick={handleRefetch}

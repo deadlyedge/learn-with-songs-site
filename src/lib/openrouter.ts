@@ -48,7 +48,15 @@ export const summarizer = async (text: string) => {
 }
 
 export const learnWordInLine = async (word: string, line: string) => {
-	const content = `Student want to learn the word "${word}" in "${line}", 请给出该词语的读音、中文语义、整句的意思，以及两条该词语的英文例句，尽量简洁，不用说"好的"，不要回答其他内容，输出格式为markdown。`
+	const content = `用户想学习词语"${word}"在句子"${line}"中的用法。请严格按照以下格式输出，不包含任何额外内容：
+
+**读音:** [音标，如 /ˈɪŋɡlɪʃ/]\n
+**中文语义:** [准确的汉语含义]\n
+**整句意思:** [整句"${line}"的中文翻译]\n
+**例句1:** [使用该词的英文例句]\n
+**例句2:** [另一个使用该词的英文例句]
+
+确保输出是纯Markdown文本，无其他说明。`
 
 	const response = await openRouter.chat.send({
 		model,
