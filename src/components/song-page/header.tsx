@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
-import { cn, fonts } from '@/lib/utils'
+import { cn, fonts, hexToRgb01 } from '@/lib/utils'
 
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -21,7 +21,7 @@ type HeaderProps = {
 		pageviews: string
 		url: string
 		artworkUrl: string
-		backgroundColor: [number, number, number]
+		backgroundColor: string[] //[number, number, number]
 	}
 }
 
@@ -30,10 +30,11 @@ export const Header = ({ headerContents }: HeaderProps) => {
 		<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 			<div className="absolute inset-0 top-0 z-[-2]">
 				<Iridescence
-					color={headerContents.backgroundColor}
+					color={hexToRgb01(headerContents.backgroundColor[0])}
+					// secondColor={hexToRgb01(headerContents.backgroundColor[1])}
 					mouseReact={false}
 					amplitude={0.1}
-					speed={0.2}
+					speed={0.1}
 				/>
 			</div>
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { ensureSongDetails } from '@/lib/song-details'
-import { hexToRgb01 } from '@/lib/utils'
+// import { hexToRgb01 } from '@/lib/utils'
 import type { GeniusSongInfo } from '@/types/songsAPI'
 
 export async function GET(
@@ -17,10 +17,7 @@ export async function GET(
 		})
 
 		if (!songRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		let song = songRecord
@@ -36,9 +33,13 @@ export async function GET(
 		}
 
 		const details = (song.details ?? null) as GeniusSongInfo | null
-		const colorArray = details?.song_art_primary_color
-			? hexToRgb01(details.song_art_primary_color)
-			: ([0.5, 0.1, 0.2] as [number, number, number])
+		// const colorArray = details?.song_art_primary_color
+		// 	? hexToRgb01(details.song_art_primary_color)
+		// 	: ([0.5, 0.1, 0.2] as [number, number, number])
+		const colorArray = [
+			details?.song_art_primary_color || '#551122',
+			details?.song_art_secondary_color || '#000',
+		]
 
 		const headerContents = {
 			title: song.title,

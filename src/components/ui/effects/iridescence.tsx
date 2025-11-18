@@ -20,6 +20,7 @@ precision highp float;
 
 uniform float uTime;
 uniform vec3 uColor;
+uniform vec3 uSecondColor;
 uniform vec3 uResolution;
 uniform vec2 uMouse;
 uniform float uAmplitude;
@@ -36,18 +37,23 @@ void main() {
   float d = -uTime * 0.5 * uSpeed;
   float a = 0.0;
   for (float i = 0.0; i < 8.0; ++i) {
-    a += cos(i - d - a * uv.x);
+    a += cos(i - d - a * uv.x * 0.5);
     d += sin(uv.y * i + a);
   }
   d += uTime * 0.5 * uSpeed;
   vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
   col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5) * uColor;
+
+  float t = cos(a + d) * 0.5 + 0.5;
+  col = mix(uSecondColor, uColor, t);
+
   gl_FragColor = vec4(col, 1.0);
 }
 `
 
 interface IridescenceProps {
 	color?: [number, number, number]
+	secondColor?: [number, number, number]
 	speed?: number
 	amplitude?: number
 	mouseReact?: boolean
@@ -55,6 +61,7 @@ interface IridescenceProps {
 
 export default function Iridescence({
 	color = [1, 1, 1],
+	secondColor = [0, 0, 0],
 	speed = 1.0,
 	amplitude = 0.1,
 	mouseReact = true,
@@ -77,6 +84,7 @@ export default function Iridescence({
 			uniforms: {
 				uTime: { value: 0 },
 				uColor: { value: new Color(...color) },
+				uSecondColor: { value: new Color(...secondColor) },
 				uResolution: {
 					value: new Color(
 						gl.canvas.width,
@@ -136,7 +144,7 @@ export default function Iridescence({
 			ctn.removeChild(gl.canvas)
 			gl.getExtension('WEBGL_lose_context')?.loseContext()
 		}
-	}, [color, speed, amplitude, mouseReact])
+	}, [color, secondColor, speed, amplitude, mouseReact])
 
 	return <div ref={ctnDom} className="w-full h-full" {...rest} />
 }

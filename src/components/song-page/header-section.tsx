@@ -12,7 +12,7 @@ type HeaderContents = {
 	pageviews: string
 	url: string
 	artworkUrl: string
-	backgroundColor: [number, number, number]
+	backgroundColor: string[] //[number, number, number]
 }
 
 async function fetchSongDetails(path: string) {
