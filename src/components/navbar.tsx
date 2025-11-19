@@ -30,7 +30,7 @@ export const Navbar = () => {
 							我的收藏
 						</Link>
 					</Button>
-					<UserButton appearance={{ elements: { avatarBox: 'ml-3' } }} />
+					<UserButton />
 				</SignedIn>
 				<SignedOut>
 					<SignInButton mode="modal">

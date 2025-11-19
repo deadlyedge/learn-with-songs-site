@@ -25,32 +25,84 @@ const getFeaturedSongs = async (): Promise<FeaturedSong[]> => {
 			geniusPath: true,
 			details: true,
 		},
+		take: 20,
 	})
 
-	const mapped = songs.map((song) => {
-		const details = (song.details ?? null) as GeniusSongInfo | null
-		const pageviews = details?.stats?.pageviews
+	const featuredSongs = songs
+		.filter((song) => {
+			const details = (song.details ?? null) as GeniusSongInfo | null
+			const pageviews = details?.stats?.pageviews
+			return (
+				details &&
+				song.geniusPath &&
+				pageviews !== undefined &&
+				pageviews !== null &&
+				typeof pageviews === 'number'
+			)
+		})
+		.map((song) => {
+			const details = song.details! as GeniusSongInfo
+			const pageviews = details.stats!.pageviews!
+			return {
+				id: song.id,
+				title: song.title,
+				artist: song.artist,
+				album: song.album ?? undefined,
+				artworkUrl: song.artworkUrl ?? undefined,
+				pageviews,
+				geniusPath: song.geniusPath!,
+			}
+		})
+		.sort(() => Math.random() - 0.5) // Randomize
+		.slice(0, 6) // Take 6 random from top 20
+		.sort((a, b) => b.pageviews - a.pageviews)
 
-		if (!details || !song.geniusPath || !pageviews) {
-			return null
-		}
+	return featuredSongs
+}
 
-		return {
-			id: song.id,
-			title: song.title,
-			artist: song.artist,
-			album: song.album ?? undefined,
-			artworkUrl: song.artworkUrl ?? undefined,
-			pageviews,
-			geniusPath: song.geniusPath,
-		} as FeaturedSong
-	})
-
-	const filtered = mapped.filter(
-		(value): value is FeaturedSong => value !== null
+function SongListItem({
+	song,
+	numberFormatter,
+}: {
+	song: FeaturedSong
+	numberFormatter: Intl.NumberFormat
+}) {
+	return (
+		<Link
+			href={`/song${song.geniusPath}`}
+			className="group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3 transition hover:border-primary/60 hover:bg-primary/5">
+			{song.artworkUrl ? (
+				<Image
+					src={song.artworkUrl}
+					alt={`${song.title} 封面`}
+					width={64}
+					height={64}
+					className="h-16 w-16 rounded-md object-cover"
+				/>
+			) : (
+				<div className="flex h-16 w-16 items-center justify-center rounded-md bg-muted text-[11px] text-muted-foreground">
+					无封面
+				</div>
+			)}
+			<div className="flex-1 space-y-1">
+				<p className="text-sm font-semibold group-hover:text-primary">
+					{song.title}
+				</p>
+				<p className="text-xs text-muted-foreground">{song.artist}</p>
+				{song.album ? (
+					<p className="text-[11px] text-muted-foreground/80">
+						专辑：{song.album}
+					</p>
+				) : null}
+			</div>
+			<div className="text-right text-xs text-muted-foreground">
+				<span className="block text-sm font-semibold text-foreground">
+					{numberFormatter.format(song.pageviews)}
+				</span>
+				<span className="uppercase tracking-wide text-[10px]">浏览</span>
+			</div>
+		</Link>
 	)
-
-	return filtered.sort((a, b) => b.pageviews - a.pageviews).slice(0, 6)
 }
 
 export async function FeaturedSongs() {
@@ -60,56 +112,27 @@ export async function FeaturedSongs() {
 	if (featuredSongs.length === 0) {
 		return null
 	}
+
 	return (
 		<section className="space-y-4">
 			<div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
 				<div>
-					<h2 className="text-xl font-semibold">热门收录歌曲</h2>
+					<h2 className="text-xl font-semibold">其他收录歌曲</h2>
 					<p className="text-sm text-muted-foreground">
-						根据 Genius 浏览量挑选的精选列表。
+						可以快速打开的本地歌曲列表。
 					</p>
 				</div>
 				<p className="text-xs text-muted-foreground">
-					统计基于 Genius stats.pageviews
+					根据 Genius 浏览量排列
 				</p>
 			</div>
 			<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
 				{featuredSongs.map((song) => (
-					<Link
+					<SongListItem
 						key={song.id}
-						href={`/song${song.geniusPath}`}
-						className="group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3 transition hover:border-primary/60 hover:bg-primary/5">
-						{song.artworkUrl ? (
-							<Image
-								src={song.artworkUrl}
-								alt={`${song.title} 封面`}
-								width={64}
-								height={64}
-								className="h-16 w-16 rounded-md object-cover"
-							/>
-						) : (
-							<div className="flex h-16 w-16 items-center justify-center rounded-md bg-muted text-[11px] text-muted-foreground">
-								无封面
-							</div>
-						)}
-						<div className="flex-1 space-y-1">
-							<p className="text-sm font-semibold group-hover:text-primary">
-								{song.title}
-							</p>
-							<p className="text-xs text-muted-foreground">{song.artist}</p>
-							{song.album ? (
-								<p className="text-[11px] text-muted-foreground/80">
-									专辑：{song.album}
-								</p>
-							) : null}
-						</div>
-						<div className="text-right text-xs text-muted-foreground">
-							<span className="block text-sm font-semibold text-foreground">
-								{numberFormatter.format(song.pageviews)}
-							</span>
-							<span className="uppercase tracking-wide text-[10px]">浏览</span>
-						</div>
-					</Link>
+						song={song}
+						numberFormatter={numberFormatter}
+					/>
 				))}
 			</div>
 		</section>

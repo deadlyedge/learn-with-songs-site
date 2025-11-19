@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { HeaderSection } from '@/components/song-page/header-section'
 import { LyricsSection } from '@/components/song-page/lyrics-section'
 import { AnnotationsSection } from '@/components/song-page/annotations-section'
-import { SelectText } from '@/components/select-text'
+import { SelectText } from '@/components/song-page/select-text'
 
 type SongPageProps = {
 	params: Promise<{

@@ -15,7 +15,7 @@ import {
 import { learnWordInLine } from '@/lib/openrouter'
 import Markdown from 'react-markdown'
 
-import { Spinner } from './ui/spinner'
+import { Spinner } from '../ui/spinner'
 import { toast } from 'sonner'
 import {
 	Dialog,
@@ -25,8 +25,8 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from './ui/dialog'
-import { Button } from './ui/button'
+} from '../ui/dialog'
+import { Button } from '../ui/button'
 
 import { DEFAULT_CONTAINER_ID, MAX_SELECTION_LENGTH } from '@/constants'
 import {
