@@ -1,5 +1,7 @@
 import { unstable_cache } from 'next/cache'
 import { Header } from './header'
+import { initialUser } from '@/lib/clerk-auth'
+import { isSongCollectedByUserId } from '@/lib/collections'
 
 type HeaderContents = {
 	title: string
@@ -46,6 +48,17 @@ type DetailsData = {
 
 export async function HeaderSection({ path }: { path: string }) {
 	const data: DetailsData = await cachedFetchSongDetails(path)
+	const user = await initialUser()
+	const isCollected =
+		user && data.songId
+			? await isSongCollectedByUserId(user.id, data.songId)
+			: false
 
-	return <Header headerContents={data.headerContents} />
+	return (
+		<Header
+			headerContents={data.headerContents}
+			songId={data.songId}
+			isCollected={isCollected}
+		/>
+	)
 }

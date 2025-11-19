@@ -21,9 +21,11 @@ model User {
   name     String?
   imageUrl String?
 
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   vocabularyEntries VocabularyEntry[]
+  collections       Song[]
 }
 
 model Song {
@@ -47,6 +49,7 @@ model Song {
   lyrics            Lyric?
   referents         Referent[]
   vocabularyEntries VocabularyEntry[]
+  collectedBy       User[]
 
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt

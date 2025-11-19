@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { EditIcon, EyeIcon, HeartIcon, Outdent, ShareIcon } from 'lucide-react'
+import { EditIcon, EyeIcon, Outdent, ShareIcon } from 'lucide-react'
 import { cn, fonts, hexToRgb01 } from '@/lib/utils'
 
 import { Badge } from '../ui/badge'
@@ -8,6 +8,7 @@ import { Button } from '../ui/button'
 import Iridescence from '../ui/effects/iridescence'
 
 import Markdown from 'react-markdown'
+import { CollectButton } from './collect-button'
 
 type HeaderProps = {
 	headerContents: {
@@ -23,9 +24,15 @@ type HeaderProps = {
 		artworkUrl: string
 		backgroundColor: string[] //[number, number, number]
 	}
+	songId: string
+	isCollected: boolean
 }
 
-export const Header = ({ headerContents }: HeaderProps) => {
+export const Header = ({
+	headerContents,
+	songId,
+	isCollected,
+}: HeaderProps) => {
 	return (
 		<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 			<div className="absolute inset-0 top-0 z-[-2]">
@@ -81,19 +88,14 @@ export const Header = ({ headerContents }: HeaderProps) => {
 							</div>
 						</div>
 						<div className="flex flex-col items-end px-2 gap-1">
-							<div className="flex text-xs justify-end gap-1">
+							<div className="flex items-center justify-end gap-2 text-xs">
 								<Badge
 									variant="buttonLike"
 									className="hover:cursor-pointer border-0">
 									<ShareIcon />
 									分享
 								</Badge>
-								<Badge
-									variant="buttonLike"
-									className="hover:cursor-pointer border-0">
-									<HeartIcon />
-									收藏
-								</Badge>
+								<CollectButton songId={songId} initialCollected={isCollected} />
 							</div>
 							{headerContents.url ? (
 								<Link
