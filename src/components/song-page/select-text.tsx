@@ -254,12 +254,13 @@ export const SelectText = ({
 
 			if (isSignedIn) {
 				try {
-					const { exists, entry } = await vocabularyEntryExistsAction({
+					const { entry } = await vocabularyEntryExistsAction({
 						word: state.selection!.word,
 						line: state.selection!.line,
 						lineNumber: state.selection!.lineNumber,
 						songId,
 					})
+					const exists = !!entry
 
 					if (cancelled) {
 						return

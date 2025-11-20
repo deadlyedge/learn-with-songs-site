@@ -1,6 +1,6 @@
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 import { SongSearch } from '@/components/song-search'
-import { Loader } from 'lucide-react'
+// import { Loader } from 'lucide-react'
 import { FeaturedSongs } from '@/components/featured-songs'
 
 export default async function HomePage() {
@@ -17,9 +17,9 @@ export default async function HomePage() {
 
 			<SongSearch />
 
-			<Suspense fallback={<Loader />}>
-				<FeaturedSongs />
-			</Suspense>
+			{/* <Suspense fallback={<Loader />}> */}
+			<FeaturedSongs />
+			{/* </Suspense> */}
 		</div>
 	)
 }
