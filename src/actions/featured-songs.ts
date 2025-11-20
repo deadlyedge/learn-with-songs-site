@@ -1,12 +1,16 @@
 'use server'
 
-import { cache } from 'react'
+// import { cache } from 'react'
 
 import { prisma } from '@/lib/prisma'
 import type { FeaturedSong } from '@/types'
 import type { GeniusSongInfo } from '@/types/songsAPI'
+import { cacheLife } from 'next/cache'
 
-const buildFeaturedSongs = cache(async (): Promise<FeaturedSong[]> => {
+const buildFeaturedSongs = async (): Promise<FeaturedSong[]> => {
+	'use cache'
+	cacheLife('hours')
+
 	const songs = await prisma.song.findMany({
 		where: {
 			lyrics: {
@@ -51,7 +55,7 @@ const buildFeaturedSongs = cache(async (): Promise<FeaturedSong[]> => {
 		.sort(() => Math.random() - 0.5)
 		.slice(0, 6)
 		.sort((a, b) => b.pageviews - a.pageviews)
-})
+}
 
 export async function getFeaturedSongsAction() {
 	return buildFeaturedSongs()

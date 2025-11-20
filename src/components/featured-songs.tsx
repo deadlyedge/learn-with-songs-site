@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 import type { FeaturedSong } from '@/types'
 import { getFeaturedSongsAction } from '@/actions/featured-songs'
+import { Suspense } from 'react'
 
 function SongListItem({
 	song,
@@ -66,19 +67,36 @@ export async function FeaturedSongs() {
 						可以快速打开的本地歌曲列表。
 					</p>
 				</div>
-				<p className="text-xs text-muted-foreground">
-					根据 Genius 浏览量排列
-				</p>
+				<p className="text-xs text-muted-foreground">根据 Genius 浏览量排列</p>
 			</div>
 			<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
 				{featuredSongs.map((song) => (
-					<SongListItem
-						key={song.id}
-						song={song}
-						numberFormatter={numberFormatter}
-					/>
+					<Suspense key={song.id} fallback={<SongListItemSkeleton />}>
+						<SongListItem
+							key={song.id}
+							song={song}
+							numberFormatter={numberFormatter}
+						/>
+					</Suspense>
 				))}
 			</div>
 		</section>
+	)
+}
+
+export function SongListItemSkeleton() {
+	return (
+		<div className="animate-pulse group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3">
+			<div className="h-16 w-16 rounded-md bg-muted" />
+			<div className="flex-1 space-y-2">
+				<div className="h-4 w-3/4 rounded bg-muted" />
+				<div className="h-3 w-1/2 rounded bg-muted" />
+				<div className="h-3 w-1/3 rounded bg-muted" />
+			</div>
+			<div className="space-y-2 text-right">
+				<div className="h-4 w-12 rounded bg-muted" />
+				<div className="h-3 w-8 rounded bg-muted" />
+			</div>
+		</div>
 	)
 }

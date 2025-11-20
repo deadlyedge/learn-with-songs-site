@@ -30,7 +30,7 @@ export default function RootLayout({
 						src="https://challenges.cloudflare.com/turnstile/v0/api.js"
 						async
 						defer
-					/> */}
+						/> */}
 					<body className={`${fonts.noto} antialiased`}>
 						<main className="mx-auto w-full xl:w-3/4">
 							<EnsureClerkUser />

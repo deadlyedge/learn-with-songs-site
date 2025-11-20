@@ -8,6 +8,10 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Toggle } from '../ui/toggle'
 import { cn } from '@/lib/utils'
+import {
+	addSongToUserCollectionsAction,
+	removeSongFromUserCollectionsAction,
+} from '@/actions/collections'
 
 type CollectButtonProps = {
 	songId: string
@@ -24,25 +28,15 @@ const CollectToggleButton = ({
 	const handleToggle = () => {
 		startTransition(async () => {
 			try {
-				const response = await fetch('/api/collections', {
-					method: isCollected ? 'DELETE' : 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ songId }),
-				})
-
-				const payload = await response.json()
-
-				if (!response.ok) {
-					throw new Error(payload?.error ?? '收藏操作失败')
+				if (isCollected) {
+					await removeSongFromUserCollectionsAction(songId)
+					setIsCollected(false)
+					toast.success('已从收藏中移除')
+				} else {
+					await addSongToUserCollectionsAction(songId)
+					setIsCollected(true)
+					toast.success('已将这首歌加入收藏')
 				}
-
-				setIsCollected(Boolean(payload.isCollected))
-
-				toast.success(
-					payload.isCollected ? '已将这首歌加入收藏' : '已从收藏中移除'
-				)
 			} catch (error) {
 				toast.error((error as Error).message ?? '收藏操作失败，请稍后重试')
 			}
@@ -54,7 +48,6 @@ const CollectToggleButton = ({
 			aria-label="Toggle collected"
 			onClick={handleToggle}
 			disabled={isPending}
-			// variant="outline"
 			defaultChecked={isCollected}
 			size="sm"
 			className={cn(

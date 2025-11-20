@@ -1,6 +1,11 @@
 'use server'
 
 import { initialUser } from '@/lib/clerk-auth'
+import {
+	addSongToCollection,
+	removeSongFromCollection,
+	CollectionUnauthorizedError,
+} from '@/lib/collections'
 import { prisma } from '@/lib/prisma'
 import type { CollectionSong } from '@/types'
 
@@ -48,4 +53,22 @@ export async function getUserCollectionsAction(): Promise<
 	}
 
 	return loadCollectionsForUser(user.id)
+}
+
+export async function addSongToUserCollectionsAction(songId: string) {
+	const user = await initialUser()
+	if (!user) {
+		throw new CollectionUnauthorizedError('未登录')
+	}
+
+	await addSongToCollection(user.id, songId)
+}
+
+export async function removeSongFromUserCollectionsAction(songId: string) {
+	const user = await initialUser()
+	if (!user) {
+		throw new CollectionUnauthorizedError('未登录')
+	}
+
+	await removeSongFromCollection(user.id, songId)
 }
