@@ -17,7 +17,7 @@ export async function fetchLyricsFromPath(path: string) {
 			...(token ? { Authorization: `Bearer ${token}` } : {}),
 		},
 		next: {
-			revalidate: 0,
+			revalidate: 86400,
 		},
 	})
 

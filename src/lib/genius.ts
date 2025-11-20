@@ -28,7 +28,7 @@ export async function searchGeniusSongs(
 				Authorization: `Bearer ${token}`,
 			},
 			next: {
-				revalidate: 0,
+				revalidate: 86400,
 			},
 		}
 	)
@@ -82,7 +82,7 @@ export async function fetchGeniusSongDetails(
 			Authorization: `Bearer ${token}`,
 		},
 		next: {
-			revalidate: 0,
+			revalidate: 86400,
 		},
 	})
 
@@ -128,7 +128,7 @@ export async function fetchGeniusReferents(
 			Authorization: `Bearer ${token}`,
 		},
 		next: {
-			revalidate: 0,
+			revalidate: 86400,
 		},
 	})
 

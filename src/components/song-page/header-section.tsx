@@ -38,7 +38,7 @@ async function fetchSongDetails(path: string) {
 const cachedFetchSongDetails = unstable_cache(
 	fetchSongDetails,
 	['song-details'],
-	{ revalidate: 3600 }
+	{ revalidate: 86400 }
 )
 
 type DetailsData = {
