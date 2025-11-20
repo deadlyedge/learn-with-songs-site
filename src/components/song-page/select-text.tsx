@@ -6,7 +6,7 @@ import {
 	vocabularyEntryExistsAction,
 	addVocabularyEntryAction,
 	updateVocabularyEntryAction,
-} from '@/app/actions/vocabulary'
+} from '@/actions/vocabulary'
 import {
 	VocabularyDuplicateError,
 	VocabularyPayloadError,

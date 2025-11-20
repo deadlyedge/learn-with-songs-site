@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import type { FeaturedSong } from '@/types'
-import { getFeaturedSongs } from '@/lib/api/app-data'
+import { getFeaturedSongsAction } from '@/actions/featured-songs'
 
 function SongListItem({
 	song,
@@ -50,7 +50,7 @@ function SongListItem({
 }
 
 export async function FeaturedSongs() {
-	const featuredSongs = await getFeaturedSongs()
+	const featuredSongs = await getFeaturedSongsAction()
 	const numberFormatter = new Intl.NumberFormat('zh-CN')
 
 	if (featuredSongs.length === 0) {

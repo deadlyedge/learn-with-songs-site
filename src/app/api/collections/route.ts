@@ -6,7 +6,7 @@ import {
 	removeSongFromCollection,
 	CollectionNotFoundError,
 } from '@/lib/collections'
-import { prisma } from '@/lib/prisma'
+import { loadCollectionsForUser } from '@/actions/collections'
 
 const parseBody = async (request: NextRequest) => {
 	try {
@@ -27,55 +27,19 @@ const ensureUser = async () => {
 	return user
 }
 
-const mapCollectionSong = (song: {
-	id: string
-	title: string
-	artist: string
-	album: string | null
-	artworkUrl: string | null
-	releaseDate: Date | null
-	geniusPath: string | null
-	url: string | null
-}) => ({
-	id: song.id,
-	title: song.title,
-	artist: song.artist,
-	album: song.album,
-	artworkUrl: song.artworkUrl,
-	releaseDate: song.releaseDate ? song.releaseDate.toISOString() : null,
-	geniusPath: song.geniusPath,
-	url: song.url,
-})
-
 export async function GET() {
 	const user = await ensureUser()
 	if (!user) {
-		return NextResponse.json({ error: '未登录' }, { status: 401 })
+		return NextResponse.json({ error: 'δ��¼' }, { status: 401 })
 	}
 
 	try {
-		const dbUser = await prisma.user.findUnique({
-			where: { id: user.id },
-			include: {
-				collections: {
-					orderBy: { title: 'asc' },
-				},
-			},
-		})
-
-		if (!dbUser) {
-			return NextResponse.json(
-				{ error: '未找到用户' },
-				{ status: 404 }
-			)
-		}
-
-		const collections = dbUser.collections.map(mapCollectionSong)
+		const collections = await loadCollectionsForUser(user.id)
 		return NextResponse.json({ collections })
 	} catch (error) {
 		console.error('Failed to fetch collections', error)
 		return NextResponse.json(
-			{ error },
+			{ error: '�޿���ȡ�ղؼ�¼' },
 			{ status: 500 }
 		)
 	}
@@ -92,7 +56,7 @@ export async function POST(request: NextRequest) {
 
 	const user = await ensureUser()
 	if (!user) {
-		return NextResponse.json({ error: '未登录' }, { status: 401 })
+		return NextResponse.json({ error: 'δ��¼' }, { status: 401 })
 	}
 
 	try {
@@ -104,7 +68,7 @@ export async function POST(request: NextRequest) {
 		}
 		console.error('Failed to add collection:', error)
 		return NextResponse.json(
-			{ error: '收藏操作失败，请稍后重试' },
+			{ error: '�ղز���ʧ�ܣ����Ժ�����' },
 			{ status: 500 }
 		)
 	}
@@ -121,7 +85,7 @@ export async function DELETE(request: NextRequest) {
 
 	const user = await ensureUser()
 	if (!user) {
-		return NextResponse.json({ error: '未登录' }, { status: 401 })
+		return NextResponse.json({ error: 'δ��¼' }, { status: 401 })
 	}
 
 	try {
@@ -133,7 +97,7 @@ export async function DELETE(request: NextRequest) {
 		}
 		console.error('Failed to remove collection:', error)
 		return NextResponse.json(
-			{ error: '取消收藏失败，请稍后重试' },
+			{ error: 'ȡ���ղ�ʧ�ܣ����Ժ�����' },
 			{ status: 500 }
 		)
 	}

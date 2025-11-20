@@ -1,14 +1,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { getUserCollections } from '@/lib/api/app-data'
+import { getUserCollectionsAction } from '@/actions/collections'
 import { normalizeSongPath } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 export default async function CollectionsPage() {
-	const collections = await getUserCollections()
+	const collections = await getUserCollectionsAction()
 
-	if (collections === null) {
+	if (!collections) {
 		return (
 			<div className="p-4 text-sm text-muted-foreground">
 				用户信息尚未同步，请刷新页面
