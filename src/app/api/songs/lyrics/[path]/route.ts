@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
 import { splitLyrics } from '@/lib/utils'
+import { isDbResourceStale } from '@/lib/refetch'
 
 export async function GET(
 	request: NextRequest,
@@ -28,7 +30,10 @@ export async function GET(
 		let lyricRecord = songRecord.lyrics
 		let lyricsError: string | null = null
 
-		if (!lyricRecord) {
+		const needsRefresh =
+			!lyricRecord || isDbResourceStale(lyricRecord.updatedAt, 'LYRICS')
+
+		if (needsRefresh) {
 			try {
 				const fetchedLyrics = await fetchLyricsFromPath(geniusPath)
 				lyricRecord = await prisma.lyric.upsert({
@@ -46,7 +51,7 @@ export async function GET(
 				})
 			} catch (error) {
 				console.error('Failed to fetch lyrics', error)
-				lyricsError = '歌词拉取失败，请稍后再试。'
+				lyricsError = '�����ȡʧ�ܣ����Ժ����ԡ�'
 			}
 		}
 
@@ -64,3 +69,4 @@ export async function GET(
 		)
 	}
 }
+

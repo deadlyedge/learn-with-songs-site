@@ -143,9 +143,14 @@ export const mapDbReferentsToNormalized = (
 	}))
 }
 
+type CacheReferentsOptions = {
+	replaceExisting?: boolean
+}
+
 export async function cacheReferentsForSong(
 	songId: string,
-	referents: NormalizedReferent[]
+	referents: NormalizedReferent[],
+	options: CacheReferentsOptions = {}
 ) {
 	const baseNow = new Date()
 
@@ -157,13 +162,19 @@ export async function cacheReferentsForSong(
 		return
 	}
 
-	const existing = await prisma.referent.findFirst({
-		where: { songId },
-		select: { id: true },
-	})
+	if (options.replaceExisting) {
+		await prisma.referent.deleteMany({
+			where: { songId },
+		})
+	} else {
+		const existing = await prisma.referent.findFirst({
+			where: { songId },
+			select: { id: true },
+		})
 
-	if (existing) {
-		return
+		if (existing) {
+			return
+		}
 	}
 
 	const createOperations = referents.map((referent) => {

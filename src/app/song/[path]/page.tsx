@@ -3,6 +3,7 @@ import { HeaderSection } from '@/components/song-page/header-section'
 import { LyricsSection } from '@/components/song-page/lyrics-section'
 import { AnnotationsSection } from '@/components/song-page/annotations-section'
 import { SelectText } from '@/components/song-page/select-text'
+import { getSongDetails } from '@/lib/api/song-data'
 
 type SongPageProps = {
 	params: Promise<{
@@ -53,13 +54,8 @@ async function SongDetailContent({ params }: SongPageProps) {
 	// Fetch details to get songId
 	let songId: string | undefined
 	try {
-		const detailsResponse = await fetch(
-			`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/songs/details/${path}`
-		)
-		if (detailsResponse.ok) {
-			const data = await detailsResponse.json()
-			songId = data.songId
-		}
+		const details = await getSongDetails(path)
+		songId = details.songId
 	} catch (error) {
 		console.error('Failed to fetch song details for coordination:', error)
 	}

@@ -97,12 +97,17 @@ const buildUpdateData = (
 	return data
 }
 
+export type EnsureSongDetailsOptions = {
+	forceRefresh?: boolean
+}
+
 export async function ensureSongDetails(
-	song: Song
+	song: Song,
+	options: EnsureSongDetailsOptions = {}
 ): Promise<{ song: Song; details: GeniusSongInfo | null }> {
 	const cached = toGeniusSongInfo(song.details)
 
-	if (cached) {
+	if (cached && !options.forceRefresh) {
 		return { song, details: cached }
 	}
 
@@ -126,7 +131,8 @@ export async function ensureSongDetails(
 }
 
 export async function ensureSongDetailsByGeniusId(
-	geniusId: number | string
+	geniusId: number | string,
+	options: EnsureSongDetailsOptions = {}
 ): Promise<{ song: Song; details: GeniusSongInfo | null } | null> {
 	const normalized = normalizeGeniusId(geniusId)
 
@@ -142,5 +148,5 @@ export async function ensureSongDetailsByGeniusId(
 		return null
 	}
 
-	return ensureSongDetails(song)
+	return ensureSongDetails(song, options)
 }

@@ -6,6 +6,7 @@ import {
 	removeSongFromCollection,
 	CollectionNotFoundError,
 } from '@/lib/collections'
+import { prisma } from '@/lib/prisma'
 
 const parseBody = async (request: NextRequest) => {
 	try {
@@ -24,6 +25,60 @@ const ensureUser = async () => {
 		return null
 	}
 	return user
+}
+
+const mapCollectionSong = (song: {
+	id: string
+	title: string
+	artist: string
+	album: string | null
+	artworkUrl: string | null
+	releaseDate: Date | null
+	geniusPath: string | null
+	url: string | null
+}) => ({
+	id: song.id,
+	title: song.title,
+	artist: song.artist,
+	album: song.album,
+	artworkUrl: song.artworkUrl,
+	releaseDate: song.releaseDate ? song.releaseDate.toISOString() : null,
+	geniusPath: song.geniusPath,
+	url: song.url,
+})
+
+export async function GET() {
+	const user = await ensureUser()
+	if (!user) {
+		return NextResponse.json({ error: '未登录' }, { status: 401 })
+	}
+
+	try {
+		const dbUser = await prisma.user.findUnique({
+			where: { id: user.id },
+			include: {
+				collections: {
+					orderBy: { title: 'asc' },
+				},
+			},
+		})
+
+		if (!dbUser) {
+			return NextResponse.json(
+				{ error: '未找到用户' },
+				{ status: 404 }
+			)
+		}
+
+		const collections = dbUser.collections.map(mapCollectionSong)
+		return NextResponse.json({ collections })
+	} catch (error) {
+		console.error('Failed to fetch collections', error)
+		return NextResponse.json(
+			{ error },
+			{ status: 500 }
+		)
+	}
 }
 
 export async function POST(request: NextRequest) {

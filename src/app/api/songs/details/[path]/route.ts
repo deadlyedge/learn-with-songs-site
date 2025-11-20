@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { ensureSongDetails } from '@/lib/song-details'
+import { isDbResourceStale } from '@/lib/refetch'
 // import { hexToRgb01 } from '@/lib/utils'
 import type { GeniusSongInfo } from '@/types/songsAPI'
 
@@ -20,16 +21,25 @@ export async function GET(
 			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
+		const shouldRefreshDetails = isDbResourceStale(
+			songRecord.detailsFetchedAt,
+			'SONG_DETAILS'
+		)
+
 		let song = songRecord
 
-		try {
-			const { song: syncedSong } = await ensureSongDetails(songRecord)
-			song = {
-				...songRecord,
-				...syncedSong,
+		if (shouldRefreshDetails) {
+			try {
+				const { song: syncedSong } = await ensureSongDetails(songRecord, {
+					forceRefresh: true,
+				})
+				song = {
+					...songRecord,
+					...syncedSong,
+				}
+			} catch (error) {
+				console.error('Failed to sync song details', error)
 			}
-		} catch (error) {
-			console.error('Failed to sync song details', error)
 		}
 
 		const details = (song.details ?? null) as GeniusSongInfo | null

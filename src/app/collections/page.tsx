@@ -1,35 +1,20 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { currentUser } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/prisma'
+import { getUserCollections } from '@/lib/api/app-data'
 import { normalizeSongPath } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 export default async function CollectionsPage() {
-	const user = await currentUser()
-	if (!user) {
-		return <div className="p-4 text-sm text-muted-foreground">请先登录</div>
-	}
+	const collections = await getUserCollections()
 
-	const dbUser = await prisma.user.findUnique({
-		where: { clerkId: user.id },
-		include: {
-			collections: {
-				orderBy: { title: 'asc' },
-			},
-		},
-	})
-
-	if (!dbUser) {
+	if (collections === null) {
 		return (
 			<div className="p-4 text-sm text-muted-foreground">
 				用户信息尚未同步，请刷新页面
 			</div>
 		)
 	}
-
-	const collections = dbUser.collections ?? []
 
 	if (collections.length === 0) {
 		return (
@@ -69,6 +54,7 @@ export default async function CollectionsPage() {
 						: null
 					const normalizedPath = normalizeSongPath(song.geniusPath ?? undefined)
 					const hasSongPage = Boolean(normalizedPath)
+					const releaseDateIso = song.releaseDate ?? undefined
 
 					return (
 						<article
@@ -103,7 +89,7 @@ export default async function CollectionsPage() {
 									{releaseYear ? (
 										<time
 											className="text-muted-foreground/80 text-xs"
-											dateTime={song.releaseDate?.toISOString()}>
+											dateTime={releaseDateIso}>
 											发行：{releaseYear}
 										</time>
 									) : null}

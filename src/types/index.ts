@@ -37,3 +37,14 @@ export type FeaturedSong = {
 	pageviews: number
 	geniusPath: string
 }
+
+export type CollectionSong = {
+	id: string
+	title: string
+	artist: string
+	album?: string | null
+	artworkUrl?: string | null
+	releaseDate?: string | null
+	geniusPath?: string | null
+	url?: string | null
+}

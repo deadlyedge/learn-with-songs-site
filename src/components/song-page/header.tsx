@@ -125,7 +125,7 @@ export const Header = ({
 						</div>
 					) : null}
 				</div>
-				<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-amber-100/80 p-2 text-sm text-shadow-none">
+				<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-white/80 p-2 text-sm text-shadow-none">
 					{headerContents.description ? (
 						<div
 							className={cn(

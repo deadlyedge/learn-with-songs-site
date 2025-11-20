@@ -7,7 +7,10 @@ export const DB_REFETCH_STRATEGY = {
 	SONG_DETAILS: 'half-year',
 	LYRICS: 'half-year',
 	REFERENTS: '3months',
-}
+} as const
+
+export type DbRefetchResource = keyof typeof DB_REFETCH_STRATEGY
+export type DbRefetchStrategy = (typeof DB_REFETCH_STRATEGY)[DbRefetchResource]
 
 export const DEFAULT_CONTAINER_ID = 'lyrics'
 export const MAX_SELECTION_LENGTH = 24

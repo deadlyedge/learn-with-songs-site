@@ -1,64 +1,8 @@
-import { cacheLife } from 'next/cache'
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { prisma } from '@/lib/prisma'
-import { FeaturedSong } from '@/types'
-import { GeniusSongInfo } from '@/types/songsAPI'
-
-const getFeaturedSongs = async (): Promise<FeaturedSong[]> => {
-	'use cache'
-	cacheLife('hours')
-
-	const songs = await prisma.song.findMany({
-		where: {
-			lyrics: {
-				isNot: null,
-			},
-		},
-		select: {
-			id: true,
-			title: true,
-			artist: true,
-			album: true,
-			artworkUrl: true,
-			geniusPath: true,
-			details: true,
-		},
-		take: 20,
-	})
-
-	const featuredSongs = songs
-		.filter((song) => {
-			const details = (song.details ?? null) as GeniusSongInfo | null
-			const pageviews = details?.stats?.pageviews
-			return (
-				details &&
-				song.geniusPath &&
-				pageviews !== undefined &&
-				pageviews !== null &&
-				typeof pageviews === 'number'
-			)
-		})
-		.map((song) => {
-			const details = song.details! as GeniusSongInfo
-			const pageviews = details.stats!.pageviews!
-			return {
-				id: song.id,
-				title: song.title,
-				artist: song.artist,
-				album: song.album ?? undefined,
-				artworkUrl: song.artworkUrl ?? undefined,
-				pageviews,
-				geniusPath: song.geniusPath!,
-			}
-		})
-		.sort(() => Math.random() - 0.5) // Randomize
-		.slice(0, 6) // Take 6 random from top 20
-		.sort((a, b) => b.pageviews - a.pageviews)
-
-	return featuredSongs
-}
+import type { FeaturedSong } from '@/types'
+import { getFeaturedSongs } from '@/lib/api/app-data'
 
 function SongListItem({
 	song,

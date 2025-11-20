@@ -7,6 +7,7 @@ import {
 	normalizeReferents,
 	type NormalizedReferent,
 } from '@/lib/referents'
+import { isDbResourceStale } from '@/lib/refetch'
 
 export async function GET(
 	request: NextRequest,
@@ -27,26 +28,39 @@ export async function GET(
 		})
 
 		if (!songRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		let referents: NormalizedReferent[] = []
 		const cachedReferents = songRecord.referents ?? []
 		const hasCachedReferents = cachedReferents.length > 0
-		const hasFetchedReferents = Boolean(songRecord.referentsFetchedAt)
+		const needsRefresh = isDbResourceStale(
+			songRecord.referentsFetchedAt,
+			'REFERENTS'
+		)
 
-		if (hasCachedReferents) {
+		if (hasCachedReferents && !needsRefresh) {
 			referents = mapDbReferentsToNormalized(cachedReferents)
-		} else if (songRecord.geniusId && !hasFetchedReferents) {
+		}
+
+		const shouldFetch =
+			songRecord.geniusId && (!hasCachedReferents || needsRefresh)
+
+		if (shouldFetch) {
 			try {
-				const referentsResponse = await fetchGeniusReferents(songRecord.geniusId)
+				if (!songRecord.geniusId) return NextResponse.json({ referents: [] })
+				const referentsResponse = await fetchGeniusReferents(
+					songRecord.geniusId
+				)
 				referents = normalizeReferents(referentsResponse)
-				await cacheReferentsForSong(songRecord.id, referents)
+				await cacheReferentsForSong(songRecord.id, referents, {
+					replaceExisting: Boolean(hasCachedReferents),
+				})
 			} catch (error) {
 				console.error('Failed to fetch Genius referents', error)
+				if (hasCachedReferents) {
+					referents = mapDbReferentsToNormalized(cachedReferents)
+				}
 			}
 		}
 
