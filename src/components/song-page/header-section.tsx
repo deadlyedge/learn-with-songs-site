@@ -1,6 +1,6 @@
 import { Header } from './header'
 import { initialUser } from '@/lib/clerk-auth'
-import { isSongCollectedByUserId } from '@/lib/collections'
+import { isSongCollectedByUserId } from '@/actions/collections'
 import { getSongDetails } from '@/lib/api/song-data'
 
 export async function HeaderSection({ path }: { path: string }) {

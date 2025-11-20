@@ -1,13 +1,16 @@
 'use server'
 
 import { initialUser } from '@/lib/clerk-auth'
-import {
-	addSongToCollection,
-	removeSongFromCollection,
-	CollectionUnauthorizedError,
-} from '@/lib/collections'
+// import {
+// 	addSongToCollection,
+// 	removeSongFromCollection,
+// } from '@/lib/collections'
 import { prisma } from '@/lib/prisma'
 import type { CollectionSong } from '@/types'
+
+class CollectionError extends Error {}
+class CollectionUnauthorizedError extends CollectionError {}
+class CollectionNotFoundError extends CollectionError {}
 
 const mapCollectionSong = (song: {
 	id: string
@@ -29,10 +32,32 @@ const mapCollectionSong = (song: {
 	url: song.url,
 })
 
-export async function loadCollectionsForUser(userId: string) {
+// export async function loadCollectionsForUser(userId: string) {
+// 	const collections = await prisma.user
+// 		.findUnique({
+// 			where: { id: userId },
+// 			include: {
+// 				collections: {
+// 					orderBy: { title: 'asc' },
+// 				},
+// 			},
+// 		})
+// 		.then((user) => user?.collections ?? [])
+
+// 	return collections.map(mapCollectionSong)
+// }
+
+export async function getUserCollectionsAction(): Promise<
+	CollectionSong[] | null
+> {
+	const user = await initialUser()
+	if (!user) {
+		throw new CollectionUnauthorizedError('未登录')
+	}
+
 	const collections = await prisma.user
 		.findUnique({
-			where: { id: userId },
+			where: { id: user.id },
 			include: {
 				collections: {
 					orderBy: { title: 'asc' },
@@ -44,24 +69,29 @@ export async function loadCollectionsForUser(userId: string) {
 	return collections.map(mapCollectionSong)
 }
 
-export async function getUserCollectionsAction(): Promise<
-	CollectionSong[] | null
-> {
-	const user = await initialUser()
-	if (!user) {
-		return null
-	}
-
-	return loadCollectionsForUser(user.id)
-}
-
 export async function addSongToUserCollectionsAction(songId: string) {
 	const user = await initialUser()
 	if (!user) {
 		throw new CollectionUnauthorizedError('未登录')
 	}
 
-	await addSongToCollection(user.id, songId)
+	const song = await prisma.song.findUnique({
+		where: { id: songId },
+		select: { id: true },
+	})
+
+	if (!song) {
+		throw new CollectionNotFoundError('歌曲不存在')
+	}
+
+	await prisma.user.update({
+		where: { id: user.id },
+		data: {
+			collections: {
+				connect: { id: songId },
+			},
+		},
+	})
 }
 
 export async function removeSongFromUserCollectionsAction(songId: string) {
@@ -70,5 +100,41 @@ export async function removeSongFromUserCollectionsAction(songId: string) {
 		throw new CollectionUnauthorizedError('未登录')
 	}
 
-	await removeSongFromCollection(user.id, songId)
+	const song = await prisma.song.findUnique({
+		where: { id: songId },
+		select: { id: true },
+	})
+
+	if (!song) {
+		throw new CollectionNotFoundError('歌曲不存在')
+	}
+
+	await prisma.user.update({
+		where: { id: user.id },
+		data: {
+			collections: {
+				disconnect: { id: songId },
+			},
+		},
+	})
+}
+
+export async function isSongCollectedByUserId(userId: string, songId: string) {
+	// const user = await initialUser()
+	// if (!user) {
+	// 	throw new CollectionUnauthorizedError('未登录')
+	// }
+
+	const count = await prisma.user.count({
+		where: {
+			id: userId,
+			collections: {
+				some: {
+					id: songId,
+				},
+			},
+		},
+	})
+
+	return count > 0
 }
