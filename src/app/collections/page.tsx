@@ -1,12 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { getUserCollectionsAction } from '@/actions/collections'
+import { getUserCollections } from '@/actions/collections'
 import { normalizeSongPath } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 export default async function CollectionsPage() {
-	const collections = await getUserCollectionsAction()
+	const collections = await getUserCollections()
 
 	if (!collections) {
 		return (

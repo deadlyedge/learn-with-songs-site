@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Toggle } from '../ui/toggle'
 import { cn } from '@/lib/utils'
 import {
-	addSongToUserCollectionsAction,
-	removeSongFromUserCollectionsAction,
+	addSongToUserCollections,
+	removeSongFromUserCollections,
 } from '@/actions/collections'
 
 type CollectButtonProps = {
@@ -29,11 +29,11 @@ const CollectToggleButton = ({
 		startTransition(async () => {
 			try {
 				if (isCollected) {
-					await removeSongFromUserCollectionsAction(songId)
+					await removeSongFromUserCollections(songId)
 					setIsCollected(false)
 					toast.success('已从收藏中移除')
 				} else {
-					await addSongToUserCollectionsAction(songId)
+					await addSongToUserCollections(songId)
 					setIsCollected(true)
 					toast.success('已将这首歌加入收藏')
 				}

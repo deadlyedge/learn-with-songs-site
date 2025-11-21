@@ -60,9 +60,7 @@ const mapCollectionSong = (song: {
  * @returns 用户收藏的歌曲数组，未登录则返回null
  * @throws CollectionUnauthorizedError 如果用户未授权
  */
-export async function getUserCollectionsAction(): Promise<
-	CollectionSong[] | null
-> {
+export async function getUserCollections(): Promise<CollectionSong[] | null> {
 	const user = await ensureLoggedInUser()
 
 	const collections = await prisma.user
@@ -85,7 +83,7 @@ export async function getUserCollectionsAction(): Promise<
  * @throws CollectionUnauthorizedError 如果用户未登录
  * @throws CollectionNotFoundError 如果歌曲不存在
  */
-export async function addSongToUserCollectionsAction(songId: string) {
+export async function addSongToUserCollections(songId: string) {
 	const user = await ensureLoggedInUser()
 	await validateSongExists(songId)
 
@@ -105,7 +103,7 @@ export async function addSongToUserCollectionsAction(songId: string) {
  * @throws CollectionUnauthorizedError 如果用户未登录
  * @throws CollectionNotFoundError 如果歌曲不存在
  */
-export async function removeSongFromUserCollectionsAction(songId: string) {
+export async function removeSongFromUserCollections(songId: string) {
 	const user = await ensureLoggedInUser()
 	await validateSongExists(songId)
 

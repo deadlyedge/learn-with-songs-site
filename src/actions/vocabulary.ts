@@ -149,11 +149,9 @@ const getVocabularyEntry = async (payload: Partial<VocabularyBase>) => {
  * @throws VocabularyUnauthorizedError 如果用户未授权
  * @throws VocabularyPayloadError 如果payload无效
  */
-export async function vocabularyEntryExistsAction(
+export async function vocabularyEntryExists(
 	payload: Partial<VocabularyEntryData>
-): Promise<
-	{ entry: VocabularyEntryData | null }
-> {
+): Promise<{ entry: VocabularyEntryData | null }> {
 	const entry = await getVocabularyEntry(payload)
 	if (!entry) {
 		return { entry: null }
@@ -178,7 +176,7 @@ export async function vocabularyEntryExistsAction(
  * @throws VocabularyDuplicateError 如果条目已存在
  * @throws VocabularyPayloadError 如果payload无效
  */
-export async function addVocabularyEntryAction(
+export async function addVocabularyEntry(
 	payload: Partial<VocabularyEntryData>
 ) {
 	const validPayload = validateVocabularyPayload(payload)
@@ -217,7 +215,7 @@ export async function addVocabularyEntryAction(
  * @throws VocabularyNotFoundError 如果条目不存在
  * @throws VocabularyPayloadError 如果payload无效
  */
-export async function updateVocabularyEntryAction(
+export async function updateVocabularyEntry(
 	payload: Partial<VocabularyEntryData>
 ) {
 	const validPayload = validateVocabularyPayload(payload)

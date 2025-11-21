@@ -61,7 +61,7 @@ const mapSongToFeatured = (song: {
  * 从数据库中随机选择并按页面浏览量排序返回最受欢迎的歌曲
  * @returns 精选歌曲数组
  */
-export async function getFeaturedSongsAction(): Promise<FeaturedSong[]> {
+export async function getFeaturedSongs(): Promise<FeaturedSong[]> {
 	'use cache'
 	cacheLife('hours')
 

@@ -3,9 +3,9 @@
 import { useEffect, useReducer } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
 import {
-	vocabularyEntryExistsAction,
-	addVocabularyEntryAction,
-	updateVocabularyEntryAction,
+	vocabularyEntryExists,
+	addVocabularyEntry,
+	updateVocabularyEntry,
 } from '@/actions/vocabulary'
 import {
 	VocabularyDuplicateError,
@@ -254,7 +254,7 @@ export const SelectText = ({
 
 			if (isSignedIn) {
 				try {
-					const { entry } = await vocabularyEntryExistsAction({
+					const { entry } = await vocabularyEntryExists({
 						word: state.selection!.word,
 						line: state.selection!.line,
 						lineNumber: state.selection!.lineNumber,
@@ -352,7 +352,7 @@ export const SelectText = ({
 		dispatch({ type: 'SET_SAVING', payload: true })
 
 		try {
-			await addVocabularyEntryAction({
+			await addVocabularyEntry({
 				word: state.selection.word,
 				line: state.selection.line,
 				lineNumber: state.selection.lineNumber,
@@ -417,7 +417,7 @@ export const SelectText = ({
 			const normalizedSongPath = normalizeSongPath(songPath)
 
 			try {
-				await updateVocabularyEntryAction({
+				await updateVocabularyEntry({
 					word: state.selection.word,
 					line: state.selection.line,
 					lineNumber: state.selection.lineNumber,

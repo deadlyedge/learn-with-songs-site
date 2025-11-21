@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import type { FeaturedSong } from '@/types'
-import { getFeaturedSongsAction } from '@/actions/featured-songs'
+import { getFeaturedSongs } from '@/actions/featured-songs'
 import { Suspense } from 'react'
 
 function SongListItem({
@@ -51,7 +51,7 @@ function SongListItem({
 }
 
 export async function FeaturedSongs() {
-	const featuredSongs = await getFeaturedSongsAction()
+	const featuredSongs = await getFeaturedSongs()
 	const numberFormatter = new Intl.NumberFormat('zh-CN')
 
 	if (featuredSongs.length === 0) {
