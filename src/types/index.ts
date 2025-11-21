@@ -62,3 +62,16 @@ export type HeaderContents = {
 	artworkUrl: string
 	backgroundColor: string[]
 }
+
+export type VocabularyEntryWithSong = {
+	id: string
+	word: string
+	line: string
+	lineNumber: number | null
+	result: string
+	songPath: string
+	songTitle: string
+	songArtworkUrl: string | null
+	mastered: boolean
+	songId: string
+}

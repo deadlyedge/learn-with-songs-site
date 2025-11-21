@@ -4,11 +4,11 @@ import { useEffect, useReducer } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
 import {
 	vocabularyEntryExists,
-	addVocabularyEntry,
+	// addVocabularyEntry,
 	updateVocabularyEntry,
 } from '@/actions/vocabulary'
 import {
-	VocabularyDuplicateError,
+	// VocabularyDuplicateError,
 	VocabularyPayloadError,
 	VocabularyUnauthorizedError,
 } from '@/lib/vocabulary'
@@ -34,6 +34,7 @@ import {
 	findLineElement,
 	normalizeSongPath,
 } from '@/lib/utils'
+import { useUserDataStore } from '@/stores/user-data'
 
 type SelectionInfo = {
 	word: string
@@ -136,6 +137,7 @@ export const SelectText = ({
 }: SelectTextProps) => {
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const { isSignedIn } = useUser()
+	const { addVocabularyItem } = useUserDataStore()
 
 	// const resetSelection = () => {
 	// 	dispatch({ type: 'RESET' })
@@ -352,7 +354,7 @@ export const SelectText = ({
 		dispatch({ type: 'SET_SAVING', payload: true })
 
 		try {
-			await addVocabularyEntry({
+			await addVocabularyItem({
 				word: state.selection.word,
 				line: state.selection.line,
 				lineNumber: state.selection.lineNumber,
@@ -362,21 +364,8 @@ export const SelectText = ({
 			})
 			toast.success('已加入我的生词本')
 		} catch (error) {
-			if (error instanceof VocabularyDuplicateError) {
-				toast.error(error.message)
-				return
-			}
-			if (error instanceof VocabularyUnauthorizedError) {
-				toast.error(error.message)
-				return
-			}
-			if (error instanceof VocabularyPayloadError) {
-				toast.error(error.message)
-				return
-			}
-			toast.error(
-				error instanceof Error ? error.message : '加入生词本失败，请稍后重试'
-			)
+			// Error is already handled by the store
+			toast.error(error instanceof Error ? error.message : '加入生词本失败，请稍后重试')
 		} finally {
 			dispatch({ type: 'SET_SAVING', payload: false })
 		}

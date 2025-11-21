@@ -1,17 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import { HeartIcon } from 'lucide-react'
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { Toggle } from '../ui/toggle'
 import { cn } from '@/lib/utils'
-import {
-	addSongToUserCollections,
-	removeSongFromUserCollections,
-} from '@/actions/collections'
+import { useUserDataStore } from '@/stores/user-data'
 
 type CollectButtonProps = {
 	songId: string
@@ -20,43 +14,34 @@ type CollectButtonProps = {
 
 const CollectToggleButton = ({
 	songId,
-	initialCollected,
-}: CollectButtonProps) => {
-	const [isCollected, setIsCollected] = useState(Boolean(initialCollected))
-	const [isPending, startTransition] = useTransition()
+}: // initialCollected,
+CollectButtonProps) => {
+	const { collections, addToCollections, removeFromCollections, loading } =
+		useUserDataStore()
+	const isCollected = collections.some((song) => song.id === songId)
 
-	const handleToggle = () => {
-		startTransition(async () => {
-			try {
-				if (isCollected) {
-					await removeSongFromUserCollections(songId)
-					setIsCollected(false)
-					toast.success('已从收藏中移除')
-				} else {
-					await addSongToUserCollections(songId)
-					setIsCollected(true)
-					toast.success('已将这首歌加入收藏')
-				}
-			} catch (error) {
-				toast.error((error as Error).message ?? '收藏操作失败，请稍后重试')
-			}
-		})
+	const handleToggle = async () => {
+		if (isCollected) {
+			await removeFromCollections(songId)
+		} else {
+			await addToCollections(songId)
+		}
 	}
 
 	return (
-		<Toggle
+		<Button
 			aria-label="Toggle collected"
 			onClick={handleToggle}
-			disabled={isPending}
-			defaultChecked={isCollected}
+			disabled={loading}
+			variant="ghost"
 			size="sm"
 			className={cn(
 				'gap-1.5 text-xs bg-transparent rounded-lg',
-				isCollected ? '*:[svg]:fill-destructive *:[svg]:stroke-destructive' : ''
+				isCollected ? 'text-destructive hover:text-destructive' : ''
 			)}>
-			<HeartIcon />
-			{isPending ? '处理中...' : isCollected ? '已收藏' : '收藏'}
-		</Toggle>
+			<HeartIcon className={cn(isCollected ? 'fill-destructive' : '')} />
+			{loading ? '处理中...' : isCollected ? '已收藏' : '收藏'}
+		</Button>
 	)
 }
 

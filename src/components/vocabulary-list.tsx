@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -11,65 +10,30 @@ import { Button } from './ui/button'
 import { ChevronsUpDownIcon } from 'lucide-react'
 
 import { VocabularyCard } from './vocabulary-card'
-import { switchMasteredState } from '@/actions/vocabulary'
+import { useUserDataStore } from '@/stores/user-data'
 
-type VocabularyListProps = {
-	initialNewWords: VocabularyEntryWithSong[]
-	initialHistoryWords: VocabularyEntryWithSong[]
-}
-
-type VocabularyEntryWithSong = {
-	id: string
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songPath: string
-	songTitle: string
-	songArtworkUrl: string | null
-	mastered: boolean
-	songId: string
-}
-
-export const VocabularyList = ({
-	initialNewWords,
-	initialHistoryWords,
-}: VocabularyListProps) => {
-	const [words, setWords] = useState([
-		...initialNewWords,
-		...initialHistoryWords,
-	])
+export const VocabularyList = () => {
+	const { vocabulary, toggleMastered, loading } = useUserDataStore()
 	const [isOpen, setIsOpen] = useState(false)
 
 	const handleSwitchMastered = async (entryId: string) => {
-		const entry = words.find((e) => e.id === entryId)
-		if (!entry) return
-
-		const newMastered = !entry.mastered
-
-		// Optimistic update
-		setWords((prev) =>
-			prev.map((e) => (e.id === entryId ? { ...e, mastered: newMastered } : e))
-		)
-
-		try {
-			await switchMasteredState(entryId)
-			// Server action will revalidate and update the page
-		} catch (error) {
-			// Revert on error
-			setWords((prev) =>
-				prev.map((e) =>
-					e.id === entryId ? { ...e, mastered: !newMastered } : e
-				)
-			)
-			console.error('Failed to switch mastered state:', error)
-		}
+		await toggleMastered(entryId)
 	}
 
-	const currentNewWords = words.filter((e) => !e.mastered)
-	const currentHistoryWords = words.filter((e) => e.mastered)
+	const currentNewWords = vocabulary.filter((e) => !e.mastered)
+	const currentHistoryWords = vocabulary.filter((e) => e.mastered)
 
-	if (currentNewWords.length === 0 && currentHistoryWords.length === 0) {
+	if (vocabulary.length === 0 || (currentNewWords.length === 0 && currentHistoryWords.length === 0)) {
+		if (loading) {
+			return (
+				<section className="p-4">
+					<p className="text-sm text-muted-foreground">
+						正在加载生词本内容...
+					</p>
+				</section>
+			)
+		}
+
 		return (
 			<section className="p-4">
 				<p className="text-sm text-muted-foreground">

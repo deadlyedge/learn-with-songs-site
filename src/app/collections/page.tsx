@@ -1,18 +1,58 @@
+'use client'
+
+import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { getUserCollections } from '@/actions/collections'
+import { useUserDataStore } from '@/stores/user-data'
 import { normalizeSongPath } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-export default async function CollectionsPage() {
-	const collections = await getUserCollections()
+export default function CollectionsPage() {
+	const { collections, loading, error, fetchCollections } = useUserDataStore()
 
-	if (!collections) {
+	useEffect(() => {
+		// Initialize data on mount if not already loaded
+		if (collections.length === 0) {
+			fetchCollections()
+		}
+	}, [collections.length, fetchCollections])
+
+	if (loading && collections.length === 0) {
 		return (
-			<div className="p-4 text-sm text-muted-foreground">
-				用户信息尚未同步，请刷新页面
-			</div>
+			<main className="container mx-auto">
+				<header className="space-y-2 p-4">
+					<h1 className="text-3xl font-semibold">收藏的歌曲</h1>
+					<p className="text-sm text-muted-foreground">
+						展示你特别想回味的歌词，有歌词页的歌曲可以直接打开复习。
+					</p>
+				</header>
+				<div className="flex items-center justify-center p-8">
+					<div className="text-sm text-muted-foreground">正在加载收藏列表...</div>
+				</div>
+			</main>
+		)
+	}
+
+	if (error) {
+		return (
+			<main className="container mx-auto">
+				<header className="space-y-2 p-4">
+					<h1 className="text-3xl font-semibold">收藏的歌曲</h1>
+					<p className="text-sm text-muted-foreground">
+						展示你特别想回味的歌词，有歌词页的歌曲可以直接打开复习。
+					</p>
+				</header>
+				<div className="p-4">
+					<p className="text-sm text-destructive">{error}</p>
+					<button
+						onClick={fetchCollections}
+						className="text-sm text-primary hover:underline mt-2"
+					>
+						重试
+					</button>
+				</div>
+			</main>
 		)
 	}
 
