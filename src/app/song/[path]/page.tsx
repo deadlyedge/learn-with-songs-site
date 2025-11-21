@@ -52,18 +52,22 @@ async function SongDetailContent({ params }: SongPageProps) {
 	const { path } = await params
 
 	// Fetch details to get songId
-	let songId: string | undefined
-	try {
-		const details = await getSongDetails(path)
-		songId = details.songId
-	} catch (error) {
-		console.error('Failed to fetch song details for coordination:', error)
+	// let songId: string | undefined
+	// try {
+	const { songId, headerContents } = await getSongDetails(path)
+	// songId = details.songId
+	// } catch (error) {
+	// console.error('Failed to fetch song details for coordination:', error)
+	// }
+
+	if (!songId || !headerContents) {
+		return null
 	}
 
 	return (
 		<article className="space-y-6 pb-6 relative">
 			<Suspense fallback={<HeaderSkeleton />}>
-				<Header path={path} />
+				<Header songId={songId} headerContents={headerContents} />
 			</Suspense>
 
 			<section className="flex flex-col md:flex-row gap-4">
