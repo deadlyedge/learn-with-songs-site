@@ -9,30 +9,31 @@ import Iridescence from '../ui/effects/iridescence'
 
 import Markdown from 'react-markdown'
 import { CollectButton } from './collect-button'
+import { isSongCollected } from '@/actions/collections'
+import { getSongDetails } from '@/lib/api/song-data'
 
-type HeaderProps = {
-	headerContents: {
-		title: string
-		artist: string
-		album: string
-		releaseDate: string
-		description: string
-		language: string
-		contributors: string
-		pageviews: string
-		url: string
-		artworkUrl: string
-		backgroundColor: string[] //[number, number, number]
-	}
-	songId: string
-	isCollected: boolean
-}
+// type HeaderProps = {
+// 	headerContents: {
+// 		title: string
+// 		artist: string
+// 		album: string
+// 		releaseDate: string
+// 		description: string
+// 		language: string
+// 		contributors: string
+// 		pageviews: string
+// 		url: string
+// 		artworkUrl: string
+// 		backgroundColor: string[] //[number, number, number]
+// 	}
+// 	songId: string
+// 	isCollected: boolean
+// }
 
-export const Header = ({
-	headerContents,
-	songId,
-	isCollected,
-}: HeaderProps) => {
+export const Header = async ({ path }: { path: string }) => {
+	const { headerContents, songId } = await getSongDetails(path)
+	const isCollected = songId ? await isSongCollected(songId) : false
+
 	return (
 		<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 			<div className="absolute inset-0 top-0 z-[-2]">

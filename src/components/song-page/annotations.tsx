@@ -1,7 +1,5 @@
 import { fonts } from '@/lib/utils'
-import type { NormalizedReferent } from '@/lib/referents'
-// import { Card, CardContent } from '../ui/card'
-// import { ScrollArea } from '../ui/scroll-area'
+// import type { NormalizedReferent } from '@/lib/referents'
 import Markdown from 'react-markdown'
 import {
 	Accordion,
@@ -10,9 +8,11 @@ import {
 	AccordionTrigger,
 } from '../ui/accordion'
 
-type AnnotationsProps = {
-	referents: NormalizedReferent[]
-}
+import { getSongReferents } from '@/lib/api/song-data'
+
+// type AnnotationsProps = {
+// 	referents: NormalizedReferent[]
+// }
 
 const normalizeAnnotationBody = (body: string | null) => {
 	if (!body) return null
@@ -56,16 +56,17 @@ const normalizeAnnotationBody = (body: string | null) => {
 	return normalizedLines.join('\n')
 }
 
-export const Annotations = ({ referents }: AnnotationsProps) => {
+export const Annotations = async ({ songId }: { songId?: string }) => {
+	if (!songId) {
+		return null
+	}
+
+	const { referents } = await getSongReferents(songId)
 	const hasReferents = referents.length > 0
 	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
 
 	return (
-		<div className='w-full md:w-1/2 border-l pl-2'>
-			{/* <Card
-				id="float-annotations"
-				className="m-2 fixed bottom-10 left-20 right-0 h-80 md:top-80 md:left-auto md:right-2 md:h-96 md:w-1/2 md:m-0 flex flex-col gap-2 bg-white/20 shadow-2xl rounded-2xl rounded-r-sm border border-white/20 py-2 px-0 backdrop-blur-sm">
-				<CardContent className={cn('h-full', fonts.sans)}> */}
+		<div className="w-full md:w-1/2 border-l pl-2">
 			{hasReferents ? (
 				<section>
 					<h2 className="block md:hidden text-xl font-semibold px-2">
@@ -146,8 +147,6 @@ export const Annotations = ({ referents }: AnnotationsProps) => {
 					</p>
 				</div>
 			)}
-			{/* </CardContent>
-			</Card> */}
 		</div>
 	)
 }

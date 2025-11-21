@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import { HeaderSection } from '@/components/song-page/header-section'
-import { LyricsSection } from '@/components/song-page/lyrics-section'
-import { AnnotationsSection } from '@/components/song-page/annotations-section'
+import { Header } from '@/components/song-page/header'
+import { Lyric } from '@/components/song-page/lyric'
+import { Annotations } from '@/components/song-page/annotations'
 import { SelectText } from '@/components/song-page/select-text'
 import { getSongDetails } from '@/lib/api/song-data'
 
@@ -63,17 +63,17 @@ async function SongDetailContent({ params }: SongPageProps) {
 	return (
 		<article className="space-y-6 pb-6 relative">
 			<Suspense fallback={<HeaderSkeleton />}>
-				<HeaderSection path={path} />
+				<Header path={path} />
 			</Suspense>
 
 			<section className="flex flex-col md:flex-row gap-4">
 				<Suspense fallback={<LyricsSkeleton />}>
-					<LyricsSection path={path} />
+					<Lyric path={path} />
 					<SelectText songId={songId} songPath={path} />
 				</Suspense>
 
 				<Suspense fallback={<AnnotationsSkeleton />}>
-					<AnnotationsSection songId={songId} />
+					<Annotations songId={songId} />
 				</Suspense>
 			</section>
 		</article>
