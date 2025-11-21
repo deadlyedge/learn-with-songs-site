@@ -20,9 +20,6 @@ export default async function CollectionsPage() {
 		return (
 			<section className="space-y-4 p-4">
 				<header className="space-y-1">
-					<p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-						我的收藏
-					</p>
 					<h1 className="text-2xl font-semibold">还没有收藏的歌曲</h1>
 					<p className="text-sm text-muted-foreground">
 						在歌词页点击“收藏”即可将歌曲加入这里，记录你值得反复听的作品。
@@ -38,16 +35,13 @@ export default async function CollectionsPage() {
 	return (
 		<section className="space-y-6 p-4">
 			<header className="space-y-2">
-				<p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-					我的收藏
-				</p>
 				<h1 className="text-3xl font-semibold">收藏的歌曲</h1>
 				<p className="text-sm text-muted-foreground">
 					展示你特别想回味的歌词，有歌词页的歌曲可以直接打开复习。
 				</p>
 			</header>
 
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+			<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 				{collections.map((song) => {
 					const releaseYear = song.releaseDate
 						? new Date(song.releaseDate).getFullYear()

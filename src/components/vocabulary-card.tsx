@@ -5,7 +5,11 @@ import Link from 'next/link'
 import { useState } from 'react'
 import Markdown from 'react-markdown'
 
-import { FileSearchCornerIcon, ThumbsUpIcon } from 'lucide-react'
+import {
+	FileSearchCornerIcon,
+	ThumbsDownIcon,
+	ThumbsUpIcon,
+} from 'lucide-react'
 import {
 	Dialog,
 	DialogClose,
@@ -35,10 +39,15 @@ export type VocabularyEntryCardProps = {
 		songPath: string
 		songTitle: string
 		songArtworkUrl?: string | null
+		mastered: boolean
 	}
+	handleSwitchMastered: (entryId: string) => void
 }
 
-export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
+export const VocabularyCard = ({
+	entry,
+	handleSwitchMastered,
+}: VocabularyEntryCardProps) => {
 	const [open, setOpen] = useState(false)
 	const normalizedPath = entry.songPath.startsWith('/')
 		? entry.songPath
@@ -89,9 +98,22 @@ export const VocabularyCard = ({ entry }: VocabularyEntryCardProps) => {
 						<FileSearchCornerIcon />
 						复习
 					</Button>{' '}
-					<Button size="sm" variant="destructive" type="button">
-						<ThumbsUpIcon />
-						已掌握
+					<Button
+						size="sm"
+						variant="destructive"
+						type="button"
+						onClick={() => handleSwitchMastered(entry.id)}>
+						{entry.mastered ? (
+							<>
+								<ThumbsDownIcon />
+								还不熟
+							</>
+						) : (
+							<>
+								<ThumbsUpIcon />
+								已掌握
+							</>
+						)}
 					</Button>
 				</div>
 				{/* <Button size="sm" variant="secondary" type="button">

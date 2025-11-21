@@ -1,8 +1,6 @@
-import Link from 'next/link'
-
 import { currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { VocabularyCard } from '@/components/vocabulary-card'
+import { VocabularyList } from '@/components/vocabulary-list'
 
 export default async function VocabularyPage() {
 	const user = await currentUser()
@@ -29,47 +27,46 @@ export default async function VocabularyPage() {
 		orderBy: { createdAt: 'desc' },
 	})
 
-	if (vocabulary.length === 0) {
-		return (
-			<section className="p-4">
-				<h1 className="text-2xl font-semibold">我的生词本</h1>
-				<p className="text-sm text-muted-foreground">
-					目前还没有加入，去听一首歌，选中感兴趣的片段吧。
-				</p>
-			</section>
-		)
-	}
+	const transformedNewWords = vocabulary
+		.filter((entry) => entry.mastered === false)
+		.map((entry) => ({
+			id: entry.id,
+			word: entry.word,
+			line: entry.line,
+			lineNumber: entry.lineNumber,
+			result: entry.result,
+			songPath: entry.songPath,
+			songTitle: entry.song?.title ?? '歌曲',
+			songArtworkUrl: entry.song?.artworkUrl ?? null,
+			mastered: entry.mastered,
+		}))
+
+	const transformedHistoryWords = vocabulary
+		.filter((entry) => entry.mastered === true)
+		.map((entry) => ({
+			id: entry.id,
+			word: entry.word,
+			line: entry.line,
+			lineNumber: entry.lineNumber,
+			result: entry.result,
+			songPath: entry.songPath,
+			songTitle: entry.song?.title ?? '歌曲',
+			songArtworkUrl: entry.song?.artworkUrl ?? null,
+			mastered: entry.mastered,
+		}))
 
 	return (
-		<section className="space-y-6 p-4">
-			<header className="space-y-2">
+		<main className="container mx-auto">
+			<header className="space-y-2 p-4">
 				<h1 className="text-2xl font-semibold">我的生词本</h1>
 				<p className="text-sm text-muted-foreground">
 					这里展示你收藏的单词/短语，点击复习即可重新打开选中位置
 				</p>
 			</header>
-			<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-				{vocabulary.map((entry) => (
-					<VocabularyCard
-						key={entry.id}
-						entry={{
-							id: entry.id,
-							word: entry.word,
-							line: entry.line,
-							lineNumber: entry.lineNumber,
-							result: entry.result,
-							songPath: entry.songPath,
-							songTitle: entry.song?.title ?? '歌曲',
-							songArtworkUrl: entry.song?.artworkUrl ?? null,
-						}}
-					/>
-				))}
-			</div>
-			<footer className="text-xs text-muted-foreground">
-				<Link href="/songs" className="text-primary hover:underline">
-					探索更多歌曲
-				</Link>
-			</footer>
-		</section>
+			<VocabularyList
+				initialNewWords={transformedNewWords}
+				initialHistoryWords={transformedHistoryWords}
+			/>
+		</main>
 	)
 }

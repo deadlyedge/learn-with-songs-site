@@ -241,3 +241,28 @@ export async function updateVocabularyEntry(
 		},
 	})
 }
+
+import { revalidatePath } from 'next/cache'
+
+export async function switchMasteredState(entryId: string) {
+	const user = await ensureVocabularyUser()
+
+	const entry = await prisma.vocabularyEntry.findFirst({
+		where: { id: entryId, userId: user.id },
+	})
+	if (!entry) {
+		throw new VocabularyNotFoundError(ERROR_MESSAGES.ENTRY_NOT_FOUND)
+	}
+
+	const updated = await prisma.vocabularyEntry.update({
+		where: { id: entry.id },
+		data: {
+			mastered: !entry.mastered,
+			masteredAt: entry.mastered ? null : new Date(),
+		},
+	})
+
+	revalidatePath('/vocabulary')
+
+	return updated
+}
