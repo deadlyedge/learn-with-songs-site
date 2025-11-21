@@ -1,44 +1,9 @@
 import { cache } from 'react'
 
-import type { NormalizedReferent } from '@/lib/referents'
-import { fetchFromApi } from './client'
+import { getSongDetails as getSongDetailsAction } from '@/actions/details'
+import { getSongLyrics as getSongLyricsAction } from '@/actions/lyrics'
+import { getSongReferents as getSongReferentsAction } from '@/actions/referents'
 
-export type HeaderContents = {
-	title: string
-	artist: string
-	album: string
-	releaseDate: string
-	description: string
-	language: string
-	contributors: string
-	pageviews: string
-	url: string
-	artworkUrl: string
-	backgroundColor: string[]
-}
-
-type SongDetailsResponse = {
-	songId: string
-	headerContents: HeaderContents
-}
-
-type LyricsResponse = {
-	lyricLines: string[]
-	lyricsError: string | null
-}
-
-type ReferentsResponse = {
-	referents: NormalizedReferent[]
-}
-
-export const getSongDetails = cache(async (path: string) => {
-	return fetchFromApi<SongDetailsResponse>(`/api/songs/details/${path}`)
-})
-
-export const getSongLyrics = cache(async (path: string) => {
-	return fetchFromApi<LyricsResponse>(`/api/songs/lyrics/${path}`)
-})
-
-export const getSongReferents = cache(async (songId: string) => {
-	return fetchFromApi<ReferentsResponse>(`/api/songs/referents/${songId}`)
-})
+export const getSongDetails = cache(getSongDetailsAction)
+export const getSongLyrics = cache(getSongLyricsAction)
+export const getSongReferents = cache(getSongReferentsAction)

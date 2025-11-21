@@ -10,24 +10,11 @@ import Iridescence from '../ui/effects/iridescence'
 import Markdown from 'react-markdown'
 import { CollectButton } from './collect-button'
 import { isSongCollected } from '@/actions/collections'
-// import { getSongDetails } from '@/lib/api/song-data'
+import type { HeaderContents } from '@/types'
 
 type HeaderProps = {
-	headerContents: {
-		title: string
-		artist: string
-		album: string
-		releaseDate: string
-		description: string
-		language: string
-		contributors: string
-		pageviews: string
-		url: string
-		artworkUrl: string
-		backgroundColor: string[] //[number, number, number]
-	}
+	headerContents: HeaderContents
 	songId: string
-	// isCollected: boolean
 }
 
 export const Header = async ({ headerContents, songId }: HeaderProps) => {

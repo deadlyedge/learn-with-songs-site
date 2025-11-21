@@ -48,3 +48,17 @@ export type CollectionSong = {
 	geniusPath?: string | null
 	url?: string | null
 }
+
+export type HeaderContents = {
+	title: string
+	artist: string
+	album: string
+	releaseDate: string
+	description: string
+	language: string
+	contributors: string
+	pageviews: string
+	url: string
+	artworkUrl: string
+	backgroundColor: string[]
+}

@@ -1,4 +1,4 @@
-import { getSongLyrics } from '@/lib/api/song-data'
+import { getSongLyrics } from '@/actions/lyrics'
 
 // type LyricProps = {
 // 	error: string | null

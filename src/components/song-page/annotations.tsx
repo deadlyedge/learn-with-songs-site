@@ -8,7 +8,7 @@ import {
 	AccordionTrigger,
 } from '../ui/accordion'
 
-import { getSongReferents } from '@/lib/api/song-data'
+import { getSongReferents } from '@/actions/referents'
 
 // type AnnotationsProps = {
 // 	referents: NormalizedReferent[]

@@ -3,7 +3,7 @@ import { Header } from '@/components/song-page/header'
 import { Lyric } from '@/components/song-page/lyric'
 import { Annotations } from '@/components/song-page/annotations'
 import { SelectText } from '@/components/song-page/select-text'
-import { getSongDetails } from '@/lib/api/song-data'
+import { getSongDetails } from '@/actions/details'
 
 type SongPageProps = {
 	params: Promise<{
