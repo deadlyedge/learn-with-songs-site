@@ -1,8 +1,7 @@
 'use client'
 
-import { switchMasteredState } from '@/actions/vocabulary'
 import { useState } from 'react'
-import { VocabularyCard } from './vocabulary-card'
+
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -10,6 +9,9 @@ import {
 } from './ui/collapsible'
 import { Button } from './ui/button'
 import { ChevronsUpDownIcon } from 'lucide-react'
+
+import { VocabularyCard } from './vocabulary-card'
+import { switchMasteredState } from '@/actions/vocabulary'
 
 type VocabularyListProps = {
 	initialNewWords: VocabularyEntryWithSong[]
@@ -26,6 +28,7 @@ type VocabularyEntryWithSong = {
 	songTitle: string
 	songArtworkUrl: string | null
 	mastered: boolean
+	songId: string
 }
 
 export const VocabularyList = ({

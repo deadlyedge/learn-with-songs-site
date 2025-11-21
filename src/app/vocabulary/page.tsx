@@ -39,6 +39,7 @@ export default async function VocabularyPage() {
 			songTitle: entry.song?.title ?? '歌曲',
 			songArtworkUrl: entry.song?.artworkUrl ?? null,
 			mastered: entry.mastered,
+			songId: entry.song?.id ?? '',
 		}))
 
 	const transformedHistoryWords = vocabulary
@@ -53,6 +54,7 @@ export default async function VocabularyPage() {
 			songTitle: entry.song?.title ?? '歌曲',
 			songArtworkUrl: entry.song?.artworkUrl ?? null,
 			mastered: entry.mastered,
+			songId: entry.song?.id ?? '',
 		}))
 
 	return (

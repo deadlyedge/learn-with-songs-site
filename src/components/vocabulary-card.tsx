@@ -3,6 +3,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+
+import { learnWordInLine } from '@/lib/openrouter'
+import { updateVocabularyEntry } from '@/actions/vocabulary'
+import { normalizeSongPath } from '@/lib/utils'
+
+import { toast } from 'sonner'
 import Markdown from 'react-markdown'
 
 import {
@@ -40,6 +46,7 @@ export type VocabularyEntryCardProps = {
 		songTitle: string
 		songArtworkUrl?: string | null
 		mastered: boolean
+		songId: string
 	}
 	handleSwitchMastered: (entryId: string) => void
 }
@@ -49,10 +56,34 @@ export const VocabularyCard = ({
 	handleSwitchMastered,
 }: VocabularyEntryCardProps) => {
 	const [open, setOpen] = useState(false)
+	const [isRefetching, setIsRefetching] = useState(false)
+	const [result, setResult] = useState(entry.result)
 	const normalizedPath = entry.songPath.startsWith('/')
 		? entry.songPath
 		: `/${entry.songPath}`
 	const songHref = `/song${normalizedPath}`
+
+	const handleRefetch = async () => {
+		setIsRefetching(true)
+		try {
+			const newResult = await learnWordInLine(entry.word, entry.line)
+			setResult(newResult)
+			// 直接更新数据库，不检查重复
+			await updateVocabularyEntry({
+				word: entry.word,
+				line: entry.line,
+				lineNumber: entry.lineNumber,
+				result: newResult,
+				songId: entry.songId,
+				songPath: normalizeSongPath(entry.songPath)!,
+			})
+			toast.success('已重新获取AI解释')
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : '重新询问AI失败')
+		} finally {
+			setIsRefetching(false)
+		}
+	}
 
 	return (
 		<Card className="w-full flex flex-col justify-between">
@@ -140,12 +171,18 @@ export const VocabularyCard = ({
 							{entry.line}
 						</DialogDescription>
 					</DialogHeader>
-					{entry.result ? (
-						<Markdown>{entry.result}</Markdown>
+					{result ? (
+						<Markdown>{result}</Markdown>
 					) : (
 						<p className="text-sm text-muted-foreground">暂无说明</p>
 					)}
-					<DialogFooter>
+					<DialogFooter className="gap-2 w-full">
+						<Button
+							type="button"
+							onClick={handleRefetch}
+							disabled={isRefetching}>
+							{isRefetching ? '重新询问中...' : '重新询问AI'}
+						</Button>
 						<DialogClose asChild>
 							<Button type="button" variant="secondary">
 								Close

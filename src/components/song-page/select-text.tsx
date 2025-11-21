@@ -232,11 +232,11 @@ export const SelectText = ({
 		}
 
 		targetContainer.addEventListener('selectstart', onSelectStart)
-		targetContainer.addEventListener('mouseup', onSelectEnd)
+		targetContainer.addEventListener('pointerup', onSelectEnd)
 
 		return () => {
 			targetContainer.removeEventListener('selectstart', onSelectStart)
-			targetContainer.removeEventListener('mouseup', onSelectEnd)
+			targetContainer.removeEventListener('pointerup', onSelectEnd)
 		}
 	}, [containerId])
 
