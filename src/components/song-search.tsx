@@ -5,32 +5,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from './ui/spinner'
-
-type SongResult = {
-	id: string
-	title: string
-	artist: string
-	album?: string | null
-	releaseDate?: string | null
-	artworkUrl?: string | null
-	language?: string | null
-	url?: string | null
-	path?: string | null
-}
-
-type Source = 'database' | 'genius' | 'mixed'
-
-type SearchResponse = {
-	source: Source
-	songs: SongResult[]
-	canSearchGenius?: boolean
-	performedGenius?: boolean
-	autoContinued?: boolean
-}
+import { searchSongs, type SearchSong, type SongSource } from '@/actions/search'
 
 type SearchState = {
-	results: SongResult[]
-	source: Source | null
+	results: SearchSong[]
+	source: SongSource | null
 	hasSearched: boolean
 	error: string | null
 	canSearchGenius: boolean
@@ -48,7 +27,8 @@ const initialSearchState: SearchState = {
 
 export const SongSearch = () => {
 	const [query, setQuery] = useState('')
-	const [searchState, setSearchState] = useState<SearchState>(initialSearchState)
+	const [searchState, setSearchState] =
+		useState<SearchState>(initialSearchState)
 	const [lastQuery, setLastQuery] = useState('')
 	const [isPending, startTransition] = useTransition()
 
@@ -70,32 +50,18 @@ export const SongSearch = () => {
 		setSearchState((prevState) => ({ ...prevState, ...updates }))
 	}
 
-	const requestSearch = async (searchParams: URLSearchParams) => {
-		const currentQuery = searchParams.get('q')?.trim() ?? ''
-
-		if (currentQuery) {
-			setLastQuery(currentQuery)
-		}
-
+	const requestSearch = async (query: string, source?: string | null) => {
+		setLastQuery(query)
 		setSearchState(resetSearchState())
 
 		try {
-			const response = await fetch(`/api/songs?${searchParams.toString()}`, {
-				method: 'GET',
-			})
-			const payload = (await response.json()) as Partial<SearchResponse> & {
-				error?: string
-			}
-
-			if (!response.ok || !payload.songs) {
-				throw new Error(payload.error ?? '搜索失败，请稍后重试。')
-			}
+			const payload = await searchSongs({ query, source })
 
 			updateSearchState({
 				results: payload.songs,
-				source: payload.source ?? null,
-				canSearchGenius: payload.canSearchGenius ?? false,
-				autoContinued: Boolean(payload.autoContinued),
+				source: payload.source || null,
+				canSearchGenius: payload.canSearchGenius,
+				autoContinued: payload.autoContinued,
 			})
 		} catch (fetchError) {
 			console.error(fetchError)
@@ -111,15 +77,15 @@ export const SongSearch = () => {
 		const trimmed = query.trim()
 
 		if (!trimmed) {
-			updateSearchState({ error: '请输入歌曲名或艺人名后再搜索。', hasSearched: false })
+			updateSearchState({
+				error: '请输入歌曲名或艺人名后再搜索。',
+				hasSearched: false,
+			})
 			return
 		}
 
-		setLastQuery(trimmed)
-
 		startTransition(() => {
-			const params = new URLSearchParams({ q: trimmed })
-			void requestSearch(params)
+			void requestSearch(trimmed)
 		})
 	}
 
@@ -129,8 +95,7 @@ export const SongSearch = () => {
 		}
 
 		startTransition(() => {
-			const params = new URLSearchParams({ q: lastQuery, source: 'genius' })
-			void requestSearch(params)
+			void requestSearch(lastQuery, 'genius')
 		})
 	}
 
@@ -148,7 +113,13 @@ export const SongSearch = () => {
 					className="h-11"
 				/>
 				<Button type="submit" className="h-11 px-6" disabled={isPending}>
-					{isPending ? '搜索中...' : '搜索'}
+					{isPending ? (
+						<span className="flex items-center">
+							搜索中 <Spinner />
+						</span>
+					) : (
+						'搜索'
+					)}
 				</Button>
 			</form>
 
@@ -158,9 +129,12 @@ export const SongSearch = () => {
 				</p>
 			) : null}
 
-			{searchState.hasSearched && searchState.results.length === 0 && !isPending ? (
+			{searchState.hasSearched &&
+			searchState.results.length === 0 &&
+			!isPending ? (
 				<p className="text-sm text-muted-foreground">
-					暂无匹配结果...<Spinner />
+					暂无匹配结果...
+					{/* <Spinner /> */}
 				</p>
 			) : null}
 
@@ -196,7 +170,7 @@ export const SongSearch = () => {
 			) : null}
 
 			<ul className="grid sm:grid-cols-2 gap-3">
-				{searchState.results.map((song: SongResult) => {
+				{searchState.results.map((song: SearchSong) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
 					const songHref = song.path ? `/song${song.path}` : null
 

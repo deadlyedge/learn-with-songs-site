@@ -6,7 +6,14 @@ export const Footer = () => {
 				<a href="mailto:xdream@gmail.com" className="underline">
 					xdream
 				</a>
-				&nbsp;and <a href="mailto:luyukaka@outlook.com" className="underline">kaka</a>
+				&nbsp;and{' '}
+				<a href="mailto:luyukaka@outlook.com" className="underline">
+					kaka.
+				</a>
+				&nbsp;
+				<a href="https://github.com/deadlyedge/learn-with-songs-site">
+					[Source Code]
+				</a>
 			</div>
 		</footer>
 	)
