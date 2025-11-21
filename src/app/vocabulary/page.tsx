@@ -1,19 +1,10 @@
-import { currentUser } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/prisma'
+import { getUserVocabulary } from '@/actions/vocabulary'
 import { VocabularyList } from '@/components/vocabulary-list'
 
 export default async function VocabularyPage() {
-	const user = await currentUser()
+	const vocabulary = await getUserVocabulary()
 
-	if (!user) {
-		return <div className="p-4 text-sm text-muted-foreground">请先登录</div>
-	}
-
-	const dbUser = await prisma.user.findUnique({
-		where: { email: user.emailAddresses.at(0)?.emailAddress },
-	})
-
-	if (!dbUser) {
+	if (!vocabulary) {
 		return (
 			<div className="p-4 text-sm text-muted-foreground">
 				用户信息尚未同步，请刷新页面
@@ -21,41 +12,8 @@ export default async function VocabularyPage() {
 		)
 	}
 
-	const vocabulary = await prisma.vocabularyEntry.findMany({
-		where: { userId: dbUser.id },
-		include: { song: true },
-		orderBy: { createdAt: 'desc' },
-	})
-
-	const transformedNewWords = vocabulary
-		.filter((entry) => entry.mastered === false)
-		.map((entry) => ({
-			id: entry.id,
-			word: entry.word,
-			line: entry.line,
-			lineNumber: entry.lineNumber,
-			result: entry.result,
-			songPath: entry.songPath,
-			songTitle: entry.song?.title ?? '歌曲',
-			songArtworkUrl: entry.song?.artworkUrl ?? null,
-			mastered: entry.mastered,
-			songId: entry.song?.id ?? '',
-		}))
-
-	const transformedHistoryWords = vocabulary
-		.filter((entry) => entry.mastered === true)
-		.map((entry) => ({
-			id: entry.id,
-			word: entry.word,
-			line: entry.line,
-			lineNumber: entry.lineNumber,
-			result: entry.result,
-			songPath: entry.songPath,
-			songTitle: entry.song?.title ?? '歌曲',
-			songArtworkUrl: entry.song?.artworkUrl ?? null,
-			mastered: entry.mastered,
-			songId: entry.song?.id ?? '',
-		}))
+	const newWords = vocabulary.filter((entry) => !entry.mastered)
+	const historyWords = vocabulary.filter((entry) => entry.mastered)
 
 	return (
 		<main className="container mx-auto">
@@ -66,8 +24,8 @@ export default async function VocabularyPage() {
 				</p>
 			</header>
 			<VocabularyList
-				initialNewWords={transformedNewWords}
-				initialHistoryWords={transformedHistoryWords}
+				initialNewWords={newWords}
+				initialHistoryWords={historyWords}
 			/>
 		</main>
 	)

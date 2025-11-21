@@ -12,8 +12,11 @@ export async function POST(req: NextRequest) {
 		if (eventType === 'user.created') {
 			const { id, email_addresses, first_name, last_name } = evt.data
 			await prisma.user.upsert({
-				where: { clerkId: id },
-				update: {},
+				where: { email: email_addresses[0].email_address },
+				update: {
+					clerkId: id,
+					name: `${first_name} ${last_name}`,
+				},
 				create: {
 					clerkId: id,
 					email: email_addresses[0].email_address,

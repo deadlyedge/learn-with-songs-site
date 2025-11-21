@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
+import { revalidatePath } from 'next/cache'
 
 // import {
 // 	addVocabularyEntry,
@@ -26,6 +27,19 @@ type VocabularyEntryData = VocabularyBase & {
 type DuplicateOptions = {
 	userId: string
 } & VocabularyBase
+
+type VocabularyEntryWithSong = {
+	id: string
+	word: string
+	line: string
+	lineNumber: number | null
+	result: string
+	songPath: string
+	songTitle: string
+	songArtworkUrl: string | null
+	mastered: boolean
+	songId: string
+}
 
 // Constants
 const ERROR_MESSAGES = {
@@ -250,7 +264,38 @@ export async function updateVocabularyEntry(
 	return updatedEntry
 }
 
-import { revalidatePath } from 'next/cache'
+/**
+ * 获取用户词汇条目
+ * @returns 用户词汇条目数组，未登录则返回null
+ * @throws VocabularyUnauthorizedError 如果用户未授权
+ */
+export async function getUserVocabulary(): Promise<
+	VocabularyEntryWithSong[] | null
+> {
+	const user = await ensureVocabularyUser()
+
+	const vocabulary = await prisma.vocabularyEntry.findMany({
+		where: { userId: user.id },
+		include: { song: true },
+		orderBy: { createdAt: 'desc' },
+	})
+
+	const transformedVocabulary = vocabulary.map((entry) => ({
+		id: entry.id,
+		word: entry.word,
+		line: entry.line,
+		lineNumber: entry.lineNumber,
+		result: entry.result,
+		songPath: entry.songPath,
+		songTitle: entry.song?.title ?? '歌曲',
+		songArtworkUrl: entry.song?.artworkUrl ?? null,
+		mastered: entry.mastered,
+		songId: entry.song?.id ?? '',
+	}))
+
+	return transformedVocabulary
+}
+
 
 export async function switchMasteredState(entryId: string) {
 	const user = await ensureVocabularyUser()
