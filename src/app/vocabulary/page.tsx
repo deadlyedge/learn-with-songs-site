@@ -10,7 +10,7 @@ export default async function VocabularyPage() {
 	}
 
 	const dbUser = await prisma.user.findUnique({
-		where: { clerkId: user.id },
+		where: { email: user.emailAddresses.at(0)?.emailAddress },
 	})
 
 	if (!dbUser) {

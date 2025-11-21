@@ -69,7 +69,7 @@ export const VocabularyList = ({
 	const currentNewWords = words.filter((e) => !e.mastered)
 	const currentHistoryWords = words.filter((e) => e.mastered)
 
-	if (currentNewWords.length === 0) {
+	if (currentNewWords.length === 0 && currentHistoryWords.length === 0) {
 		return (
 			<section className="p-4">
 				<p className="text-sm text-muted-foreground">

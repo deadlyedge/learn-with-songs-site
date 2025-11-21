@@ -15,11 +15,13 @@ export async function initialUser() {
 	)
 	const fallbackEmail = clerkUser.emailAddresses.at(0)
 	const resolvedEmail =
-		(primaryEmail ?? fallbackEmail)?.emailAddress ?? `${clerkUser.id}@users.clerk.local`
+		(primaryEmail ?? fallbackEmail)?.emailAddress ??
+		`${clerkUser.id}@users.clerk.local`
 
 	return prisma.user.upsert({
-		where: { clerkId: clerkUser.id },
+		where: { email: resolvedEmail },
 		update: {
+			clerkId: clerkUser.id,
 			name: clerkUser.fullName ?? clerkUser.username ?? null,
 			email: resolvedEmail,
 			imageUrl: clerkUser.imageUrl,

@@ -196,7 +196,7 @@ export async function addVocabularyEntry(
 
 	console.log(`[Vocabulary Add] '${validPayload.word}' added by '${user.name}'`)
 
-	return createVocabularyEntry({
+	const newEntry = await createVocabularyEntry({
 		userId: user.id,
 		word: validPayload.word,
 		line: validPayload.line,
@@ -205,6 +205,10 @@ export async function addVocabularyEntry(
 		songId: validPayload.songId,
 		songPath: validPayload.songPath,
 	})
+
+	revalidatePath('/vocabulary')
+
+	return newEntry
 }
 
 /**
@@ -233,13 +237,17 @@ export async function updateVocabularyEntry(
 		throw new VocabularyNotFoundError(ERROR_MESSAGES.ENTRY_NOT_FOUND)
 	}
 
-	return prisma.vocabularyEntry.update({
+	const updatedEntry = await prisma.vocabularyEntry.update({
 		where: { id: existing.id },
 		data: {
 			result: validPayload.result,
 			songPath: validPayload.songPath,
 		},
 	})
+
+	revalidatePath('/vocabulary')
+
+	return updatedEntry
 }
 
 import { revalidatePath } from 'next/cache'
