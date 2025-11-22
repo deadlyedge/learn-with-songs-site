@@ -4,6 +4,23 @@ import { prisma } from '@/lib/prisma'
 import { ensureSongDetails } from '@/lib/song-details'
 import { isDbResourceStale } from '@/lib/refetch'
 import type { HeaderContents, GeniusSongInfo } from '@/types'
+import type { Song } from '@/generated/prisma'
+
+// type SongRecordWithDetails = Prisma.SongGetPayload<{
+// 	select: {
+// 		id: true
+// 		geniusId: true
+// 		title: true
+// 		artist: true
+// 		album: true
+// 		language: true
+// 		url: true
+// 		artworkUrl: true
+// 		geniusPath: true
+// 		details: true
+// 		detailsFetchedAt: true
+// 	}
+// }>
 
 type SongDetailsResponse = {
 	songId: string
@@ -16,7 +33,20 @@ export async function getSongDetails(
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },
-	})
+		select: {
+			id: true,
+			geniusId: true,
+			title: true,
+			artist: true,
+			album: true,
+			language: true,
+			url: true,
+			artworkUrl: true,
+			geniusPath: true,
+			details: true,
+			detailsFetchedAt: true,
+		},
+	}) as Song | null
 
 	if (!songRecord) {
 		throw new Error('Song not found')

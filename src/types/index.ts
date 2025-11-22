@@ -7,12 +7,12 @@ import { Prisma } from '@/generated/prisma'
 
 // 从 referentsAPI导出的规范类型
 export type {
-	Referent as GeniusReferent,
+	Referent,
 	Range,
 	Annotatable,
 	Annotation as ReferentAnnotation,
 	Author,
-	User as GeniusUser,
+	// User as GeniusUser,
 	AvatarImages,
 	AvatarImage,
 	BoundingBox,
@@ -26,8 +26,8 @@ export type {
 	GeniusSongInfo,
 	SongStats,
 	CurrentUserMetadata,
-	Album as GeniusAlbum,
-	Artist as GeniusArtist,
+	Album as SongAlbum,
+	Artist as SongArtist,
 	Performance,
 	MediaItem,
 	RelatedSong,
@@ -36,12 +36,21 @@ export type {
 	DescriptionAnnotation,
 	DescriptionAnnotationRaw,
 	GeniusSongInfoRaw,
-	User as GeniusSongUser, // 避免与 GeniusUser 冲突
+	// User as GeniusSongUser, // 避免与 GeniusUser 冲突
 	AnnotationAuthor,
 	GeniusDomNode,
 	AnnotationRaw,
 	Annotation as SongAnnotation,
 } from './songsAPI'
+
+export type {
+	VocabularyEntryWithFullSong,
+	VocabularyEntryWithSongData,
+	VocabularyPayload,
+	DuplicateOptions,
+	VocabularyExistsPayload,
+	VocabularyEntryData,
+} from './vocabulary'
 
 // ===== Genius API专用类型 (完全基于API响应的规范类型) =====
 
@@ -105,30 +114,6 @@ export type GeniusSongResponse = {
 	path?: string
 }
 
-// VocabularyEntry完整查询类型 (包括song关联) - Prisma自动生成
-export type VocabularyEntryWithFullSong = Prisma.VocabularyEntryGetPayload<{
-	select: {
-		id: true
-		word: true
-		line: true
-		lineNumber: true
-		result: true
-		songPath: true
-		createdAt: true
-		updatedAt: true
-		mastered: true
-		masteredAt: true
-		reviewCount: true
-		song: {
-			select: {
-				id: true
-				title: true
-				artworkUrl: true
-			}
-		}
-	}
-}>
-
 // Song表基础查询类型 (搜索用的最简格式)
 export type SongSearchResult = Prisma.SongGetPayload<{
 	select: {
@@ -145,20 +130,6 @@ export type SongSearchResult = Prisma.SongGetPayload<{
 }>
 
 // ===== 前端显示专用类型 =====
-
-// VocabularyEntry前端显示格式 (从VocabularyEntryWithFullSong推导)
-export type VocabularyEntryWithSongData = {
-	id: string
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songPath: string
-	songTitle: string
-	songArtworkUrl: string | null
-	mastered: boolean
-	songId: string
-}
 
 // FeaturedSong (基于业务逻辑，不是数据库)
 export type FeaturedSong = {
@@ -248,21 +219,4 @@ export type SearchSongDTO = {
 	language: string | null
 	url: string | null
 	path: string | null
-}
-
-export type DuplicateOptions = {
-	userId: string
-	word: string
-	line: string
-	lineNumber: number | null
-	songId: string
-}
-
-export type VocabularyPayload = {
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songId: string
-	songPath: string
 }

@@ -2,12 +2,15 @@
  * API 与 Database 之间，以及 Database 与 前端的类型转换工具
  */
 
-import { VocabularyEntryWithFullSong, VocabularyEntryWithSongData } from '@/types'
+import {
+	VocabularyEntryWithFullSong,
+	VocabularyEntryWithSongData,
+} from '@/types'
 
 /**
  * 将 Prisma 查询结果转换为前端显示格式，完全利用 Prisma 类型安全
  */
-export function transformVocabularyEntryToDisplayData(
+function transformVocabularyEntryToDisplayData(
 	entry: VocabularyEntryWithFullSong
 ): VocabularyEntryWithSongData {
 	return {

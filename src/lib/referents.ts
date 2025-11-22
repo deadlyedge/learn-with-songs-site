@@ -6,7 +6,7 @@ import type {
 	NormalizedReferent,
 	NormalizedReferentAnnotation,
 	ReferentDomNode,
-	GeniusReferent,
+	Referent,
 	GeniusDomNode,
 } from '@/types'
 
@@ -15,7 +15,7 @@ type DbReferentWithAnnotations = Prisma.ReferentGetPayload<{
 }>
 
 const normalizeAnnotationAuthors = (
-	authors: GeniusReferent['annotations'][number]['authors']
+	authors: Referent['annotations'][number]['authors']
 ) => {
 	if (!authors || authors.length === 0) {
 		return []
@@ -64,7 +64,7 @@ const convertReferentsDomToGenius = (
 }
 
 const normalizeAnnotationBody = (
-	annotation: GeniusReferent['annotations'][number]
+	annotation: Referent['annotations'][number]
 ) => {
 	try {
 		const geniusDom = convertReferentsDomToGenius(annotation.body?.dom)
@@ -75,7 +75,7 @@ const normalizeAnnotationBody = (
 }
 
 export const normalizeReferents = (
-	referents: GeniusReferent[] | undefined
+	referents: Referent[] | undefined
 ): NormalizedReferent[] => {
 	if (!referents || referents.length === 0) {
 		return []

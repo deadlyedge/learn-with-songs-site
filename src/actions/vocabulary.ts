@@ -10,6 +10,13 @@ import {
 	VocabularyPayload,
 } from '@/types'
 import { transformVocabularyEntriesToDisplayData } from '@/lib/transforms'
+import {
+	VOCABULARY_ERROR_MESSAGES,
+	VocabularyDuplicateError,
+	VocabularyNotFoundError,
+	VocabularyPayloadError,
+	VocabularyUnauthorizedError,
+} from '@/lib/vocabulary-errors'
 
 // 使用集中化的类型而非内联定义 - 完全基于Prisma type safety
 import type { Prisma } from '@/generated/prisma'
@@ -17,21 +24,6 @@ import type { Prisma } from '@/generated/prisma'
 // 从Prisma生成的具体操作类型
 type VocabularyCreateInput = Prisma.VocabularyEntryUncheckedCreateInput
 // type VocabularyWhereUniqueInput = Prisma.VocabularyEntryWhereUniqueInput
-
-// Constants
-const ERROR_MESSAGES = {
-	UNAUTHENTICATED: '未授权',
-	DUPLICATE_ENTRY: '该片段已经在生词本中了',
-	MISSING_FIELDS: '缺少必要字段',
-	ENTRY_NOT_FOUND: '生词本条目未找到',
-} as const
-
-// Vocabulary Errors
-class VocabularyError extends Error {}
-class VocabularyUnauthorizedError extends VocabularyError {}
-class VocabularyDuplicateError extends VocabularyError {}
-class VocabularyPayloadError extends VocabularyError {}
-class VocabularyNotFoundError extends VocabularyError {}
 
 const findDuplicateEntry = async (options: DuplicateOptions) => {
 	return await prisma.vocabularyEntry.findFirst({
@@ -48,7 +40,9 @@ const findDuplicateEntry = async (options: DuplicateOptions) => {
 const ensureVocabularyUser = async () => {
 	const user = await initialUser()
 	if (!user) {
-		throw new VocabularyUnauthorizedError(ERROR_MESSAGES.UNAUTHENTICATED)
+		throw new VocabularyUnauthorizedError(
+			VOCABULARY_ERROR_MESSAGES.UNAUTHENTICATED
+		)
 	}
 	return user
 }
@@ -75,7 +69,7 @@ const validateVocabularyEntryPayload = (
 	const { word, line, songId, result, songPath } = payload
 
 	if (!word?.trim() || !line?.trim() || !songId || !result || !songPath) {
-		throw new VocabularyPayloadError(ERROR_MESSAGES.MISSING_FIELDS)
+		throw new VocabularyPayloadError(VOCABULARY_ERROR_MESSAGES.MISSING_FIELDS)
 	}
 
 	return {
@@ -172,7 +166,9 @@ export async function addVocabularyEntry(
 	})
 
 	if (existing) {
-		throw new VocabularyDuplicateError(ERROR_MESSAGES.DUPLICATE_ENTRY)
+		throw new VocabularyDuplicateError(
+			VOCABULARY_ERROR_MESSAGES.DUPLICATE_ENTRY
+		)
 	}
 
 	console.log(`[Vocabulary Add] '${validPayload.word}' added by '${user.name}'`)
@@ -222,7 +218,7 @@ export async function updateVocabularyEntry(
 	})
 
 	if (!existing) {
-		throw new VocabularyNotFoundError(ERROR_MESSAGES.ENTRY_NOT_FOUND)
+		throw new VocabularyNotFoundError(VOCABULARY_ERROR_MESSAGES.ENTRY_NOT_FOUND)
 	}
 
 	const updatedEntry = await prisma.vocabularyEntry.update({
@@ -286,7 +282,7 @@ export async function switchMasteredState(entryId: string) {
 		where: { id: entryId, userId: user.id },
 	})
 	if (!entry) {
-		throw new VocabularyNotFoundError(ERROR_MESSAGES.ENTRY_NOT_FOUND)
+		throw new VocabularyNotFoundError(VOCABULARY_ERROR_MESSAGES.ENTRY_NOT_FOUND)
 	}
 
 	const updated = await prisma.vocabularyEntry.update({

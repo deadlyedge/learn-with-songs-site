@@ -2,7 +2,20 @@
 
 import { prisma } from '@/lib/prisma'
 import { cacheLife } from 'next/cache'
+import type { Prisma } from '@/generated/prisma'
 import type { GeniusSongInfo, FeaturedSong } from '@/types'
+
+type SongWithDetails = Prisma.SongGetPayload<{
+	select: {
+		id: true
+		title: true
+		artist: true
+		album: true
+		artworkUrl: true
+		geniusPath: true
+		details: true
+	}
+}>
 import {
 	FEATURED_SONGS_RANDOM_SAMPLE_SIZE,
 	FEATURED_SONGS_COUNT,
@@ -13,10 +26,7 @@ import {
  * @param song - 数据库中的歌曲记录
  * @returns 是否符合精选歌曲标准
  */
-const isValidFeaturedSong = (song: {
-	geniusPath: string | null
-	details: unknown
-}): boolean => {
+const isValidFeaturedSong = (song: SongWithDetails): boolean => {
 	const details = song.details as GeniusSongInfo | null
 	const pageviews = details?.stats?.pageviews
 
@@ -32,15 +42,7 @@ const isValidFeaturedSong = (song: {
  * @param song - 数据库中的有效歌曲记录（已通过过滤）
  * @returns 精选歌曲对象
  */
-const mapSongToFeatured = (song: {
-	id: string
-	title: string
-	artist: string
-	album: string | null
-	artworkUrl: string | null
-	geniusPath: string | null
-	details: unknown
-}): FeaturedSong => {
+const mapSongToFeatured = (song: SongWithDetails): FeaturedSong => {
 	const details = song.details as GeniusSongInfo
 	const pageviews = details.stats?.pageviews ?? 0
 

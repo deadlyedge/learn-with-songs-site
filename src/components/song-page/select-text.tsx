@@ -11,7 +11,7 @@ import {
 	// VocabularyDuplicateError,
 	VocabularyPayloadError,
 	VocabularyUnauthorizedError,
-} from '@/lib/vocabulary'
+} from '@/lib/vocabulary-errors'
 import { learnWordInLine } from '@/lib/openrouter'
 import Markdown from 'react-markdown'
 
@@ -365,7 +365,9 @@ export const SelectText = ({
 			toast.success('已加入我的生词本')
 		} catch (error) {
 			// Error is already handled by the store
-			toast.error(error instanceof Error ? error.message : '加入生词本失败，请稍后重试')
+			toast.error(
+				error instanceof Error ? error.message : '加入生词本失败，请稍后重试'
+			)
 		} finally {
 			dispatch({ type: 'SET_SAVING', payload: false })
 		}

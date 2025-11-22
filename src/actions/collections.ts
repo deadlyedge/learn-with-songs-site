@@ -2,7 +2,27 @@
 
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
+import type { Prisma } from '@/generated/prisma'
 import type { CollectionSong } from '@/types'
+
+type UserWithCollections = Prisma.UserGetPayload<{
+	include: {
+		collections: {
+			select: {
+				id: true
+				title: true
+				artist: true
+				album: true
+				artworkUrl: true
+				releaseDate: true
+				geniusPath: true
+				url: true
+			}
+		}
+	}
+}>
+
+type CollectionSongRecord = UserWithCollections['collections'][number]
 
 // Constants
 const ERROR_MESSAGES = {
@@ -35,16 +55,7 @@ const validateSongExists = async (songId: string) => {
 	}
 }
 
-const mapCollectionSong = (song: {
-	id: string
-	title: string
-	artist: string
-	album: string | null
-	artworkUrl: string | null
-	releaseDate: Date | null
-	geniusPath: string | null
-	url: string | null
-}): CollectionSong => ({
+const mapCollectionSong = (song: CollectionSongRecord): CollectionSong => ({
 	id: song.id,
 	title: song.title,
 	artist: song.artist,
@@ -63,16 +74,26 @@ const mapCollectionSong = (song: {
 export async function getUserCollections(): Promise<CollectionSong[] | null> {
 	const user = await ensureLoggedInUser()
 
-	const collections = await prisma.user
-		.findUnique({
-			where: { id: user.id },
-			include: {
-				collections: {
-					orderBy: { title: 'asc' },
+	const userWithCollections = await prisma.user.findUnique({
+		where: { id: user.id },
+		include: {
+			collections: {
+				orderBy: { title: 'asc' },
+				select: {
+					id: true,
+					title: true,
+					artist: true,
+					album: true,
+					artworkUrl: true,
+					releaseDate: true,
+					geniusPath: true,
+					url: true,
 				},
 			},
-		})
-		.then((user) => user?.collections ?? [])
+		},
+	})
+
+	const collections = userWithCollections?.collections ?? []
 
 	return collections.map(mapCollectionSong)
 }

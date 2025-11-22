@@ -1,20 +1,19 @@
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
-import { DuplicateOptions, VocabularyPayload } from '@/types'
+import {
+	DuplicateOptions,
+	VocabularyEntryData,
+	VocabularyExistsPayload,
+	VocabularyPayload,
+} from '@/types'
+import {
+	VOCABULARY_ERROR_MESSAGES,
+	VocabularyDuplicateError,
+	VocabularyNotFoundError,
+	VocabularyPayloadError,
+	VocabularyUnauthorizedError,
+} from './vocabulary-errors'
 
-
-// export async function getVocabularyUser() {
-// 	return initialUser()
-// }
-
-export class VocabularyError extends Error {}
-
-export class VocabularyUnauthorizedError extends VocabularyError {}
-
-export class VocabularyDuplicateError extends VocabularyError {}
-
-export class VocabularyPayloadError extends VocabularyError {}
-export class VocabularyNotFoundError extends VocabularyError {}
 
 export const findDuplicateEntry = (options: DuplicateOptions) => {
 	return prisma.vocabularyEntry.findFirst({
@@ -61,7 +60,7 @@ export const validateVocabularyPayload = (
 		!payload.songId ||
 		!payload.songPath
 	) {
-		throw new VocabularyPayloadError('缺少必要字段')
+		throw new VocabularyPayloadError(VOCABULARY_ERROR_MESSAGES.MISSING_FIELDS)
 	}
 	return {
 		word: payload.word,
@@ -78,7 +77,9 @@ export const validateVocabularyPayload = (
 export const ensureVocabularyUser = async () => {
 	const user = await initialUser()
 	if (!user) {
-		throw new VocabularyUnauthorizedError('未授权')
+		throw new VocabularyUnauthorizedError(
+			VOCABULARY_ERROR_MESSAGES.UNAUTHENTICATED
+		)
 	}
 	return user
 }
@@ -98,7 +99,9 @@ export const addVocabularyEntry = async (
 	})
 
 	if (existing) {
-		throw new VocabularyDuplicateError('该片段已经在生词本中了')
+		throw new VocabularyDuplicateError(
+			VOCABULARY_ERROR_MESSAGES.DUPLICATE_ENTRY
+		)
 	}
 
 	return createVocabularyEntry({
@@ -127,7 +130,9 @@ export const updateVocabularyEntry = async (
 	})
 
 	if (!existing) {
-		throw new VocabularyNotFoundError('生词本条目未找到')
+		throw new VocabularyNotFoundError(
+			VOCABULARY_ERROR_MESSAGES.ENTRY_NOT_FOUND
+		)
 	}
 
 	return prisma.vocabularyEntry.update({
@@ -139,18 +144,11 @@ export const updateVocabularyEntry = async (
 	})
 }
 
-export type VocabularyExistsPayload = {
-	word: string
-	line: string
-	lineNumber: number | null
-	songId: string
-}
-
 export const validateExistsPayload = (
 	payload: Partial<VocabularyExistsPayload>
 ) => {
 	if (!payload.word || !payload.line || !payload.songId) {
-		throw new VocabularyPayloadError('缺少必要字段')
+		throw new VocabularyPayloadError(VOCABULARY_ERROR_MESSAGES.MISSING_FIELDS)
 	}
 	return {
 		word: payload.word,
@@ -158,15 +156,6 @@ export const validateExistsPayload = (
 		lineNumber: payload.lineNumber ?? null,
 		songId: payload.songId,
 	}
-}
-
-export type VocabularyEntryData = {
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songId: string
-	songPath: string
 }
 
 export const getVocabularyEntry = async (
