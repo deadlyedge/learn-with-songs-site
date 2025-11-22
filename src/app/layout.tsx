@@ -14,6 +14,10 @@ import { Toaster } from '@/components/ui/sonner'
 export const metadata: Metadata = {
 	title: 'Learn English with Songs',
 	description: '通过歌词搜索与学习，提升英语水平的音乐学习平台。',
+	icons: {
+		icon: '/favicon.ico',
+		apple: '/logo_512.png',
+	},
 }
 
 export default function RootLayout({

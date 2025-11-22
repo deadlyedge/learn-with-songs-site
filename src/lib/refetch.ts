@@ -10,7 +10,7 @@ const STRATEGY_TO_MILLISECONDS: Record<DbRefetchStrategy, number> = {
 	'3months': 1000 * 60 * 60 * 24 * 90,
 } as const
 
-export const getDbRefetchWindowMs = (resource: DbRefetchResource) => {
+const getDbRefetchWindowMs = (resource: DbRefetchResource) => {
 	const strategy = DB_REFETCH_STRATEGY[resource]
 	return STRATEGY_TO_MILLISECONDS[strategy]
 }
