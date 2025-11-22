@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from './ui/spinner'
-import { searchSongs, type SearchSong, type SongSource } from '@/actions/search'
+import { searchSongs } from '@/actions/search'
+import { SearchSongDTO, SongSearchResponse } from '@/types'
 
 type SearchState = {
-	results: SearchSong[]
-	source: SongSource | null
+	results: SearchSongDTO[]
+	source: SongSearchResponse['source'] | null
 	hasSearched: boolean
 	error: string | null
 	canSearchGenius: boolean
@@ -59,7 +60,7 @@ export const SongSearch = () => {
 
 			updateSearchState({
 				results: payload.songs,
-				source: payload.source || null,
+				source: payload.source,
 				canSearchGenius: payload.canSearchGenius,
 				autoContinued: payload.autoContinued,
 			})
@@ -170,7 +171,7 @@ export const SongSearch = () => {
 			) : null}
 
 			<ul className="grid sm:grid-cols-2 gap-3">
-				{searchState.results.map((song: SearchSong) => {
+				{searchState.results.map((song: SearchSongDTO) => {
 					const releaseYear = getReleaseYear(song.releaseDate)
 					const songHref = song.path ? `/song${song.path}` : null
 

@@ -6,9 +6,9 @@ import {
 	cacheReferentsForSong,
 	mapDbReferentsToNormalized,
 	normalizeReferents,
-	type NormalizedReferent,
 } from '@/lib/referents'
 import { isDbResourceStale } from '@/lib/refetch'
+import type { NormalizedReferent } from '@/types'
 
 type ReferentsResponse = {
 	referents: NormalizedReferent[]

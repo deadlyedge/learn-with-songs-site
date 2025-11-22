@@ -10,11 +10,11 @@ import {
 	addSongToUserCollections,
 	removeSongFromUserCollections,
 } from '@/actions/collections'
-import type { CollectionSong, VocabularyEntryWithSong } from '@/types'
+import type { CollectionSong, VocabularyEntryWithSongData } from '@/types'
 
 type UserDataState = {
 	// State
-	vocabulary: VocabularyEntryWithSong[]
+	vocabulary: VocabularyEntryWithSongData[]
 	collections: CollectionSong[]
 	loading: boolean
 	error: string | null
@@ -91,7 +91,7 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		const optimisticId = `optimistic-${Date.now()}`
 
 		// Optimistic update
-		const optimisticItem: VocabularyEntryWithSong = {
+		const optimisticItem: VocabularyEntryWithSongData = {
 			id: optimisticId,
 			...item,
 			songTitle: 'Loading...',

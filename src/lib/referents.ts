@@ -1,40 +1,21 @@
 import { prisma } from '@/lib/prisma'
 import { convertDomToMarkdown } from './dom-to-markdown'
 
-import type { DomNode, Referent } from '@/types/referentsAPI'
 import type { Prisma } from '@/generated/prisma/client'
-import type { GeniusDomNode } from '@/types/songsAPI'
-
-export type NormalizedReferentAnnotation = {
-	id: number
-	body: string | null
-	url: string
-	votesTotal: number
-	authors: Array<{
-		id: number
-		name?: string
-		login?: string
-	}>
-	verified: boolean
-	source?: string | null
-}
-
-export type NormalizedReferent = {
-	id: number
-	fragment: string
-	classification: string
-	rangeContent?: string
-	path: string
-	url: string
-	annotations: NormalizedReferentAnnotation[]
-}
+import type {
+	NormalizedReferent,
+	NormalizedReferentAnnotation,
+	ReferentDomNode,
+	GeniusReferent,
+	GeniusDomNode,
+} from '@/types'
 
 type DbReferentWithAnnotations = Prisma.ReferentGetPayload<{
 	include: { annotations: true }
 }>
 
 const normalizeAnnotationAuthors = (
-	authors: Referent['annotations'][number]['authors']
+	authors: GeniusReferent['annotations'][number]['authors']
 ) => {
 	if (!authors || authors.length === 0) {
 		return []
@@ -48,7 +29,7 @@ const normalizeAnnotationAuthors = (
 }
 
 const convertReferentsDomToGenius = (
-	dom?: DomNode | null
+	dom?: ReferentDomNode | null
 ): GeniusDomNode | null => {
 	if (!dom) return null
 
@@ -83,7 +64,7 @@ const convertReferentsDomToGenius = (
 }
 
 const normalizeAnnotationBody = (
-	annotation: Referent['annotations'][number]
+	annotation: GeniusReferent['annotations'][number]
 ) => {
 	try {
 		const geniusDom = convertReferentsDomToGenius(annotation.body?.dom)
@@ -94,7 +75,7 @@ const normalizeAnnotationBody = (
 }
 
 export const normalizeReferents = (
-	referents: Referent[] | undefined
+	referents: GeniusReferent[] | undefined
 ): NormalizedReferent[] => {
 	if (!referents || referents.length === 0) {
 		return []

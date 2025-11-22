@@ -1,10 +1,10 @@
 import {
-	Annotation,
+	SongAnnotation,
 	AnnotationRaw,
 	GeniusDomNode,
 	GeniusSongInfo,
 	GeniusSongInfoRaw,
-} from '@/types/songsAPI'
+} from '@/types'
 
 const BLOCK_LEVEL_TAGS = new Set([
 	'root',
@@ -85,9 +85,7 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 		}
 		case 'img': {
 			const src =
-				node.attributes?.src?.toString() ??
-				node.data?.src?.toString() ??
-				''
+				node.attributes?.src?.toString() ?? node.data?.src?.toString() ?? ''
 			if (!src) {
 				return ''
 			}
@@ -169,7 +167,7 @@ export const convertDomToMarkdown = (
 
 const normalizeAnnotations = (
 	annotations?: AnnotationRaw[] | null
-): Annotation[] | undefined => {
+): SongAnnotation[] | undefined => {
 	if (!annotations) {
 		return undefined
 	}
@@ -182,14 +180,14 @@ const normalizeAnnotations = (
 		const { body, ...rest } = annotation
 
 		if (typeof body === 'string') {
-			return { ...rest, body } satisfies Annotation
+			return { ...rest, body } satisfies SongAnnotation
 		}
 
 		const markdown = convertDomToMarkdown(body?.dom)
 		return {
 			...rest,
 			body: markdown,
-		} satisfies Annotation
+		} satisfies SongAnnotation
 	})
 }
 

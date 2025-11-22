@@ -1,8 +1,5 @@
 import type { Prisma, Song } from '@/generated/prisma/client'
-import type {
-	GeniusSongInfo,
-	GeniusSongInfoRaw,
-} from '@/types/songsAPI'
+import type { GeniusSongInfo, GeniusSongInfoRaw } from '@/types'
 import { fetchGeniusSongDetails } from './genius'
 import { prisma } from './prisma'
 import { normalizeSongInfo } from './dom-to-markdown'

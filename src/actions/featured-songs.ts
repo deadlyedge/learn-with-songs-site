@@ -2,8 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { cacheLife } from 'next/cache'
-import type { FeaturedSong } from '@/types'
-import type { GeniusSongInfo } from '@/types/songsAPI'
+import type { GeniusSongInfo, FeaturedSong } from '@/types'
 import {
 	FEATURED_SONGS_RANDOM_SAMPLE_SIZE,
 	FEATURED_SONGS_COUNT,

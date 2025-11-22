@@ -15,6 +15,7 @@ Learn English with Songs is a learning hub built on Next.js App Router. It surfa
 - Clerk for authentication, Prisma for PostgreSQL access.
 - Genius API and a lyrics proxy (`lyrics.zick.me`) for metadata and content, OpenRouter for LLML explanations, and the Sonner toaster for notifications.
 - Tailwind CSS (v4) plus Lucide UI primitives and shadcn/ui components for layout.
+- zustand for state management.
 
 ## Getting started
 

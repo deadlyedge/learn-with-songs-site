@@ -1,11 +1,15 @@
 'use server'
 
-import type { Song } from '@/generated/prisma/client'
-import type { NormalizedSong } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { searchGeniusSongs } from '@/lib/genius'
+import {
+	GeniusSongResponse,
+	SongSearchResult,
+	SongSearchResponse,
+	SearchSongDTO
+} from '@/types'
 
-const toSongDTO = (song: Song) => ({
+const toSearchSongDTO = (song: SongSearchResult): SearchSongDTO => ({
 	id: song.id,
 	title: song.title,
 	artist: song.artist,
@@ -26,7 +30,7 @@ const parseReleaseDate = (value?: string | null) => {
 	return Number.isNaN(parsed.getTime()) ? null : parsed
 }
 
-const upsertNormalizedSong = (song: NormalizedSong) => {
+const upsertNormalizedSong = (song: GeniusSongResponse) => {
 	const parsedReleaseDate = parseReleaseDate(song.releaseDate)
 
 	return prisma.song.upsert({
@@ -54,32 +58,30 @@ const upsertNormalizedSong = (song: NormalizedSong) => {
 			url: song.url ?? null,
 			geniusPath: song.path ?? null,
 		},
+		select: {
+			id: true,
+			title: true,
+			artist: true,
+			album: true,
+			geniusPath: true,
+			releaseDate: true,
+			artworkUrl: true,
+			language: true,
+			url: true,
+		},
 	})
 }
 
-export type SearchSong = ReturnType<typeof toSongDTO>
-export type SongSource = 'database' | 'genius' | 'mixed'
-
-export type SongSearchResponse = {
-	source: SongSource
-	songs: SearchSong[]
-	canSearchGenius: boolean
-	performedGenius: boolean
-	autoContinued: boolean
-}
-
-type SearchParams = {
+export async function searchSongs({ query, source }: {
 	query: string
 	source?: string | null
-}
-
-export async function searchSongs({ query, source }: SearchParams) {
+}) {
 	if (!query) {
 		throw new Error('Parameter `q` is required for searching songs.')
 	}
 
 	const forceGenius = source === 'genius'
-	const dbSongs = await prisma.song.findMany({
+	const dbSongs: SongSearchResult[] = await prisma.song.findMany({
 		where: {
 			OR: [
 				{ title: { contains: query, mode: 'insensitive' } },
@@ -90,9 +92,20 @@ export async function searchSongs({ query, source }: SearchParams) {
 			releaseDate: 'asc',
 		},
 		take: 10,
+		select: {
+			id: true,
+			title: true,
+			artist: true,
+			album: true,
+			geniusPath: true,
+			releaseDate: true,
+			artworkUrl: true,
+			language: true,
+			url: true,
+		},
 	})
 
-	const songs: Song[] = []
+	const songs: SongSearchResult[] = []
 	const seen = new Set<string>()
 
 	for (const song of dbSongs) {
@@ -107,7 +120,7 @@ export async function searchSongs({ query, source }: SearchParams) {
 	let autoContinued = false
 
 	if (needsGenius) {
-		const fallbackSongs = await searchGeniusSongs(query)
+		const fallbackSongs: GeniusSongResponse[] = await searchGeniusSongs(query)
 
 		console.log('[Genius Search] ', query)
 
@@ -115,7 +128,7 @@ export async function searchSongs({ query, source }: SearchParams) {
 			performedGenius = true
 			autoContinued = !forceGenius && dbSongs.length > 0 && dbSongs.length < 3
 
-			const persisted = await Promise.all(
+			const persisted: SongSearchResult[] = await Promise.all(
 				fallbackSongs.slice(0, 10).map((song) => upsertNormalizedSong(song))
 			)
 
@@ -140,11 +153,13 @@ export async function searchSongs({ query, source }: SearchParams) {
 		responseSource = 'genius'
 	}
 
-	return {
+	const result: SongSearchResponse = {
 		source: responseSource,
-		songs: songs.map(toSongDTO),
+		songs: songs.map(toSearchSongDTO),
 		canSearchGenius: !forceGenius,
 		performedGenius,
 		autoContinued,
 	}
+
+	return result
 }

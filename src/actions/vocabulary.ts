@@ -3,43 +3,20 @@
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
 import { revalidatePath } from 'next/cache'
+import {
+	VocabularyEntryWithSongData,
+	VocabularyEntryWithFullSong,
+	DuplicateOptions,
+	VocabularyPayload,
+} from '@/types'
+import { transformVocabularyEntriesToDisplayData } from '@/lib/transforms'
 
-// import {
-// 	addVocabularyEntry,
-// 	vocabularyEntryExists,
-// 	VocabularyPayload,
-// 	updateVocabularyEntry,
-// } from '@/lib/vocabulary'
+// 使用集中化的类型而非内联定义 - 完全基于Prisma type safety
+import type { Prisma } from '@/generated/prisma'
 
-// Base types
-type VocabularyBase = {
-	word: string
-	line: string
-	lineNumber: number | null
-	songId: string
-}
-
-type VocabularyEntryData = VocabularyBase & {
-	result: string
-	songPath: string
-}
-
-type DuplicateOptions = {
-	userId: string
-} & VocabularyBase
-
-type VocabularyEntryWithSong = {
-	id: string
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songPath: string
-	songTitle: string
-	songArtworkUrl: string | null
-	mastered: boolean
-	songId: string
-}
+// 从Prisma生成的具体操作类型
+type VocabularyCreateInput = Prisma.VocabularyEntryUncheckedCreateInput
+// type VocabularyWhereUniqueInput = Prisma.VocabularyEntryWhereUniqueInput
 
 // Constants
 const ERROR_MESSAGES = {
@@ -76,75 +53,48 @@ const ensureVocabularyUser = async () => {
 	return user
 }
 
-const createVocabularyEntry = async (data: {
-	userId: string
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songId: string
-	songPath: string
-}) => {
+const createVocabularyEntry = async (data: VocabularyCreateInput) => {
 	return await prisma.vocabularyEntry.create({
-		data: {
-			userId: data.userId,
-			word: data.word,
-			line: data.line,
-			lineNumber: data.lineNumber,
-			result: data.result,
-			songId: data.songId,
-			songPath: data.songPath,
-		},
+		data: data,
 	})
 }
 
-// Common validation function
-const validateBasePayload = (
-	payload: Partial<VocabularyBase>
-): VocabularyBase => {
-	if (!payload.word || !payload.line || !payload.songId) {
+type ValidationResult = {
+	word: string
+	line: string
+	lineNumber: number | null
+	songId: string
+	result: string
+	songPath: string
+}
+
+// Common validation function (使用具体类型)
+const validateVocabularyEntryPayload = (
+	payload: Partial<VocabularyPayload>
+): ValidationResult => {
+	const { word, line, songId, result, songPath } = payload
+
+	if (!word?.trim() || !line?.trim() || !songId || !result || !songPath) {
 		throw new VocabularyPayloadError(ERROR_MESSAGES.MISSING_FIELDS)
 	}
+
 	return {
-		word: payload.word,
-		line: payload.line,
+		word: word.trim(),
+		line: line.trim(),
 		lineNumber: payload.lineNumber ?? null,
-		songId: payload.songId,
+		songId,
+		result: result.trim(),
+		songPath: songPath.startsWith('/') ? songPath : `/${songPath}`,
 	}
 }
 
-const validateVocabularyPayload = (
-	payload: Partial<VocabularyEntryData>
-): VocabularyEntryData => {
-	// Additional required fields for full payload
-	if (!payload.result || !payload.songPath) {
-		throw new VocabularyPayloadError(ERROR_MESSAGES.MISSING_FIELDS)
-	}
-
-	const base = validateBasePayload(payload)
-
-	// Check for empty trimmed values (after validation)
-	if (base.word.trim().length === 0 && base.line.trim().length === 0) {
-		throw new VocabularyPayloadError(ERROR_MESSAGES.MISSING_FIELDS)
-	}
-
-	return {
-		...base,
-		result: payload.result,
-		songPath: payload.songPath.startsWith('/')
-			? payload.songPath
-			: `/${payload.songPath}`,
-	}
-}
-
-// const validateExistsPayload = (
-// 	payload: Partial<VocabularyBase>
-// ): VocabularyBase => {
-// 	return validateBasePayload(payload)
-// }
-
-const getVocabularyEntry = async (payload: Partial<VocabularyBase>) => {
-	const validPayload = validateBasePayload(payload)
+// 内联函数，移除复杂validation (简化维护)
+const getVocabularyEntry = async (payload: Partial<VocabularyPayload>) => {
+	const validPayload = validateVocabularyEntryPayload({
+		...payload,
+		result: 'dummy',
+		songPath: '/dummy',
+	})
 	const user = await ensureVocabularyUser()
 
 	return findDuplicateEntry({
@@ -156,6 +106,16 @@ const getVocabularyEntry = async (payload: Partial<VocabularyBase>) => {
 	})
 }
 
+// 词汇条目的简要信息类型
+type VocabularyEntrySummary = {
+	word: string
+	line: string
+	lineNumber: number | null
+	result: string
+	songId: string
+	songPath: string
+}
+
 /**
  * 检查词汇条目是否存在
  * @param payload - 词汇条目信息（包含word, line, songId）
@@ -164,8 +124,8 @@ const getVocabularyEntry = async (payload: Partial<VocabularyBase>) => {
  * @throws VocabularyPayloadError 如果payload无效
  */
 export async function vocabularyEntryExists(
-	payload: Partial<VocabularyEntryData>
-): Promise<{ entry: VocabularyEntryData | null }> {
+	payload: Partial<VocabularyPayload>
+): Promise<{ entry: VocabularyEntrySummary | null }> {
 	const entry = await getVocabularyEntry(payload)
 	if (!entry) {
 		return { entry: null }
@@ -178,7 +138,7 @@ export async function vocabularyEntryExists(
 			result: entry.result,
 			songId: entry.songId,
 			songPath: entry.songPath,
-		} satisfies VocabularyEntryData,
+		},
 	}
 }
 
@@ -191,9 +151,16 @@ export async function vocabularyEntryExists(
  * @throws VocabularyPayloadError 如果payload无效
  */
 export async function addVocabularyEntry(
-	payload: Partial<VocabularyEntryData>
+	payload: Partial<{
+		word: string
+		line: string
+		lineNumber: number | null
+		result: string
+		songId: string
+		songPath: string
+	}>
 ) {
-	const validPayload = validateVocabularyPayload(payload)
+	const validPayload = validateVocabularyEntryPayload(payload)
 	const user = await ensureVocabularyUser()
 
 	const existing = await findDuplicateEntry({
@@ -234,9 +201,16 @@ export async function addVocabularyEntry(
  * @throws VocabularyPayloadError 如果payload无效
  */
 export async function updateVocabularyEntry(
-	payload: Partial<VocabularyEntryData>
+	payload: Partial<{
+		word: string
+		line: string
+		lineNumber: number | null
+		result: string
+		songId: string
+		songPath: string
+	}>
 ) {
-	const validPayload = validateVocabularyPayload(payload)
+	const validPayload = validateVocabularyEntryPayload(payload)
 	const user = await ensureVocabularyUser()
 
 	const existing = await findDuplicateEntry({
@@ -265,37 +239,45 @@ export async function updateVocabularyEntry(
 }
 
 /**
- * 获取用户词汇条目
+ * 获取用户词汇条目 - 完全利用 Prisma 类型安全
  * @returns 用户词汇条目数组，未登录则返回null
  * @throws VocabularyUnauthorizedError 如果用户未授权
  */
 export async function getUserVocabulary(): Promise<
-	VocabularyEntryWithSong[] | null
+	VocabularyEntryWithSongData[] | null
 > {
 	const user = await ensureVocabularyUser()
 
-	const vocabulary = await prisma.vocabularyEntry.findMany({
-		where: { userId: user.id },
-		include: { song: true },
-		orderBy: { createdAt: 'desc' },
-	})
+	// 使用精确的 select 查询，完美匹配 VocabularyEntryWithFullSong 类型
+	const vocabulary: VocabularyEntryWithFullSong[] =
+		await prisma.vocabularyEntry.findMany({
+			where: { userId: user.id },
+			select: {
+				id: true,
+				word: true,
+				line: true,
+				lineNumber: true,
+				result: true,
+				songPath: true,
+				createdAt: true,
+				updatedAt: true,
+				mastered: true,
+				masteredAt: true,
+				reviewCount: true,
+				song: {
+					select: {
+						id: true,
+						title: true,
+						artworkUrl: true,
+					},
+				},
+			},
+			orderBy: { createdAt: 'desc' },
+		})
 
-	const transformedVocabulary = vocabulary.map((entry) => ({
-		id: entry.id,
-		word: entry.word,
-		line: entry.line,
-		lineNumber: entry.lineNumber,
-		result: entry.result,
-		songPath: entry.songPath,
-		songTitle: entry.song?.title ?? '歌曲',
-		songArtworkUrl: entry.song?.artworkUrl ?? null,
-		mastered: entry.mastered,
-		songId: entry.song?.id ?? '',
-	}))
-
-	return transformedVocabulary
+	// 使用类型安全的 transform function
+	return transformVocabularyEntriesToDisplayData(vocabulary)
 }
-
 
 export async function switchMasteredState(entryId: string) {
 	const user = await ensureVocabularyUser()

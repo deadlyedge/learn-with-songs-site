@@ -1,7 +1,10 @@
 import { GENIUS_API_BASE } from '@/constants'
-import type { GeniusSongHit, NormalizedSong } from '@/types'
-import { Referent } from '@/types/referentsAPI'
-import type { GeniusSongInfoRaw } from '@/types/songsAPI'
+import {
+	GeniusSongHit,
+	GeniusSongResponse,
+	GeniusReferent,
+	GeniusSongInfoRaw
+} from '@/types'
 
 const ensureToken = () => {
 	const token = process.env.GENIUS_API_TOKEN
@@ -17,7 +20,7 @@ const ensureToken = () => {
 
 export async function searchGeniusSongs(
 	query: string
-): Promise<NormalizedSong[]> {
+): Promise<GeniusSongResponse[]> {
 	const token = ensureToken()
 
 	const response = await fetch(
@@ -109,7 +112,7 @@ export async function fetchGeniusSongDetails(
 
 export async function fetchGeniusReferents(
 	songId: number | string
-): Promise<Referent[]> {
+): Promise<GeniusReferent[]> {
 	const token = ensureToken()
 	const idValue =
 		typeof songId === 'number'
@@ -140,7 +143,7 @@ export async function fetchGeniusReferents(
 
 	const payload = (await response.json()) as {
 		response?: {
-			referents?: Referent[]
+			referents?: GeniusReferent[]
 		}
 	}
 

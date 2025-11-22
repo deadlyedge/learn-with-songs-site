@@ -3,15 +3,16 @@
 import { prisma } from '@/lib/prisma'
 import { ensureSongDetails } from '@/lib/song-details'
 import { isDbResourceStale } from '@/lib/refetch'
-import type { GeniusSongInfo } from '@/types/songsAPI'
-import type { HeaderContents } from '@/types'
+import type { HeaderContents, GeniusSongInfo } from '@/types'
 
 type SongDetailsResponse = {
 	songId: string
 	headerContents: HeaderContents
 }
 
-export async function getSongDetails(path: string): Promise<SongDetailsResponse> {
+export async function getSongDetails(
+	path: string
+): Promise<SongDetailsResponse> {
 	const geniusPath = `/${path}`
 	const songRecord = await prisma.song.findUnique({
 		where: { geniusPath },

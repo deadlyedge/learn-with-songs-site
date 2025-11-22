@@ -35,19 +35,10 @@ import {
 	CardTitle,
 } from './ui/card'
 
+import { VocabularyEntryWithSongData } from '@/types'
+
 export type VocabularyEntryCardProps = {
-	entry: {
-		id: string
-		word: string
-		line: string
-		lineNumber: number | null
-		result: string
-		songPath: string
-		songTitle: string
-		songArtworkUrl?: string | null
-		mastered: boolean
-		songId: string
-	}
+	entry: VocabularyEntryWithSongData
 	handleSwitchMastered: (entryId: string) => void
 }
 

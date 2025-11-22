@@ -1,13 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
+import { DuplicateOptions, VocabularyPayload } from '@/types'
 
-type DuplicateOptions = {
-	userId: string
-	word: string
-	line: string
-	lineNumber: number | null
-	songId: string
-}
 
 // export async function getVocabularyUser() {
 // 	return initialUser()
@@ -32,15 +26,6 @@ export const findDuplicateEntry = (options: DuplicateOptions) => {
 			songId: options.songId,
 		},
 	})
-}
-
-export type VocabularyPayload = {
-	word: string
-	line: string
-	lineNumber: number | null
-	result: string
-	songId: string
-	songPath: string
 }
 
 export const createVocabularyEntry = (data: {
