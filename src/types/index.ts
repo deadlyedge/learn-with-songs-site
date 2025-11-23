@@ -220,3 +220,14 @@ export type SearchSongDTO = {
 	url: string | null
 	path: string | null
 }
+
+export type Suggestion = {
+	text: string
+	type: 'song' | 'artist' | 'album'
+	metadata?: {
+		artist?: string
+		album?: string
+		path?: string
+		popularity?: number
+	}
+}

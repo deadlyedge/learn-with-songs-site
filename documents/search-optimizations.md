@@ -137,3 +137,70 @@ model Song {
    - 搜索建议/自动完成
 
 您希望我优先解决哪个方面？我可以帮您实现具体的优化方案。.toggle to Act mode.
+
+基于您的测试结果，当前的 `search.ts` 代码**大部分不需要修改**，因为它已经正确使用了 `similarity()` 函数，这会自动利用您刚刚创建的 GIN trigram 索引。
+
+## 🎯 **当前代码状况评估**
+
+### ✅ **已经正确的部分**
+- `searchBySimilarity` 函数使用 `similarity()` 函数 ✅
+- PostgreSQL 会自动利用 GIN trigram 索引 ✅  
+- 查询语法正确 ✅
+
+### 🔧 **可选的小幅优化** 
+
+现在您有了索引，可以考虑轻松调整相似度阈值来获得更好的搜索体验：
+
+```typescript
+// 在 src/constants.ts 中
+// similarity control
+export const SIMILARITY_HIGH_THRESHOLD = 0.45  // 保持，用于确定高置信度
+export const SIMILARITY_LOW_THRESHOLD = 0.2    // 从 0.35 降低到 0.2，启用索引后更宽泛
+```
+
+### 📊 **为什么不需要大幅修改**
+
+您的查询：
+```sql
+WHERE similarity("title", $query) > 0.35 OR similarity("artist", $query) > 0.35
+```
+
+现在会**自动使用 GIN 索引**进行快速扫描，而不是全表扫描。这样性能应该有显著提升：
+
+- **查询速度**: 从逐行计算相似度 → 索引快速查找
+- **索引利用**: GIN trigram 索引直接返回候选行
+- **缓存效果**: 更小的结果集，更好地利用内存
+
+### 🧪 **建议测试**
+
+您现在可以测试搜索性能的改进：
+
+1. **单词搜索**: `love` → 应该快速找到具有相似三元组的结果
+2. **拼写变体**: `beleve` → 应该匹配 `believe`  
+3. **部分匹配**: `beatle` → 应该匹配 `The Beatles`
+
+如果查询仍然感觉慢，您可以进一步：
+
+### 🚀 **高级优化 (如果需要)**
+
+```typescript
+// 使用 word_similarity 进行前缀匹配（如果数据库版本支持）
+const searchByWordSimilarity = async (query: string, take: number) => {
+  // word_similarity 函数更适合前缀/后缀匹配
+  return prisma.$queryRaw`
+    SELECT * FROM "Song" 
+    WHERE word_similarity($1, "title") > 0.4 
+       OR word_similarity($1, "artist") > 0.4
+    ORDER BY word_similarity($1, "title") + word_similarity($1, "artist") DESC
+    LIMIT $2
+  `, [query, take]
+}
+```
+
+**结论**: 您的代码已经可以很好地利用新创建的索引！🎉主要变化是调整阈值以充分利用索引的性能优势。
+
+3. **客户端优化**
+   - 输入防抖 (debounce)
+   - 搜索建议/自动完成
+
+need ui improve

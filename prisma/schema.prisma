@@ -52,15 +52,18 @@ model Song {
   @@index([title, artist])
   @@index([artist])
   @@index([geniusPath])
+  // 添加 pg_trgm GIN 索引用于相似度搜索
+  @@index([title(ops: raw("gin_trgm_ops"))], name: "song_title_trgm_idx", type: Gin)
+  @@index([artist(ops: raw("gin_trgm_ops"))], name: "song_artist_trgm_idx", type: Gin)
 }
 
 model SearchCache {
-  id        String   @id @default(uuid())
-  query     String   @unique
-  songs     Json
+  id         String   @id @default(uuid())
+  query      String   @unique
+  songs      Json
   confidence String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model VocabularyEntry {
