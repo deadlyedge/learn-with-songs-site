@@ -143,12 +143,14 @@ export const SongSearch = () => {
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 					{searchState.source ? (
 						<p className="text-xs uppercase tracking-wide text-muted-foreground">
-							数据来源：
+							Source:
 							{searchState.source === 'database'
-								? '本地缓存'
+								? 'Local'
 								: searchState.source === 'genius'
 								? 'Genius API'
-								: '本地缓存 + Genius'}
+								: searchState.source === 'cache'
+								? 'Cached results'
+								: 'Local + Genius'}
 						</p>
 					) : null}
 					{searchState.canSearchGenius ? (
@@ -158,7 +160,7 @@ export const SongSearch = () => {
 							size="sm"
 							onClick={handleGeniusSearch}
 							disabled={isPending}>
-							{isPending ? '搜索中...' : '通过 Genius 继续搜索'}
+							{isPending ? 'Searching...' : 'Search via Genius'}
 						</Button>
 					) : null}
 				</div>

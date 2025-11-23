@@ -57,3 +57,8 @@ If you want, I can dig into the existing search action and help refactor indexes
 
    - Cancel stale searches (if a new keystroke triggers searchSongs before the prior promise resolves) and show “searching…” states so users know the system is still working.
    - Display metadata (e.g., “From Genius fallback”) using the source field so users know why results popped in.
+
+## bugs
+
+- 未利用pg相似度
+- 未实时反馈

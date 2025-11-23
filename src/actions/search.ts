@@ -2,12 +2,142 @@
 
 import { prisma } from '@/lib/prisma'
 import { searchGeniusSongs } from '@/lib/genius'
+import type { Prisma } from '@/generated/prisma'
 import {
 	GeniusSongResponse,
 	SongSearchResult,
 	SongSearchResponse,
-	SearchSongDTO
+	SearchSongDTO,
 } from '@/types'
+
+type CacheConfidence = 'high' | 'medium' | 'low' | null
+type CacheResult = {
+	songs: SearchSongDTO[]
+	confidence: CacheConfidence
+}
+
+const CACHE_TTL_MS = 1000 * 60 * 60 * 6 // 6 hours cache window
+const SIMILARITY_HIGH_THRESHOLD = 0.45
+const SIMILARITY_LOW_THRESHOLD = 0.35
+
+type SongWithSimilarity = SongSearchResult & {
+	similarity: number
+}
+
+const MIN_CACHE_RESULTS = 3
+
+const normalizeQuery = (value: string) => value.trim().toLowerCase()
+
+const selectFields = {
+	id: true,
+	title: true,
+	artist: true,
+	album: true,
+	geniusPath: true,
+	releaseDate: true,
+	artworkUrl: true,
+	language: true,
+	url: true,
+}
+
+const executeLocalSearch = (where: Prisma.SongWhereInput, take: number) =>
+	prisma.song.findMany({
+		where,
+		select: selectFields,
+		take,
+		orderBy: { releaseDate: 'asc' },
+	})
+
+const searchBySimilarity = async (
+	query: string,
+	take: number
+): Promise<SongWithSimilarity[]> => {
+	const raw = await prisma.$queryRaw<SongWithSimilarity[]>`
+		SELECT
+			"id",
+			"title",
+			"artist",
+			"album",
+			"geniusPath",
+			"releaseDate",
+			"artworkUrl",
+			"language",
+			"url",
+			GREATEST(similarity("title", ${query}), similarity("artist", ${query})) AS similarity
+		FROM "Song"
+		WHERE similarity("title", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
+			OR similarity("artist", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
+		ORDER BY similarity DESC
+		LIMIT ${take}
+	`
+
+	return raw
+}
+
+const determineConfidence = (
+	highMatches: number,
+	mediumMatches: number,
+	totalMatches: number
+): CacheConfidence => {
+	if (highMatches >= 3) {
+		return 'high'
+	}
+	if (highMatches > 0 || mediumMatches >= 2 || totalMatches >= 4) {
+		return 'medium'
+	}
+	return 'low'
+}
+
+const fetchCachedSearchResults = async (
+	normalizedQuery: string
+): Promise<CacheResult | null> => {
+	if (!normalizedQuery) {
+		return null
+	}
+
+	const cacheEntry = await prisma.searchCache.findUnique({
+		where: { query: normalizedQuery },
+	})
+
+	if (!cacheEntry) {
+		return null
+	}
+
+	const age = Date.now() - cacheEntry.updatedAt.getTime()
+	if (age > CACHE_TTL_MS) {
+		return null
+	}
+
+	if (!Array.isArray(cacheEntry.songs)) {
+		return null
+	}
+
+	const confidence = cacheEntry.confidence as CacheConfidence
+	if (!confidence || confidence === 'low') {
+		return null
+	}
+
+	return {
+		songs: cacheEntry.songs as SearchSongDTO[],
+		confidence,
+	}
+}
+
+const cacheSearchResults = async (
+	normalizedQuery: string,
+	songs: SearchSongDTO[],
+	confidence: CacheConfidence
+) => {
+	if (!normalizedQuery || songs.length === 0 || confidence === 'low') {
+		return
+	}
+
+	await prisma.searchCache.upsert({
+		where: { query: normalizedQuery },
+		create: { query: normalizedQuery, songs, confidence },
+		update: { songs, confidence },
+	})
+}
 
 const toSearchSongDTO = (song: SongSearchResult): SearchSongDTO => ({
 	id: song.id,
@@ -58,108 +188,168 @@ const upsertNormalizedSong = (song: GeniusSongResponse) => {
 			url: song.url ?? null,
 			geniusPath: song.path ?? null,
 		},
-		select: {
-			id: true,
-			title: true,
-			artist: true,
-			album: true,
-			geniusPath: true,
-			releaseDate: true,
-			artworkUrl: true,
-			language: true,
-			url: true,
-		},
+		select: selectFields,
 	})
 }
 
-export async function searchSongs({ query, source }: {
+export async function searchSongs({
+	query,
+	source,
+}: {
 	query: string
 	source?: string | null
-}) {
+}): Promise<SongSearchResponse> {
 	if (!query) {
 		throw new Error('Parameter `q` is required for searching songs.')
 	}
 
-	const forceGenius = source === 'genius'
-	const dbSongs: SongSearchResult[] = await prisma.song.findMany({
-		where: {
-			OR: [
-				{ title: { contains: query, mode: 'insensitive' } },
-				{ artist: { contains: query, mode: 'insensitive' } },
-			],
-		},
-		orderBy: {
-			releaseDate: 'asc',
-		},
-		take: 10,
-		select: {
-			id: true,
-			title: true,
-			artist: true,
-			album: true,
-			geniusPath: true,
-			releaseDate: true,
-			artworkUrl: true,
-			language: true,
-			url: true,
-		},
-	})
-
-	const songs: SongSearchResult[] = []
-	const seen = new Set<string>()
-
-	for (const song of dbSongs) {
-		if (!seen.has(song.id)) {
-			seen.add(song.id)
-			songs.push(song)
-		}
+	const trimmedQuery = query.trim()
+	if (!trimmedQuery) {
+		throw new Error('Parameter `q` is required for searching songs.')
 	}
 
-	const needsGenius = forceGenius || dbSongs.length < 3
-	let performedGenius = false
-	let autoContinued = false
+	const normalizedQuery = normalizeQuery(trimmedQuery)
+	const forceGenius = source === 'genius'
 
-	if (needsGenius) {
-		const fallbackSongs: GeniusSongResponse[] = await searchGeniusSongs(query)
-
-		console.log('[Genius Search] ', query)
-
-		if (fallbackSongs.length > 0) {
-			performedGenius = true
-			autoContinued = !forceGenius && dbSongs.length > 0 && dbSongs.length < 3
-
-			const persisted: SongSearchResult[] = await Promise.all(
-				fallbackSongs.slice(0, 10).map((song) => upsertNormalizedSong(song))
-			)
-
-			for (const song of persisted) {
-				if (!seen.has(song.id)) {
-					seen.add(song.id)
-					songs.push(song)
-				}
+	if (!forceGenius) {
+		const cachedSearch = await fetchCachedSearchResults(normalizedQuery)
+		if (cachedSearch && cachedSearch.songs.length >= MIN_CACHE_RESULTS) {
+			return {
+				source: 'cache',
+				songs: cachedSearch.songs,
+				canSearchGenius: !forceGenius,
+				performedGenius: false,
+				autoContinued: false,
 			}
 		}
 	}
 
+	const normalizedWords = trimmedQuery
+		.split(/\s+/)
+		.map((word) => word.trim())
+		.filter((word) => word.length >= 3)
+
+	const mediumConfidenceWhere: Prisma.SongWhereInput = {
+		OR: [
+			{ title: { contains: trimmedQuery, mode: 'insensitive' } },
+			{ artist: { contains: trimmedQuery, mode: 'insensitive' } },
+		],
+	}
+
+	const lowConfidenceWhere: Prisma.SongWhereInput | null =
+		normalizedWords.length > 0
+			? {
+					OR: normalizedWords.flatMap((word) => [
+						{ title: { contains: word, mode: 'insensitive' } },
+						{ artist: { contains: word, mode: 'insensitive' } },
+					]),
+			  }
+			: null
+
+	const songs: SongSearchResult[] = []
+	const seen = new Set<string>()
+
+	const appendUnique = (items: SongSearchResult[]) => {
+		const added: SongSearchResult[] = []
+		for (const song of items) {
+			if (seen.has(song.id)) {
+				continue
+			}
+			seen.add(song.id)
+			added.push(song)
+			songs.push(song)
+			if (songs.length >= 10) {
+				break
+			}
+		}
+		return added
+	}
+
+	const similarityMatches = await searchBySimilarity(trimmedQuery, 6)
+	const similarityHighCount = similarityMatches.filter(
+		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD
+	).length
+	const similarityMediumCount =
+		similarityMatches.filter(
+			(item) =>
+				item.similarity >= SIMILARITY_LOW_THRESHOLD &&
+				item.similarity < SIMILARITY_HIGH_THRESHOLD
+		).length
+
+	appendUnique(similarityMatches)
+
+	const mediumMatches = await executeLocalSearch(mediumConfidenceWhere, 6)
+	const lowMatches =
+		lowConfidenceWhere !== null
+			? await executeLocalSearch(lowConfidenceWhere, 6)
+			: []
+
+	if (songs.length < 10) {
+		appendUnique(mediumMatches)
+	}
+	if (songs.length < 10) {
+		appendUnique(lowMatches)
+	}
+
+	const confidence = determineConfidence(
+		similarityHighCount,
+		similarityMediumCount,
+		songs.length
+	)
+	const shouldCallGenius = forceGenius || confidence === 'low'
+
+	let performedGenius = false
+	let autoContinued = false
+
+	if (!shouldCallGenius) {
+		const songDTOs = songs.map(toSearchSongDTO)
+		await cacheSearchResults(normalizedQuery, songDTOs, confidence)
+
+		return {
+			source: 'database',
+			songs: songDTOs,
+			canSearchGenius: !forceGenius,
+			performedGenius: false,
+			autoContinued: false,
+		}
+	}
+
+	const fallbackSongs: GeniusSongResponse[] = await searchGeniusSongs(
+		trimmedQuery
+	)
+
+	if (fallbackSongs.length > 0) {
+		console.log('[Genius Search] ', trimmedQuery)
+		performedGenius = true
+		autoContinued = !forceGenius && songs.length > 0
+
+		const persisted: SongSearchResult[] = await Promise.all(
+			fallbackSongs.slice(0, 10).map((song) => upsertNormalizedSong(song))
+		)
+
+		appendUnique(persisted)
+	}
+
 	let responseSource: SongSearchResponse['source']
 
-	if (performedGenius && dbSongs.length > 0) {
-		responseSource = 'mixed'
+	if (performedGenius && songs.length > similarityHighCount) {
+		responseSource =
+			similarityHighCount > 0 ? 'mixed' : 'genius'
 	} else if (performedGenius || forceGenius) {
 		responseSource = 'genius'
-	} else if (dbSongs.length > 0) {
+	} else if (songs.length > 0) {
 		responseSource = 'database'
 	} else {
 		responseSource = 'genius'
 	}
 
-	const result: SongSearchResponse = {
+	const resultDTOs = songs.map(toSearchSongDTO)
+
+	return {
 		source: responseSource,
-		songs: songs.map(toSearchSongDTO),
+		songs: resultDTOs,
 		canSearchGenius: !forceGenius,
 		performedGenius,
 		autoContinued,
 	}
-
-	return result
 }

@@ -201,7 +201,7 @@ export type NormalizedReferent = {
 
 // 搜索响应格式 (标准化API响应)
 export type SongSearchResponse = {
-	source: 'database' | 'genius' | 'mixed'
+	source: 'database' | 'genius' | 'mixed' | 'cache'
 	songs: SearchSongDTO[]
 	canSearchGenius: boolean
 	performedGenius: boolean
