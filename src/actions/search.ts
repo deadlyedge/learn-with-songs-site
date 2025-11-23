@@ -10,21 +10,22 @@ import {
 	SearchSongDTO,
 } from '@/types'
 
+import {
+	CACHE_TTL_MS,
+	MIN_CACHE_RESULTS,
+	SIMILARITY_HIGH_THRESHOLD,
+	SIMILARITY_LOW_THRESHOLD,
+} from '@/constants'
+
 type CacheConfidence = 'high' | 'medium' | 'low' | null
 type CacheResult = {
 	songs: SearchSongDTO[]
 	confidence: CacheConfidence
 }
 
-const CACHE_TTL_MS = 1000 * 60 * 60 * 6 // 6 hours cache window
-const SIMILARITY_HIGH_THRESHOLD = 0.45
-const SIMILARITY_LOW_THRESHOLD = 0.35
-
 type SongWithSimilarity = SongSearchResult & {
 	similarity: number
 }
-
-const MIN_CACHE_RESULTS = 3
 
 const normalizeQuery = (value: string) => value.trim().toLowerCase()
 
@@ -269,12 +270,11 @@ export async function searchSongs({
 	const similarityHighCount = similarityMatches.filter(
 		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD
 	).length
-	const similarityMediumCount =
-		similarityMatches.filter(
-			(item) =>
-				item.similarity >= SIMILARITY_LOW_THRESHOLD &&
-				item.similarity < SIMILARITY_HIGH_THRESHOLD
-		).length
+	const similarityMediumCount = similarityMatches.filter(
+		(item) =>
+			item.similarity >= SIMILARITY_LOW_THRESHOLD &&
+			item.similarity < SIMILARITY_HIGH_THRESHOLD
+	).length
 
 	appendUnique(similarityMatches)
 
@@ -333,8 +333,7 @@ export async function searchSongs({
 	let responseSource: SongSearchResponse['source']
 
 	if (performedGenius && songs.length > similarityHighCount) {
-		responseSource =
-			similarityHighCount > 0 ? 'mixed' : 'genius'
+		responseSource = similarityHighCount > 0 ? 'mixed' : 'genius'
 	} else if (performedGenius || forceGenius) {
 		responseSource = 'genius'
 	} else if (songs.length > 0) {

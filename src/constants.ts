@@ -18,3 +18,9 @@ export const MAX_SELECTION_LENGTH = 24
 export const FEATURED_SONGS_COUNT = 6
 export const FEATURED_SONGS_RANDOM_SAMPLE_SIZE = 20
 
+export const CACHE_TTL_MS = 1000 * 60 * 60 * 6 // 6 hours cache window
+export const MIN_CACHE_RESULTS = 3
+
+// similarity contral
+export const SIMILARITY_HIGH_THRESHOLD = 0.45
+export const SIMILARITY_LOW_THRESHOLD = 0.35
