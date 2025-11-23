@@ -12,12 +12,43 @@ import { Toaster } from '@/components/ui/sonner'
 // import Script from 'next/script'
 
 export const metadata: Metadata = {
+	metadataBase: new URL('https://le.zick.me'),
 	title: 'Learn English with Songs',
-	description: '通过歌词搜索与学习，提升英语水平的音乐学习平台。',
+	description:
+		'通过阅读分析英语歌词，伴随兴趣和娱乐提升单词量和英语语感的学习平台。',
+	authors: [
+		{
+			name: 'xdream',
+			url: 'https://github.com/deadlyedge/learn-with-songs-site',
+		},
+		{ name: 'kaka' },
+	],
+	keywords: ['English', 'songs', 'learning', 'vocabulary'],
 	icons: {
 		icon: '/favicon.ico',
 		apple: '/logo_512.png',
+		other: [{ rel: 'apple-touch-icon', url: '/logo_512.png' }],
 	},
+	openGraph: {
+		title: 'Learn English with Songs',
+		description:
+			'通过阅读分析英语歌词，伴随兴趣和娱乐提升单词量和英语语感的学习平台。',
+		url: 'https://le.zick.me',
+		siteName: 'Learn English with Songs',
+		images: '/logo_512.png',
+		locale: 'zh-CN',
+		type: 'website',
+	},
+	// robots: {
+	// 	index: true,
+	// 	follow: true,
+	// },
+}
+
+export const viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	themeColor: '#0ea5e9',
 }
 
 export default function RootLayout({

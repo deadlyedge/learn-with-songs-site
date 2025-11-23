@@ -12,10 +12,7 @@ type CollectButtonProps = {
 	initialCollected?: boolean
 }
 
-const CollectToggleButton = ({
-	songId,
-}: // initialCollected,
-CollectButtonProps) => {
+const CollectToggleButton = ({ songId }: CollectButtonProps) => {
 	const { collections, addToCollections, removeFromCollections, loading } =
 		useUserDataStore()
 	const isCollected = collections.some((song) => song.id === songId)
