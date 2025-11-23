@@ -21,6 +21,9 @@ export const FEATURED_SONGS_RANDOM_SAMPLE_SIZE = 20
 export const CACHE_TTL_MS = 1000 * 60 * 60 * 6 // 6 hours cache window
 export const MIN_CACHE_RESULTS = 3
 
-// similarity contral
+// similarity control
 export const SIMILARITY_HIGH_THRESHOLD = 0.45
 export const SIMILARITY_LOW_THRESHOLD = 0.35
+
+// search results control
+export const MAX_SEARCH_RESULTS = 10

@@ -62,3 +62,78 @@ If you want, I can dig into the existing search action and help refactor indexes
 
 - 未利用pg相似度
 - 未实时反馈
+
+基于您的搜索代码和优化文档分析，我发现了几个关键问题：
+
+## 🎯 **主要性能瓶颈**
+
+### 1. **数据库索引缺失**
+```sql
+-- 当前只有基础索引
+@@index([title, artist])
+@@index([artist])
+
+-- 缺少：
+-- 1. pg_trgm扩展启用 (代码中使用了similarity但没有对应索引)
+-- 2. FULLTEXT SEARCH (GIN/GIST索引)
+-- 3. 归一化字段索引 (适用于不敏感搜索)
+```
+
+### 2. **查询分层执行效率低下**
+- 当前：3个单独的数据库查询（相似度/精确匹配/分词）
+- 问题：不能利用数据库的一次查询返回策略，也没有智能排序
+
+### 3. **缓存策略不完整**
+- ✅ 缓存本地DB结果
+- ❌ 没有缓存Genius API结果
+- 当前依赖于`upsertNormalizedSong`写入数据库，但`searchGeniusSongs`的结果没有直接缓存
+
+### 4. **重复API调用风险**
+没有防卫机制防止并发相同查询重复触发Genius API调用
+
+## 🚀 **具体优化建议**
+
+### **立即可行的改进 (代码层面)**
+
+1. **调整相似度阈值**
+```typescript
+// 当前设置可能过于保守
+export const SIMILARITY_LOW_THRESHOLD = 0.35  // 建议: 0.2-0.3
+export const MIN_CACHE_RESULTS = 3            // 建议: 1或2
+```
+
+2. **改进查询合并策略**
+- 在同一个查询中结合多个匹配类型
+- 使用数据库的智能排序而非应用层排序
+
+### **需要数据库schema更新的改进**
+
+1. **添加pg_trgm索引**
+```sql
+-- 在Prisma schema中添加
+model Song {
+  // ... 现有字段
+  @@index([title(ops: raw("gin_trgm_ops"))])
+  @@index([artist(ops: raw("gin_trgm_ops"))])
+}
+```
+
+2. **创建FULLTEXT SEARCH索引**
+3. **添加归一化生成字段用于不敏感匹配**
+
+### **架构层面优化**
+
+1. **引入Redis/external cache**
+   - 缓存Genius API响应
+   - 实现分布式锁防止重复请求
+
+2. **添加搜索日志/指标**
+   - 查询长度分布
+   - 缓存命中率
+   - Genius调用频率
+
+3. **客户端优化**
+   - 输入防抖 (debounce)
+   - 搜索建议/自动完成
+
+您希望我优先解决哪个方面？我可以帮您实现具体的优化方案。.toggle to Act mode.
