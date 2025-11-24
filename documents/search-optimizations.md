@@ -203,4 +203,4 @@ const searchByWordSimilarity = async (query: string, take: number) => {
    - 输入防抖 (debounce)
    - 搜索建议/自动完成
 
-need ui improve
+[need ui improve](https://www.shadcn-form.com/components/autocomplete)
