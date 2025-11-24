@@ -28,4 +28,4 @@ export const SIMILARITY_LOW_THRESHOLD = 0.35
 // search results control
 export const MAX_SEARCH_RESULTS = 10
 export const SEARCH_DEBOUNCE_DELAY = 300
-export const SEARCH_SUGGESTIONS_LIMIT = 5
+export const SEARCH_SUGGESTIONS_LIMIT = 6
