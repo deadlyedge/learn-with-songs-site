@@ -194,59 +194,51 @@ export const SongSearch = () => {
 				<label className="sr-only" htmlFor="search">
 					歌曲或艺人
 				</label>
-				<Input
-					id="search"
-					placeholder="输入歌曲或艺人名称..."
-					value={query}
-					onChange={(event) => setQuery(event.target.value)}
-					onKeyDown={handleKeyDown}
-					onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-					onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-					className="h-11"
-				/>
-				<Button type="submit" className="h-11 px-6" disabled={isPending}>
-					{isPending ? (
-						<span className="flex items-center">
-							搜索中 <Spinner />
-						</span>
-					) : (
-						'搜索'
-					)}
-				</Button>
-			</form>
+				<div className="relative flex-1">
+					<Input
+						id="search"
+						placeholder="输入歌曲或艺人名称..."
+						value={query}
+						onChange={(event) => setQuery(event.target.value)}
+						onKeyDown={handleKeyDown}
+						onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+						onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+						className="h-11"
+					/>
 
-			{/* Autocomplete Suggestions */}
-			{showSuggestions && suggestions.length > 0 && (
-				<div className="relative">
-					<div className="absolute -top-6 left-0 z-10 w-full max-w-xl">
-						<div className="mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+					{/* Autocomplete Suggestions */}
+					{showSuggestions && suggestions.length > 0 && (
+						<ul
+							className="mt-2 bg-background border rounded-md shadow-sm absolute z-10 w-full max-h-60 overflow-y-auto"
+							role="listbox"
+						>
 							{suggestions.map((suggestion, index) => (
-								<button
+								<li
 									key={`${suggestion.text}-${suggestion.type}-${index}`}
-									type="button"
-									className={`w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none ${
-										index === selectedIndex
-											? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-											: 'text-gray-900 dark:text-gray-100'
+									className={`px-4 py-2 cursor-pointer hover:bg-muted ${
+										index === selectedIndex ? 'bg-muted' : ''
 									}`}
 									onClick={() => handleSuggestionSelect(suggestion)}
-									onMouseEnter={() => setSelectedIndex(index)}>
+									onMouseEnter={() => setSelectedIndex(index)}
+									role="option"
+									aria-selected={index === selectedIndex}
+								>
 									<div className="flex items-center justify-between">
 										<div className="flex items-center space-x-2">
 											<span className="font-medium">{suggestion.text}</span>
 											<span
 												className={`text-xs px-2 py-0.5 rounded-full ${
 													suggestion.type === 'song'
-														? 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200'
+														? 'bg-blue-100 text-blue-800'
 														: suggestion.type === 'artist'
-														? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
-														: 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200'
+														? 'bg-green-100 text-green-800'
+														: 'bg-purple-100 text-purple-800'
 												}`}>
 												{suggestion.type}
 											</span>
 										</div>
 										{suggestion.metadata && (
-											<div className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+											<div className="text-xs text-muted-foreground ml-2">
 												{suggestion.metadata.artist && (
 													<span>by {suggestion.metadata.artist}</span>
 												)}
@@ -259,12 +251,21 @@ export const SongSearch = () => {
 											</div>
 										)}
 									</div>
-								</button>
+								</li>
 							))}
-						</div>
-					</div>
+						</ul>
+					)}
 				</div>
-			)}
+				<Button type="submit" className="h-11 px-6" disabled={isPending}>
+					{isPending ? (
+						<span className="flex items-center">
+							搜索中 <Spinner />
+						</span>
+					) : (
+						'搜索'
+					)}
+				</Button>
+			</form>
 
 			{searchState.error ? (
 				<p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
