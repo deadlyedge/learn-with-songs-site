@@ -73,8 +73,11 @@ const searchBySimilarity = async (
 			"url",
 			GREATEST(similarity("title", ${query}), similarity("artist", ${query})) AS similarity
 		FROM "Song"
-		WHERE similarity("title", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
-			OR similarity("artist", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
+		WHERE "hasDetails" = true  -- ⚡ 只搜索有内容的歌曲，性能显著提升
+			AND (
+				similarity("title", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
+				OR similarity("artist", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
+			)
 		ORDER BY similarity DESC
 		LIMIT ${take}
 	`
@@ -249,7 +252,9 @@ const buildSearchConditions = (trimmedQuery: string) => {
 		.map((word) => word.trim())
 		.filter((word) => word.length >= 3)
 
+	// 🎯 优化：添加 hasDetails 过滤，避免复杂JOIN查询
 	const mediumConfidenceWhere: Prisma.SongWhereInput = {
+		hasDetails: true, // ⚡ 数据库级索引过滤，无需JOIN
 		OR: [
 			{ title: { contains: trimmedQuery, mode: 'insensitive' } },
 			{ artist: { contains: trimmedQuery, mode: 'insensitive' } },
@@ -259,6 +264,7 @@ const buildSearchConditions = (trimmedQuery: string) => {
 	const lowConfidenceWhere: Prisma.SongWhereInput | null =
 		normalizedWords.length > 0
 			? {
+					hasDetails: true, // ⚡ 同样添加hasDetails过滤
 					OR: normalizedWords.flatMap((word) => [
 						{ title: { contains: word, mode: 'insensitive' } },
 						{ artist: { contains: word, mode: 'insensitive' } },

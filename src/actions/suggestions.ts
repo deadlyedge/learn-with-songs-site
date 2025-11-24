@@ -5,6 +5,16 @@ import { Prisma } from '@/generated/prisma'
 import type { SearchSongDTO, Suggestion } from '@/types'
 import { SEARCH_SUGGESTIONS_LIMIT } from '@/constants'
 
+// Type for songs used in suggestion processing
+type ProcessedSong = {
+	id: string
+	title: string
+	artist: string
+	album: string | null
+	hasLyrics: boolean | null
+	hasReferents: boolean | null
+}
+
 /**
  * Get search suggestions from cached results and Song table
  * Combines cache suggestions with database suggestions for better coverage
@@ -148,17 +158,41 @@ async function getCachedSuggestions(
 
 /**
  * Get suggestions directly from Song table for songs with details
- * 🚀 优化后：使用 hasDetails 字段，避免 JOIN 操作
+ * 🚀 智能混合策略：前缀匹配 + 相似度匹配
  */
 async function getSongBasedSuggestions(
 	normalizedQuery: string,
 	suggestionsMap: Map<string, Suggestion & { score: number }>,
 	limit: number
 ) {
-	// Get songs that have been enriched with content (hasDetails = true)
-	const detailedSongs = await prisma.song.findMany({
+	// 实施智能混合匹配策略
+	try {
+		// 方案1: 前缀匹配（精确，高优先级）
+		const prefixResults = await getPrefixMatchingSongs(normalizedQuery, limit)
+
+		// 方案2: 相似度匹配（补充，追加更多相关结果）
+		const similarityResults = await getSimilarityMatchingSongs(normalizedQuery, prefixResults.map(r => r.id), limit)
+
+		// 合并结果并处理评分
+		const allResults = [...prefixResults, ...similarityResults]
+
+		for (const song of allResults) {
+			processSongSuggestion(song, normalizedQuery, suggestionsMap)
+		}
+	} catch (error) {
+		console.error('Error in hybrid search:', error)
+		// 降级到简单的startsWith策略
+		fallbackToPrefixOnly(normalizedQuery, suggestionsMap, limit)
+	}
+}
+
+/**
+ * 前缀匹配策略：精确且快速
+ */
+async function getPrefixMatchingSongs(normalizedQuery: string, limit: number) {
+	return await prisma.song.findMany({
 		where: {
-			hasDetails: true, // ⚡ 索引优化：直接过滤，无需JOIN
+			hasDetails: true,
 			OR: [
 				{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
 				{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
@@ -174,57 +208,136 @@ async function getSongBasedSuggestions(
 			hasReferents: true,
 		},
 		orderBy: {
-			updatedAt: 'desc', // Prefer recently updated songs
+			updatedAt: 'desc',
 		},
-		take: Math.min(limit, 20), // Don't fetch too much
+		take: Math.floor(limit * 0.7), // 前缀匹配占70%配额
 	})
+}
 
-	for (const song of detailedSongs) {
-		// 使用预计算的字段确定内容丰富度评分
-		const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
+/**
+ * 相似度匹配策略：使用pg_trgm相似度
+ */
+async function getSimilarityMatchingSongs(normalizedQuery: string, excludedIds: string[], limit: number) {
+	// 使用Prisma的SQL查询能力进行相似度匹配
+	const similarityThreshold = normalizedQuery.length >= 4 ? 0.4 : 0.6 // 长查询更严格
 
-		// Song title suggestion
-		if (song.title?.toLowerCase().startsWith(normalizedQuery)) {
-			const key = `song:${song.title}`
-			const existing = suggestionsMap.get(key)
+	const rawQuery = `
+		SELECT DISTINCT
+			s.id, s.title, s.artist, s.album, s."hasLyrics", s."hasReferents"
+		FROM "Song" s
+		WHERE s."hasDetails" = true
+			AND s.id NOT IN (${excludedIds.length > 0 ? excludedIds.map(id => `'${id}'`).join(',') : "'dummy'"})
+			AND (
+				similarity(s.title, $1) > $2
+				OR similarity(s.artist, $1) > $2
+				OR similarity(s.album, $1) > $2
+			)
+		ORDER BY
+			-- 综合相似度评分
+			((similarity(s.title, $1) + similarity(s.artist, $1) + similarity(s.album, $1)) / 3) DESC,
+			s."updatedAt" DESC
+		LIMIT $3
+	`
 
-			if (!existing) {
-				suggestionsMap.set(key, {
-					text: song.title,
-					type: 'song',
-					metadata: {
-						artist: song.artist ?? undefined,
-						album: song.album ?? undefined,
-					},
-					score: 1.0 + contentScore, // Detailed songs get good priority
-				})
-			} else {
-				existing.score = Math.max(existing.score, 1.0 + contentScore)
-			}
+	try {
+		const result = await prisma.$queryRawUnsafe(
+			rawQuery,
+			normalizedQuery,
+			similarityThreshold,
+			Math.floor(limit * 0.3) // 相似度匹配占30%配额
+		) as Array<{
+			id: string
+			title: string
+			artist: string
+			album: string | null
+			hasLyrics: boolean
+			hasReferents: boolean
+		}>
+
+		return result
+	} catch (error) {
+		console.error('Similarity search failed:', error)
+		return []
+	}
+}
+
+/**
+ * 处理单个song的suggestion逻辑
+ */
+function processSongSuggestion(
+	song: ProcessedSong,
+	normalizedQuery: string,
+	suggestionsMap: Map<string, Suggestion & { score: number }>
+) {
+	// 根据匹配质量确定基准分
+	const getMatchScore = (field: string | null | undefined, isPrefixMatch: boolean) => {
+		if (!field) return 0
+		const fieldLower = field.toLowerCase()
+
+		// 检查前缀匹配
+		const isPrefix = fieldLower.startsWith(normalizedQuery)
+
+		// 检查完全匹配
+		const isExact = fieldLower === normalizedQuery
+
+		if (isExact) return isPrefixMatch ? 1.2 : 1.1    // 完全匹配最高
+		if (isPrefix) return isPrefixMatch ? 1.0 : 0.9  // 前缀匹配中等
+		if (fieldLower.includes(normalizedQuery)) return 0.7 // 包含匹配较低
+
+		return 0 // 无匹配
+	}
+
+	// 使用预计算的字段确定内容丰富度评分
+	const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
+
+	const isPrefixMatch = Boolean(
+		song.title?.toLowerCase().startsWith(normalizedQuery) ||
+		song.artist?.toLowerCase().startsWith(normalizedQuery) ||
+		song.album?.toLowerCase().startsWith(normalizedQuery)
+	)
+
+	// Song title suggestion
+	const titleScore = getMatchScore(song.title, isPrefixMatch)
+	if (titleScore > 0) {
+		const key = `song:${song.title}`
+		const existing = suggestionsMap.get(key)
+
+		if (!existing) {
+			suggestionsMap.set(key, {
+				text: song.title,
+				type: 'song',
+				metadata: {
+					artist: song.artist ?? undefined,
+					album: song.album ?? undefined,
+				},
+				score: 1.0 + titleScore + (contentScore * 0.5), // 前缀匹配得分更高
+			})
+		} else {
+			existing.score = Math.max(existing.score, 1.0 + titleScore + (contentScore * 0.5))
 		}
+	}
 
-		// Artist suggestion
-		if (song.artist?.toLowerCase().startsWith(normalizedQuery)) {
-			const key = `artist:${song.artist}`
-			const existing = suggestionsMap.get(key)
+	// Artist suggestion
+	const artistScore = getMatchScore(song.artist, isPrefixMatch)
+	if (artistScore > 0) {
+		const key = `artist:${song.artist}`
+		const existing = suggestionsMap.get(key)
 
-			if (!existing) {
-				suggestionsMap.set(key, {
-					text: song.artist,
-					type: 'artist',
-					score: 0.8 + contentScore,
-				})
-			} else {
-				existing.score = Math.max(existing.score, 0.8 + contentScore)
-			}
+		if (!existing) {
+			suggestionsMap.set(key, {
+				text: song.artist,
+				type: 'artist',
+				score: 0.8 + artistScore + (contentScore * 0.3),
+			})
+		} else {
+			existing.score = Math.max(existing.score, 0.8 + artistScore + (contentScore * 0.3))
 		}
+	}
 
-		// Album suggestion
-		if (
-			song.album &&
-			song.album !== song.title &&
-			song.album.toLowerCase().startsWith(normalizedQuery)
-		) {
+	// Album suggestion
+	if (song.album && song.album !== song.title) {
+		const albumScore = getMatchScore(song.album, isPrefixMatch)
+		if (albumScore > 0) {
 			const key = `album:${song.album}`
 			const existing = suggestionsMap.get(key)
 
@@ -235,12 +348,50 @@ async function getSongBasedSuggestions(
 					metadata: {
 						artist: song.artist ?? undefined,
 					},
-					score: 0.6 + contentScore,
+					score: 0.6 + albumScore + (contentScore * 0.2),
 				})
 			} else {
-				existing.score = Math.max(existing.score, 0.6 + contentScore)
+				existing.score = Math.max(existing.score, 0.6 + albumScore + (contentScore * 0.2))
 			}
 		}
+	}
+}
+
+/**
+ * 降级策略：当混合搜索失败时退回到纯前缀匹配
+ */
+async function fallbackToPrefixOnly(
+	normalizedQuery: string,
+	suggestionsMap: Map<string, Suggestion & { score: number }>,
+	limit: number
+) {
+	try {
+		const songs = await prisma.song.findMany({
+			where: {
+				hasDetails: true,
+				OR: [
+					{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
+					{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
+					{ album: { startsWith: normalizedQuery, mode: 'insensitive' } },
+				],
+			},
+			select: {
+				id: true,
+				title: true,
+				artist: true,
+				album: true,
+				hasLyrics: true,
+				hasReferents: true,
+			},
+			orderBy: { updatedAt: 'desc' },
+			take: limit,
+		})
+
+		for (const song of songs) {
+			processSongSuggestion(song, normalizedQuery, suggestionsMap)
+		}
+	} catch (error) {
+		console.error('Fallback search failed:', error)
 	}
 }
 
