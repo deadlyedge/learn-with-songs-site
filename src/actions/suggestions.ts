@@ -148,28 +148,21 @@ async function getCachedSuggestions(
 
 /**
  * Get suggestions directly from Song table for songs with details
+ * 🚀 优化后：使用 hasDetails 字段，避免 JOIN 操作
  */
 async function getSongBasedSuggestions(
 	normalizedQuery: string,
 	suggestionsMap: Map<string, Suggestion & { score: number }>,
 	limit: number
 ) {
-	// Get songs that have been enriched with lyrics or annotations (details available)
+	// Get songs that have been enriched with content (hasDetails = true)
 	const detailedSongs = await prisma.song.findMany({
 		where: {
+			hasDetails: true, // ⚡ 索引优化：直接过滤，无需JOIN
 			OR: [
-				{ lyrics: { isNot: null } }, // Has lyrics
-				{ referents: { some: {} } }, // Has annotations
-				{ detailsFetchedAt: { not: null } }, // Has been processed
-			],
-			AND: [
-				{
-					OR: [
-						{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
-						{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
-						{ album: { startsWith: normalizedQuery, mode: 'insensitive' } },
-					],
-				},
+				{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
+				{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
+				{ album: { startsWith: normalizedQuery, mode: 'insensitive' } },
 			],
 		},
 		select: {
@@ -177,13 +170,8 @@ async function getSongBasedSuggestions(
 			title: true,
 			artist: true,
 			album: true,
-			lyrics: {
-				select: { id: true }, // Just check if exists
-			},
-			referents: {
-				select: { id: true },
-				take: 1, // Just check if exists
-			},
+			hasLyrics: true,
+			hasReferents: true,
 		},
 		orderBy: {
 			updatedAt: 'desc', // Prefer recently updated songs
@@ -192,10 +180,8 @@ async function getSongBasedSuggestions(
 	})
 
 	for (const song of detailedSongs) {
-		// Determine relevance score based on content richness
-		const hasLyrics = !!song.lyrics
-		const hasReferents = song.referents.length > 0
-		const contentScore = (hasLyrics ? 0.8 : 0) + (hasReferents ? 0.2 : 0)
+		// 使用预计算的字段确定内容丰富度评分
+		const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
 
 		// Song title suggestion
 		if (song.title?.toLowerCase().startsWith(normalizedQuery)) {
@@ -307,10 +293,10 @@ export async function getPopularSuggestions(
 			}
 		}
 
-		// Add recently detailed songs (songs with content)
+		// Add recently detailed songs (songs with content) - 使用优化字段
 		const detailedSongs = await prisma.song.findMany({
 			where: {
-				OR: [{ lyrics: { isNot: null } }, { referents: { some: {} } }],
+				hasDetails: true, // ⚡ 索引优化：避免复杂JOIN
 			},
 			select: {
 				id: true,
