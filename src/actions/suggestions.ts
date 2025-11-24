@@ -16,6 +16,62 @@ type ProcessedSong = {
 }
 
 /**
+ * Calculate overall match score for a song based on query relevance
+ */
+function calculateMatchScore(song: ProcessedSong, normalizedQuery: string): number {
+	// 根据匹配质量确定基准分
+	const getMatchScore = (field: string | null | undefined, isPrefixMatch: boolean) => {
+		if (!field) return 0
+		const fieldLower = field.toLowerCase()
+
+		// 检查前缀匹配
+		const isPrefix = fieldLower.startsWith(normalizedQuery)
+
+		// 检查完全匹配
+		const isExact = fieldLower === normalizedQuery
+
+		if (isExact) return isPrefixMatch ? 1.2 : 1.1 // 完全匹配最高
+		if (isPrefix) return isPrefixMatch ? 1.0 : 0.9 // 前缀匹配中等
+		if (fieldLower.includes(normalizedQuery)) return 0.7 // 包含匹配较低
+
+		return 0 // 无匹配
+	}
+
+	// 使用预计算的字段确定内容丰富度评分
+	const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
+
+	const isPrefixMatch = Boolean(
+		song.title?.toLowerCase().startsWith(normalizedQuery) ||
+		song.artist?.toLowerCase().startsWith(normalizedQuery) ||
+		song.album?.toLowerCase().startsWith(normalizedQuery)
+	)
+
+	let totalScore = 0
+
+	// Song title suggestion
+	const titleScore = getMatchScore(song.title, isPrefixMatch)
+	if (titleScore > 0) {
+		totalScore += 1.0 + titleScore + contentScore * 0.5
+	}
+
+	// Artist suggestion
+	const artistScore = getMatchScore(song.artist, isPrefixMatch)
+	if (artistScore > 0) {
+		totalScore += 0.8 + artistScore + contentScore * 0.3
+	}
+
+	// Album suggestion
+	if (song.album && song.album !== song.title) {
+		const albumScore = getMatchScore(song.album, isPrefixMatch)
+		if (albumScore > 0) {
+			totalScore += 0.6 + albumScore + contentScore * 0.2
+		}
+	}
+
+	return totalScore
+}
+
+/**
  * Get search suggestions from cached results and Song table
  * Combines cache suggestions with database suggestions for better coverage
  */
@@ -158,7 +214,7 @@ async function getCachedSuggestions(
 
 /**
  * Get suggestions directly from Song table for songs with details
- * 🚀 智能混合策略：前缀匹配 + 相似度匹配
+ * 🚀 智能混合策略：前缀匹配 + 相似度匹配，统一结果排序
  */
 async function getSongBasedSuggestions(
 	normalizedQuery: string,
@@ -167,22 +223,36 @@ async function getSongBasedSuggestions(
 ) {
 	// 实施智能混合匹配策略
 	try {
-		// 方案1: 前缀匹配（精确，高优先级）
-		const prefixResults = await getPrefixMatchingSongs(normalizedQuery, limit)
+		const candidateLimit = limit * 2 // 给每个策略足够搜索空间
 
-		// 方案2: 相似度匹配（补充，追加更多相关结果）
-		const similarityResults = await getSimilarityMatchingSongs(normalizedQuery, prefixResults.map(r => r.id), limit)
+		// 并行查询：前缀匹配和相似度匹配，各取candidateLimit个候选
+		const [prefixResults, similarityResults] = await Promise.all([
+			getPrefixMatchingSongs(normalizedQuery, candidateLimit),
+			getSimilarityMatchingSongs(normalizedQuery, [], candidateLimit), // 不预排除，让评分决定
+		])
 
-		// 合并结果并处理评分
-		const allResults = [...prefixResults, ...similarityResults]
+		// 合并所有候选结果
+		const allCandidates = [...prefixResults, ...similarityResults]
 
-		for (const song of allResults) {
+		// 计算每条结果的匹配评分
+		const scoredCandidates = allCandidates.map((song) => ({
+			song,
+			score: calculateMatchScore(song, normalizedQuery),
+		}))
+
+		// 按评分排序，取前limit个最佳结果
+		const bestResults = scoredCandidates
+			.sort((a, b) => b.score - a.score)
+			.slice(0, limit)
+
+		// 处理选中的最佳结果
+		for (const { song } of bestResults) {
 			processSongSuggestion(song, normalizedQuery, suggestionsMap)
 		}
 	} catch (error) {
 		console.error('Error in hybrid search:', error)
 		// 降级到简单的startsWith策略
-		fallbackToPrefixOnly(normalizedQuery, suggestionsMap, limit)
+		await fallbackToPrefixOnly(normalizedQuery, suggestionsMap, limit)
 	}
 }
 
@@ -217,35 +287,58 @@ async function getPrefixMatchingSongs(normalizedQuery: string, limit: number) {
 /**
  * 相似度匹配策略：使用pg_trgm相似度
  */
-async function getSimilarityMatchingSongs(normalizedQuery: string, excludedIds: string[], limit: number) {
+async function getSimilarityMatchingSongs(
+	normalizedQuery: string,
+	excludedIds: string[],
+	limit: number
+) {
 	// 使用Prisma的SQL查询能力进行相似度匹配
-	const similarityThreshold = normalizedQuery.length >= 4 ? 0.4 : 0.6 // 长查询更严格
+	// 对包含中间匹配的查询（比如"rose"在"guns n' roses"中），降低阈值
+	const hasMiddleMatches = normalizedQuery.length >= 3 // 3个字符以上的查询可能有中间匹配
+	const similarityThreshold = normalizedQuery.length >= 4 ? 0.3 : hasMiddleMatches ? 0.25 : 0.6
 
+	// 简化SQL查询：先获取候选数据，然后在应用层排序，避免PostgreSQL的DISTINCT约束
 	const rawQuery = `
-		SELECT DISTINCT
-			s.id, s.title, s.artist, s.album, s."hasLyrics", s."hasReferents"
+		SELECT
+			s.id, s.title, s.artist, s.album, s."hasLyrics", s."hasReferents",
+			-- 计算包含匹配的优先级
+			CASE
+				WHEN s.title ILIKE '%' || $1 || '%' THEN 1.0  -- 完全包含匹配最高优先级
+				WHEN s.artist ILIKE '%' || $1 || '%' THEN 0.9 -- 艺术家包含匹配
+				WHEN s.album ILIKE '%' || $1 || '%' THEN 0.8  -- 专辑包含匹配
+				ELSE 0.0  -- 普通相似度匹配
+			END as match_priority,
+			-- 相综合相似度分
+			(similarity(s.title, $1) + similarity(s.artist, $1) + similarity(s.album, $1)) / 3 as avg_similarity,
+			s."updatedAt"
 		FROM "Song" s
 		WHERE s."hasDetails" = true
-			AND s.id NOT IN (${excludedIds.length > 0 ? excludedIds.map(id => `'${id}'`).join(',') : "'dummy'"})
+			AND s.id NOT IN (${
+				excludedIds.length > 0
+					? excludedIds.map((id) => `'${id}'`).join(',')
+					: "'dummy'"
+			})
 			AND (
+				-- 相似度匹配
 				similarity(s.title, $1) > $2
 				OR similarity(s.artist, $1) > $2
 				OR similarity(s.album, $1) > $2
+				-- 直接包含匹配（确保不遗漏）
+				OR s.title ILIKE '%' || $1 || '%'
+				OR s.artist ILIKE '%' || $1 || '%'
+				OR s.album ILIKE '%' || $1 || '%'
 			)
-		ORDER BY
-			-- 综合相似度评分
-			((similarity(s.title, $1) + similarity(s.artist, $1) + similarity(s.album, $1)) / 3) DESC,
-			s."updatedAt" DESC
+		ORDER BY match_priority DESC, avg_similarity DESC, s."updatedAt" DESC
 		LIMIT $3
 	`
 
 	try {
-		const result = await prisma.$queryRawUnsafe(
+		const result = (await prisma.$queryRawUnsafe(
 			rawQuery,
 			normalizedQuery,
 			similarityThreshold,
-			Math.floor(limit * 0.3) // 相似度匹配占30%配额
-		) as Array<{
+			Math.floor(limit * 1) // 增大相似度配额到limit的2倍，因为相似度能发现前缀匹配遗漏的
+		)) as Array<{
 			id: string
 			title: string
 			artist: string
@@ -270,7 +363,10 @@ function processSongSuggestion(
 	suggestionsMap: Map<string, Suggestion & { score: number }>
 ) {
 	// 根据匹配质量确定基准分
-	const getMatchScore = (field: string | null | undefined, isPrefixMatch: boolean) => {
+	const getMatchScore = (
+		field: string | null | undefined,
+		isPrefixMatch: boolean
+	) => {
 		if (!field) return 0
 		const fieldLower = field.toLowerCase()
 
@@ -280,20 +376,21 @@ function processSongSuggestion(
 		// 检查完全匹配
 		const isExact = fieldLower === normalizedQuery
 
-		if (isExact) return isPrefixMatch ? 1.2 : 1.1    // 完全匹配最高
-		if (isPrefix) return isPrefixMatch ? 1.0 : 0.9  // 前缀匹配中等
+		if (isExact) return isPrefixMatch ? 1.2 : 1.1 // 完全匹配最高
+		if (isPrefix) return isPrefixMatch ? 1.0 : 0.9 // 前缀匹配中等
 		if (fieldLower.includes(normalizedQuery)) return 0.7 // 包含匹配较低
 
 		return 0 // 无匹配
 	}
 
 	// 使用预计算的字段确定内容丰富度评分
-	const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
+	const contentScore =
+		(song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
 
 	const isPrefixMatch = Boolean(
 		song.title?.toLowerCase().startsWith(normalizedQuery) ||
-		song.artist?.toLowerCase().startsWith(normalizedQuery) ||
-		song.album?.toLowerCase().startsWith(normalizedQuery)
+			song.artist?.toLowerCase().startsWith(normalizedQuery) ||
+			song.album?.toLowerCase().startsWith(normalizedQuery)
 	)
 
 	// Song title suggestion
@@ -310,10 +407,13 @@ function processSongSuggestion(
 					artist: song.artist ?? undefined,
 					album: song.album ?? undefined,
 				},
-				score: 1.0 + titleScore + (contentScore * 0.5), // 前缀匹配得分更高
+				score: 1.0 + titleScore + contentScore * 0.5, // 前缀匹配得分更高
 			})
 		} else {
-			existing.score = Math.max(existing.score, 1.0 + titleScore + (contentScore * 0.5))
+			existing.score = Math.max(
+				existing.score,
+				1.0 + titleScore + contentScore * 0.5
+			)
 		}
 	}
 
@@ -327,10 +427,13 @@ function processSongSuggestion(
 			suggestionsMap.set(key, {
 				text: song.artist,
 				type: 'artist',
-				score: 0.8 + artistScore + (contentScore * 0.3),
+				score: 0.8 + artistScore + contentScore * 0.3,
 			})
 		} else {
-			existing.score = Math.max(existing.score, 0.8 + artistScore + (contentScore * 0.3))
+			existing.score = Math.max(
+				existing.score,
+				0.8 + artistScore + contentScore * 0.3
+			)
 		}
 	}
 
@@ -348,10 +451,13 @@ function processSongSuggestion(
 					metadata: {
 						artist: song.artist ?? undefined,
 					},
-					score: 0.6 + albumScore + (contentScore * 0.2),
+					score: 0.6 + albumScore + contentScore * 0.2,
 				})
 			} else {
-				existing.score = Math.max(existing.score, 0.6 + albumScore + (contentScore * 0.2))
+				existing.score = Math.max(
+					existing.score,
+					0.6 + albumScore + contentScore * 0.2
+				)
 			}
 		}
 	}

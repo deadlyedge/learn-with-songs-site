@@ -41,9 +41,9 @@ model Song {
   referentsUpdatePeriod UpdatePeriod @default(THREE_MONTHS)
 
   // 生成列 - 通过迁移添加，手动维护同步
-  hasLyrics     Boolean?
-  hasReferents  Boolean?
-  hasDetails    Boolean?
+  hasLyrics    Boolean?
+  hasReferents Boolean?
+  hasDetails   Boolean?
 
   lyrics            Lyric?
   referents         Referent[]

@@ -1,21 +1,38 @@
 -- AlterTable
-ALTER TABLE "Song" ADD COLUMN     "hasDetails" BOOLEAN,
-ADD COLUMN     "hasLyrics" BOOLEAN,
-ADD COLUMN     "hasReferents" BOOLEAN;
+ALTER TABLE "Song"
+ADD COLUMN "hasDetails" BOOLEAN,
+ADD COLUMN "hasLyrics" BOOLEAN,
+ADD COLUMN "hasReferents" BOOLEAN;
 
 -- CreateIndex
 CREATE INDEX "song_album_trgm_idx" ON "Song" USING GIN ("album" gin_trgm_ops);
 
 -- CreateIndex
-CREATE INDEX "song_has_details_idx" ON "Song"("hasDetails", "updatedAt" DESC);
+CREATE INDEX "song_has_details_idx" ON "Song" (
+    "hasDetails",
+    "updatedAt" DESC
+);
 
 -- 填充现有数据
-UPDATE "Song" SET
-  "hasLyrics" = CASE WHEN id IN (SELECT "songId" FROM "Lyric") THEN TRUE ELSE FALSE END,
-  "hasReferents" = CASE WHEN id IN (SELECT DISTINCT "songId" FROM "Referent") THEN TRUE ELSE FALSE END;
+UPDATE "Song"
+SET
+    "hasLyrics" = CASE
+        WHEN id IN (
+            SELECT "songId"
+            FROM "Lyric"
+        ) THEN TRUE
+        ELSE FALSE
+    END,
+    "hasReferents" = CASE
+        WHEN id IN (
+            SELECT DISTINCT
+                "songId"
+            FROM "Referent"
+        ) THEN TRUE
+        ELSE FALSE
+    END;
 
-UPDATE "Song" SET
-  "hasDetails" = ("hasLyrics" OR "hasReferents");
+UPDATE "Song" SET "hasDetails" = ( "hasLyrics" OR "hasReferents" );
 
 -- 创建函数和触发器来保持数据同步
 
@@ -82,8 +99,20 @@ ON "Referent" FOR EACH ROW EXECUTE FUNCTION update_song_has_referents();
 
 -- 验证更新
 SELECT
-  COUNT(*) as total_songs,
-  COUNT(CASE WHEN "hasLyrics" THEN 1 END) as songs_with_lyrics,
-  COUNT(CASE WHEN "hasReferents" THEN 1 END) as songs_with_referents,
-  COUNT(CASE WHEN "hasDetails" THEN 1 END) as songs_with_details
+    COUNT(*) as total_songs,
+    COUNT(
+        CASE
+            WHEN "hasLyrics" THEN 1
+        END
+    ) as songs_with_lyrics,
+    COUNT(
+        CASE
+            WHEN "hasReferents" THEN 1
+        END
+    ) as songs_with_referents,
+    COUNT(
+        CASE
+            WHEN "hasDetails" THEN 1
+        END
+    ) as songs_with_details
 FROM "Song";

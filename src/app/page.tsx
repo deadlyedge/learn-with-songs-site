@@ -1,7 +1,9 @@
 import Image from 'next/image'
-import { SongSearch } from '@/components/song-search'
+// import { SongSearch } from '@/components/song-search'
 // import { Loader } from 'lucide-react'
 import { FeaturedSongs } from '@/components/featured-songs'
+import { InputWithSuggestions } from '@/components/search/input-with-suggestions'
+import { SearchResults } from '@/components/search/search-results'
 
 export default async function HomePage() {
 	return (
@@ -28,7 +30,11 @@ export default async function HomePage() {
 				</section>
 			</div>
 
-			<SongSearch />
+			{/* <SongSearch /> */}
+			<section className="space-y-6 px-1.5">
+				<InputWithSuggestions />
+				<SearchResults />
+			</section>
 
 			{/* <Suspense fallback={<Loader />}> */}
 			<FeaturedSongs />

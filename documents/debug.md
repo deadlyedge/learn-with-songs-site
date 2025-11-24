@@ -4,3 +4,4 @@
 - 添加到生词本后立刻disable‘添加到生词本’按钮，并显示已经添加了
 - 全局not found页面
 - 选取文字时去掉两侧的标点
+- 点选search via genius后，应该只返回genius搜索结果
