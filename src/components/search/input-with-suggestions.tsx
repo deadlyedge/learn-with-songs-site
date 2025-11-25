@@ -3,7 +3,6 @@
 import { FormEvent, useState, useEffect, useRef } from 'react'
 import { Spinner } from '../ui/spinner'
 import { getSearchSuggestions } from '@/actions/suggestions'
-// import type { Suggestion } from '@/types'
 import { useSearchStore } from '@/stores/searchStore'
 import { cn } from '@/lib/utils'
 import {
@@ -36,13 +35,11 @@ export const InputWithSuggestions = () => {
 		query,
 		suggestions,
 		selectedIndex,
-		// showSuggestions,
 		isPending,
 		isExpanded,
 		setQuery,
 		setSuggestions,
 		setSelectedIndex,
-		// setShowSuggestions,
 		setIsExpanded,
 		handleSubmit,
 		handleSuggestionSelect,
@@ -51,15 +48,6 @@ export const InputWithSuggestions = () => {
 	const inputRef = useRef<HTMLInputElement>(null)
 	const debouncedQuery = useDebounce(query)
 
-	// Focus expanded input when expanded
-	// useEffect(() => {
-	// 	if (isExpanded) {
-	// 		setTimeout(() => {
-	// 			inputRef.current?.focus()
-	// 		}, 50)
-	// 	}
-	// }, [isExpanded])
-
 	// Fetch suggestions based on debounced query
 	useEffect(() => {
 		const fetchSuggestions = async () => {
@@ -67,16 +55,13 @@ export const InputWithSuggestions = () => {
 				try {
 					const results = await getSearchSuggestions(debouncedQuery)
 					setSuggestions(results)
-					// setShowSuggestions(results.length > 0)
 					setSelectedIndex(-1)
 				} catch (error) {
 					console.error('Failed to fetch suggestions:', error)
 					setSuggestions([])
-					// setShowSuggestions(false)
 				}
 			} else {
 				setSuggestions([])
-				// setShowSuggestions(false)
 			}
 		}
 
@@ -124,7 +109,6 @@ export const InputWithSuggestions = () => {
 				break
 			case 'Escape':
 				setIsExpanded(false)
-				// setShowSuggestions(false)
 				setSelectedIndex(-1)
 				break
 		}
@@ -136,16 +120,17 @@ export const InputWithSuggestions = () => {
 				歌曲或艺人
 			</label>
 			<div className="relative w-full">
+				<div className="h-12" />
 				<div
 					className={cn(
-						'border-2 rounded-3xl overflow-hidden transition-all duration-300',
+						'absolute top-0 left-1/2 -translate-x-1/2 w-full md:w-2xl border-2 rounded-3xl overflow-hidden transition-all duration-300',
 						isExpanded ? 'bg-card border-primary shadow-lg' : 'border-border'
 					)}>
 					{/* Input area always present */}
 					<InputGroup
 						className={cn(
 							'h-11 border-0',
-							isExpanded ? 'border-b border-border' : ''
+							isExpanded ? 'border-b border-border' : 'hover:bg-card'
 						)}>
 						<InputGroupAddon>
 							<SearchIcon className="h-4 w-4" />
@@ -222,9 +207,13 @@ export const InputWithSuggestions = () => {
 										</div>
 									</div>
 								))
-							) : (
+							) : query ? (
 								<div className="px-4 py-2 text-muted-foreground">
 									没有找到匹配的结果
+								</div>
+							) : (
+								<div className="px-4 py-2 text-muted-foreground">
+									请输入歌曲或艺人名称以搜索
 								</div>
 							)}
 						</div>

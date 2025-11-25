@@ -59,7 +59,7 @@ export async function FeaturedSongs() {
 	}
 
 	return (
-		<section className="space-y-4">
+		<section className="space-y-4 px-2 xl:px-0">
 			<div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
 				<div>
 					<h2 className="text-xl font-semibold">其他收录歌曲</h2>

@@ -56,7 +56,7 @@ export const SearchResults = () => {
 							size="sm"
 							onClick={handleGeniusSearch}
 							disabled={isPending}>
-							{isPending ? 'Searching...' : 'Search via Genius'}
+							{isPending ? 'Searching...' : '继续搜索Genius'}
 						</Button>
 					) : null}
 				</div>

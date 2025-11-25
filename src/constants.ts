@@ -15,7 +15,7 @@ export type DbRefetchStrategy = (typeof DB_REFETCH_STRATEGY)[DbRefetchResource]
 export const DEFAULT_CONTAINER_ID = 'lyrics'
 export const MAX_SELECTION_LENGTH = 24
 
-export const FEATURED_SONGS_COUNT = 6
+export const FEATURED_SONGS_COUNT = 8
 export const FEATURED_SONGS_RANDOM_SAMPLE_SIZE = 20
 
 export const CACHE_TTL_MS = 1000 * 60 * 60 * 6 // 6 hours cache window
