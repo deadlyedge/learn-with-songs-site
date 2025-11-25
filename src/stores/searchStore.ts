@@ -25,7 +25,7 @@ type SearchStore = {
 	query: string
 	suggestions: Suggestion[]
 	selectedIndex: number
-	showSuggestions: boolean
+	// showSuggestions: boolean
 	lastQuery: string
 
 	// Search result state
@@ -33,14 +33,16 @@ type SearchStore = {
 
 	// UI state
 	isPending: boolean
+	isExpanded: boolean
 
 	// Actions
 	setQuery: (query: string) => void
 	setSuggestions: (suggestions: Suggestion[]) => void
 	setSelectedIndex: (index: number) => void
-	setShowSuggestions: (show: boolean) => void
+	// setShowSuggestions: (show: boolean) => void
 	setLastQuery: (query: string) => void
 	setIsPending: (pending: boolean) => void
+	setIsExpanded: (expanded: boolean) => void
 
 	// Search actions
 	resetSearchState: () => void
@@ -62,15 +64,17 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
 	showSuggestions: false,
 	lastQuery: '',
 	isPending: false,
+	isExpanded: false,
 	searchState: initialSearchState,
 
 	// Actions
 	setQuery: (query) => set({ query }),
 	setSuggestions: (suggestions) => set({ suggestions }),
 	setSelectedIndex: (index) => set({ selectedIndex: index }),
-	setShowSuggestions: (show) => set({ showSuggestions: show }),
+	// setShowSuggestions: (show) => set({ showSuggestions: show }),
 	setLastQuery: (query) => set({ lastQuery: query }),
 	setIsPending: (pending) => set({ isPending: pending }),
+	setIsExpanded: (expanded) => set({ isExpanded: expanded }),
 
 	resetSearchState: () =>
 		set(() => ({
@@ -128,9 +132,9 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
 	},
 
 	handleSuggestionSelect: async (suggestion) => {
-		const { setQuery, setShowSuggestions, setSelectedIndex, requestSearch } = get()
+		const { setQuery, setSelectedIndex, setIsExpanded, requestSearch } = get()
 		setQuery(suggestion.text)
-		setShowSuggestions(false)
+		setIsExpanded(false)
 		setSelectedIndex(-1)
 
 		// Automatically trigger search
