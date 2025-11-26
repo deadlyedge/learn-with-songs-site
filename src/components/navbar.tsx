@@ -18,13 +18,13 @@ export const Navbar = () => {
 			<div className="flex items-center">
 				{/* <NavSearch /> */}
 				<SignedIn>
-					<Button variant="link" size="sm" asChild>
+					<Button variant="link" size="sm" asChild className='text-foreground'>
 						<Link href="/vocabulary">
 							<BookIcon />
 							生词本
 						</Link>
 					</Button>
-					<Button variant="link" size="sm" asChild>
+					<Button variant="link" size="sm" asChild className='text-foreground'>
 						<Link href="/collections">
 							<HeartIcon />
 							我的收藏
@@ -34,7 +34,7 @@ export const Navbar = () => {
 				</SignedIn>
 				<SignedOut>
 					<SignInButton mode="modal">
-						<Button variant="link">登入</Button>
+						<Button variant="link" className='text-foreground'>登入</Button>
 					</SignInButton>
 				</SignedOut>
 			</div>

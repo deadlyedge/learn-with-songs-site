@@ -6,6 +6,8 @@ import {
 	ItemTitle,
 } from './ui/item'
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://le.zick.me'
+
 const itemContents = [
 	{
 		title: '贡献者1',
@@ -27,29 +29,21 @@ const itemContents = [
 		title: '隐私权政策',
 		description:
 			'您的登录目前只用来为您提供生词本和收藏服务。详情请点击标题查看。',
-		href: 'https://le.zick.me/privacy',
+		href: `${baseUrl}/privacy`,
 	},
 	{
 		title: '服务条款',
 		description: '我们的服务按"现状"提供。',
-		href: 'https://le.zick.me/terms-of-service',
+		href: `${baseUrl}/terms-of-service`,
 	},
 ]
 
 export const Footer = () => {
 	return (
 		<footer className="flex flex-col items-center justify-center text-xs border-t mt-2 p-2 gap-4">
-			{/* <p>
-				<a href="https://github.com/deadlyedge/learn-with-songs-site">
-					[Source Code],{' '}
-				</a>
-				<a href="https://le.zick.me/privacy">隐私权政策</a>
-				{' 和 '}
-				<a href="https://le.zick.me/terms-of-service">服务条款</a>
-			</p> */}
 			<ItemGroup className="flex-wrap flex-row items-start justify-center gap-6">
 				{itemContents.map((item, index) => (
-					<Item key={index} variant="muted" className="w-64">
+					<Item key={index} variant="muted" className="w-48 sm:w-64">
 						<ItemContent>
 							<ItemTitle>
 								<a href={item.href} target="_blank" className="underline">
