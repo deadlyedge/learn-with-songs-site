@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import { initialUser } from '@/lib/clerk-auth'
 import { revalidatePath } from 'next/cache'
 import {
@@ -18,12 +19,8 @@ import {
 	VocabularyUnauthorizedError,
 } from '@/lib/vocabulary-errors'
 
-// 使用集中化的类型而非内联定义 - 完全基于Prisma type safety
-import type { Prisma } from '@/generated/prisma/client'
-
 // 从Prisma生成的具体操作类型
 type VocabularyCreateInput = Prisma.VocabularyEntryUncheckedCreateInput
-// type VocabularyWhereUniqueInput = Prisma.VocabularyEntryWhereUniqueInput
 
 const findDuplicateEntry = async (options: DuplicateOptions) => {
 	return await prisma.vocabularyEntry.findFirst({

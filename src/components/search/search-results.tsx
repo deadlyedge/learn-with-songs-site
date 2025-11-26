@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import type { SearchSongDTO } from '@/types'
-import { useSearchStore } from '@/stores/searchStore'
+import { useSearchStore } from '@/stores/search'
 
 export const SearchResults = () => {
 	const {

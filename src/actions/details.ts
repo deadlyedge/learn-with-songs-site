@@ -6,22 +6,6 @@ import { isDbResourceStale } from '@/lib/refetch'
 import type { HeaderContents, GeniusSongInfo } from '@/types'
 import type { Song } from '@/generated/prisma/client'
 
-// type SongRecordWithDetails = Prisma.SongGetPayload<{
-// 	select: {
-// 		id: true
-// 		geniusId: true
-// 		title: true
-// 		artist: true
-// 		album: true
-// 		language: true
-// 		url: true
-// 		artworkUrl: true
-// 		geniusPath: true
-// 		details: true
-// 		detailsFetchedAt: true
-// 	}
-// }>
-
 type SongDetailsResponse = {
 	songId: string
 	headerContents: HeaderContents
@@ -31,7 +15,7 @@ export async function getSongDetails(
 	path: string
 ): Promise<SongDetailsResponse> {
 	const geniusPath = `/${path}`
-	const songRecord = await prisma.song.findUnique({
+	const songRecord = (await prisma.song.findUnique({
 		where: { geniusPath },
 		select: {
 			id: true,
@@ -46,7 +30,7 @@ export async function getSongDetails(
 			details: true,
 			detailsFetchedAt: true,
 		},
-	}) as Song | null
+	})) as Song | null
 
 	if (!songRecord) {
 		throw new Error('Song not found')

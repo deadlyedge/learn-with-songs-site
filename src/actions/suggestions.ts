@@ -18,9 +18,15 @@ type ProcessedSong = {
 /**
  * Calculate overall match score for a song based on query relevance
  */
-function calculateMatchScore(song: ProcessedSong, normalizedQuery: string): number {
+function calculateMatchScore(
+	song: ProcessedSong,
+	normalizedQuery: string
+): number {
 	// 根据匹配质量确定基准分
-	const getMatchScore = (field: string | null | undefined, isPrefixMatch: boolean) => {
+	const getMatchScore = (
+		field: string | null | undefined,
+		isPrefixMatch: boolean
+	) => {
 		if (!field) return 0
 		const fieldLower = field.toLowerCase()
 
@@ -38,12 +44,13 @@ function calculateMatchScore(song: ProcessedSong, normalizedQuery: string): numb
 	}
 
 	// 使用预计算的字段确定内容丰富度评分
-	const contentScore = (song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
+	const contentScore =
+		(song.hasLyrics ? 0.8 : 0) + (song.hasReferents ? 0.2 : 0)
 
 	const isPrefixMatch = Boolean(
 		song.title?.toLowerCase().startsWith(normalizedQuery) ||
-		song.artist?.toLowerCase().startsWith(normalizedQuery) ||
-		song.album?.toLowerCase().startsWith(normalizedQuery)
+			song.artist?.toLowerCase().startsWith(normalizedQuery) ||
+			song.album?.toLowerCase().startsWith(normalizedQuery)
 	)
 
 	let totalScore = 0
@@ -295,7 +302,8 @@ async function getSimilarityMatchingSongs(
 	// 使用Prisma的SQL查询能力进行相似度匹配
 	// 对包含中间匹配的查询（比如"rose"在"guns n' roses"中），降低阈值
 	const hasMiddleMatches = normalizedQuery.length >= 3 // 3个字符以上的查询可能有中间匹配
-	const similarityThreshold = normalizedQuery.length >= 4 ? 0.3 : hasMiddleMatches ? 0.25 : 0.6
+	const similarityThreshold =
+		normalizedQuery.length >= 4 ? 0.3 : hasMiddleMatches ? 0.25 : 0.6
 
 	// 简化SQL查询：先获取候选数据，然后在应用层排序，避免PostgreSQL的DISTINCT约束
 	const rawQuery = `

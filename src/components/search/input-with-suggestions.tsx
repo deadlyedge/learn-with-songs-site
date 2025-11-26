@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect, useRef } from 'react'
 import { Spinner } from '../ui/spinner'
 import { getSearchSuggestions } from '@/actions/suggestions'
-import { useSearchStore } from '@/stores/searchStore'
+import { useSearchStore } from '@/stores/search'
 import { cn } from '@/lib/utils'
 import {
 	InputGroup,
