@@ -19,7 +19,7 @@ import {
 } from '@/lib/vocabulary-errors'
 
 // 使用集中化的类型而非内联定义 - 完全基于Prisma type safety
-import type { Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 
 // 从Prisma生成的具体操作类型
 type VocabularyCreateInput = Prisma.VocabularyEntryUncheckedCreateInput

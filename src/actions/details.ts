@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { ensureSongDetails } from '@/lib/song-details'
 import { isDbResourceStale } from '@/lib/refetch'
 import type { HeaderContents, GeniusSongInfo } from '@/types'
-import type { Song } from '@/generated/prisma'
+import type { Song } from '@/generated/prisma/client'
 
 // type SongRecordWithDetails = Prisma.SongGetPayload<{
 // 	select: {

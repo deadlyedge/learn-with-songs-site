@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { searchGeniusSongs } from '@/lib/genius'
-import type { Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import {
 	GeniusSongResponse,
 	SongSearchResult,

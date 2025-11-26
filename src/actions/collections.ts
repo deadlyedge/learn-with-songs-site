@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
-import type { Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import type { CollectionSong } from '@/types'
 
 type UserWithCollections = Prisma.UserGetPayload<{

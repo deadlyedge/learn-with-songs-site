@@ -1,7 +1,7 @@
 // ===== 数据库查询结果类型 (完全基于Prisma生成的类型) =====
 
 // Prisma导入 - 所有数据库相关类型都应当从这里来
-import { Prisma } from '@/generated/prisma'
+import { Prisma } from '@/generated/prisma/client'
 
 // ===== 外部API响应类型 (规范化的API类型定义) =====
 

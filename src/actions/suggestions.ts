@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@/generated/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import type { SearchSongDTO, Suggestion } from '@/types'
 import { SEARCH_SUGGESTIONS_LIMIT } from '@/constants'
 

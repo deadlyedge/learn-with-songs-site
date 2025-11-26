@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { cacheLife } from 'next/cache'
-import type { Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import type { GeniusSongInfo, FeaturedSong } from '@/types'
 
 type SongWithDetails = Prisma.SongGetPayload<{
