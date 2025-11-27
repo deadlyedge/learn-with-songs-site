@@ -83,7 +83,7 @@ export const expandToFullWords = (text: string, start: number, end: number) => {
 	}
 
 	const normalized = text.slice(expandedStart, expandedEnd).trim()
-	return normalized.length ? normalized : null
+	return normalized.length ? removeTrailingPunctuation(normalized) : null
 }
 
 export const findLineElement = (node: Node | null) => {
@@ -131,4 +131,9 @@ export const splitLyrics = (content: string) => {
 	}
 
 	return normalized
+}
+
+// 消除词尾标点符号
+export const removeTrailingPunctuation = (word: string) => {
+	return word.replace(/[,.?;!]$/, '')
 }

@@ -49,8 +49,7 @@ function calculateMatchScore(
 
 	const isPrefixMatch = Boolean(
 		song.title?.toLowerCase().startsWith(normalizedQuery) ||
-			song.artist?.toLowerCase().startsWith(normalizedQuery) ||
-			song.album?.toLowerCase().startsWith(normalizedQuery)
+			song.artist?.toLowerCase().startsWith(normalizedQuery)
 	)
 
 	let totalScore = 0
@@ -65,14 +64,6 @@ function calculateMatchScore(
 	const artistScore = getMatchScore(song.artist, isPrefixMatch)
 	if (artistScore > 0) {
 		totalScore += 0.8 + artistScore + contentScore * 0.3
-	}
-
-	// Album suggestion
-	if (song.album && song.album !== song.title) {
-		const albumScore = getMatchScore(song.album, isPrefixMatch)
-		if (albumScore > 0) {
-			totalScore += 0.6 + albumScore + contentScore * 0.2
-		}
 	}
 
 	return totalScore
@@ -192,29 +183,6 @@ async function getCachedSuggestions(
 					existing.score = Math.max(existing.score, 1.3 + timeBonus)
 				}
 			}
-
-			// Album suggestion
-			if (
-				song.album &&
-				song.album !== song.title &&
-				song.album.toLowerCase().startsWith(normalizedQuery)
-			) {
-				const key = `album:${song.album}`
-				const existing = suggestionsMap.get(key)
-
-				if (!existing) {
-					suggestionsMap.set(key, {
-						text: song.album,
-						type: 'album',
-						metadata: {
-							artist: song.artist ?? undefined,
-						},
-						score: 1.1 + timeBonus,
-					})
-				} else {
-					existing.score = Math.max(existing.score, 1.1 + timeBonus)
-				}
-			}
 		}
 	}
 }
@@ -273,7 +241,6 @@ async function getPrefixMatchingSongs(normalizedQuery: string, limit: number) {
 			OR: [
 				{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
 				{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
-				{ album: { startsWith: normalizedQuery, mode: 'insensitive' } },
 			],
 		},
 		select: {
@@ -313,11 +280,10 @@ async function getSimilarityMatchingSongs(
 			CASE
 				WHEN s.title ILIKE '%' || $1 || '%' THEN 1.0  -- 完全包含匹配最高优先级
 				WHEN s.artist ILIKE '%' || $1 || '%' THEN 0.9 -- 艺术家包含匹配
-				WHEN s.album ILIKE '%' || $1 || '%' THEN 0.8  -- 专辑包含匹配
 				ELSE 0.0  -- 普通相似度匹配
 			END as match_priority,
 			-- 相综合相似度分
-			(similarity(s.title, $1) + similarity(s.artist, $1) + similarity(s.album, $1)) / 3 as avg_similarity,
+			(similarity(s.title, $1) + similarity(s.artist, $1)) / 2 as avg_similarity,
 			s."updatedAt"
 		FROM "Song" s
 		WHERE s."hasDetails" = true
@@ -330,11 +296,9 @@ async function getSimilarityMatchingSongs(
 				-- 相似度匹配
 				similarity(s.title, $1) > $2
 				OR similarity(s.artist, $1) > $2
-				OR similarity(s.album, $1) > $2
 				-- 直接包含匹配（确保不遗漏）
 				OR s.title ILIKE '%' || $1 || '%'
 				OR s.artist ILIKE '%' || $1 || '%'
-				OR s.album ILIKE '%' || $1 || '%'
 			)
 		ORDER BY match_priority DESC, avg_similarity DESC, s."updatedAt" DESC
 		LIMIT $3
@@ -397,8 +361,7 @@ function processSongSuggestion(
 
 	const isPrefixMatch = Boolean(
 		song.title?.toLowerCase().startsWith(normalizedQuery) ||
-			song.artist?.toLowerCase().startsWith(normalizedQuery) ||
-			song.album?.toLowerCase().startsWith(normalizedQuery)
+			song.artist?.toLowerCase().startsWith(normalizedQuery)
 	)
 
 	// Song title suggestion
@@ -444,31 +407,6 @@ function processSongSuggestion(
 			)
 		}
 	}
-
-	// Album suggestion
-	if (song.album && song.album !== song.title) {
-		const albumScore = getMatchScore(song.album, isPrefixMatch)
-		if (albumScore > 0) {
-			const key = `album:${song.album}`
-			const existing = suggestionsMap.get(key)
-
-			if (!existing) {
-				suggestionsMap.set(key, {
-					text: song.album,
-					type: 'album',
-					metadata: {
-						artist: song.artist ?? undefined,
-					},
-					score: 0.6 + albumScore + contentScore * 0.2,
-				})
-			} else {
-				existing.score = Math.max(
-					existing.score,
-					0.6 + albumScore + contentScore * 0.2
-				)
-			}
-		}
-	}
 }
 
 /**
@@ -486,7 +424,6 @@ async function fallbackToPrefixOnly(
 				OR: [
 					{ title: { startsWith: normalizedQuery, mode: 'insensitive' } },
 					{ artist: { startsWith: normalizedQuery, mode: 'insensitive' } },
-					{ album: { startsWith: normalizedQuery, mode: 'insensitive' } },
 				],
 			},
 			select: {

@@ -59,8 +59,6 @@ model Song {
   // 添加 pg_trgm GIN 索引用于相似度搜索
   @@index([title(ops: raw("gin_trgm_ops"))], name: "song_title_trgm_idx", type: Gin)
   @@index([artist(ops: raw("gin_trgm_ops"))], name: "song_artist_trgm_idx", type: Gin)
-  // 新增：album的相似度搜索索引
-  @@index([album(ops: raw("gin_trgm_ops"))], name: "song_album_trgm_idx", type: Gin)
   // 新增：有详情歌曲的优先索引
   @@index([hasDetails, updatedAt(sort: Desc)], name: "song_has_details_idx")
 }
