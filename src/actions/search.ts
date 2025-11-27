@@ -18,7 +18,7 @@ import {
 	MAX_SEARCH_RESULTS,
 } from '@/constants'
 
-type CacheConfidence = 'high' | 'medium' | 'low' | null
+type CacheConfidence = 'high' | 'medium' | 'low' | 'ongoing' | null
 type CacheResult = {
 	songs: SearchSongDTO[]
 	confidence: CacheConfidence
@@ -161,28 +161,49 @@ const markGeniusCallInProgress = async (query: string) => {
 		create: {
 			query,
 			songs: [],
-			confidence: 'ongoing' as CacheConfidence, // Using type assertion since it's not in the enum normally
+			confidence: 'ongoing',
 		},
 		update: {
 			songs: [],
-			confidence: 'ongoing' as CacheConfidence,
+			confidence: 'ongoing',
 			updatedAt: new Date(), // Keep the entry alive
 		},
 	})
 }
 
-// clearGeniusCallInProgress function removed - not needed as markers are replaced by cached results
+/**
+ * Clear the ongoing Genius API call marker for the given query
+ */
+const clearGeniusCallInProgress = async (query: string) => {
+	await prisma.searchCache.updateMany({
+		where: {
+			query,
+			confidence: 'ongoing',
+		},
+		data: {
+			songs: [],
+			confidence: null,
+			updatedAt: new Date(),
+		},
+	})
+}
 
 /**
- * Cached results are now stored only if confidence is not 'low'
- * Results from ongoing calls are not cached (will be cached after completion)
+ * Cache search results if they have valid content and confidence level
+ * Results with 'low' confidence or 'ongoing' status are not cached
  */
 const cacheSearchResults = async (
 	normalizedQuery: string,
 	songs: SearchSongDTO[],
 	confidence: CacheConfidence
 ) => {
-	if (!normalizedQuery || songs.length === 0 || confidence === 'low') {
+	if (
+		!normalizedQuery ||
+		songs.length === 0 ||
+		confidence === 'low' ||
+		confidence === 'ongoing' ||
+		confidence === null
+	) {
 		return
 	}
 
@@ -416,10 +437,16 @@ const handleGeniusFallback = async (
 				await cacheSearchResults(trimmedQuery, songDTOs, confidence)
 
 				return { performedGenius, autoContinued }
+			} else {
+				console.warn(`[Genius Search] No results found for query: "${trimmedQuery}"`)
 			}
+		} catch (error) {
+			console.error(`[Genius Search Error] Failed to search Genius for query "${trimmedQuery}":`, error)
+			// Continue with local results only - don't throw error to user
 		} finally {
 			// Clear the in-progress marker regardless of success or failure
 			// The marker will be replaced with cached results on success
+			await clearGeniusCallInProgress(trimmedQuery)
 		}
 	}
 
@@ -432,15 +459,23 @@ const determineResponseSource = (
 	songs: SongSearchResult[],
 	similarityHighCount: number
 ): SongSearchResponse['source'] => {
-	if (performedGenius && songs.length > similarityHighCount) {
-		return similarityHighCount > 0 ? 'mixed' : 'genius'
-	} else if (performedGenius || forceGenius) {
-		return 'genius'
-	} else if (songs.length > 0) {
-		return 'database'
-	} else {
+	// If forcing Genius or Genius was performed, determine source based on data origin
+	if (forceGenius || performedGenius) {
+		// If we have both Genius results and database results, it's mixed
+		if (performedGenius && similarityHighCount > 0) {
+			return 'mixed'
+		}
+		// Otherwise, it's purely from Genius
 		return 'genius'
 	}
+
+	// If no Genius involvement and we have database results
+	if (songs.length > 0) {
+		return 'database'
+	}
+
+	// Fallback (shouldn't happen in normal flow)
+	return 'genius'
 }
 
 export async function searchSongs({
