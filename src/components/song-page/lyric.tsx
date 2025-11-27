@@ -17,21 +17,19 @@ export const Lyric = async ({ path }: { path: string }) => {
 							<ul className="space-y-2">
 								{lyricLines.map((line, index) =>
 									line === '' ? (
-										// <li key={`spacer-${index}`} className="h-3" />
 										<span
 											key={`spacer-${index}`}
 											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
 											{index + 1}
 										</span>
 									) : (
-										<li key={`${index}-${line}`} className="leading-6">
-											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
+										<li
+											key={`${index}-${line}`}
+											className="leading-6 group/line">
+											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none group-hover/line:font-bold group-hover/line:text-red-400">
 												{index + 1}
 											</span>
-											<span
-												data-line-text={line}
-												data-line-index={index + 1}
-												className="bg-none hover:bg-amber-200 ring-0 ring-amber-300 hover:ring-2">
+											<span data-line-text={line} data-line-index={index + 1}>
 												{line}
 											</span>
 										</li>

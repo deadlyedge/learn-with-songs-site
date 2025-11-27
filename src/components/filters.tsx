@@ -3,8 +3,7 @@ import { Button } from './ui/button'
 import { ButtonGroup } from './ui/button-group'
 import { useUserDataStore } from '@/stores/user-data'
 import type { CollectionSong } from '@/types'
-
-const FILTER_RANGE = ['title', 'artist', 'releaseDate'] as const
+import { FILTER_SETTING } from '@/constants'
 
 export const Filters = () => {
 	const { collectionFilter, setCollectionFilter } = useUserDataStore()
@@ -14,22 +13,19 @@ export const Filters = () => {
 		if (collectionFilter.key === key) {
 			order = collectionFilter.order === 'asc' ? 'desc' : 'asc'
 		}
-		setCollectionFilter({
-			key,
-			order,
-		})
+		setCollectionFilter({ key, order })
 	}
 
 	return (
 		<ButtonGroup className="[--radius:9999rem]">
-			{FILTER_RANGE.map((key) => (
+			{FILTER_SETTING.map(({ show, key }) => (
 				<Button
 					key={key}
 					variant={collectionFilter.key === key ? 'default' : 'outline'}
 					size="sm"
 					className="flex items-center"
 					onClick={() => handleChangeFilter(key)}>
-					{key.charAt(0).toUpperCase() + key.slice(1)}
+					{show.charAt(0).toUpperCase() + show.slice(1)}
 					{collectionFilter.key === key &&
 						(collectionFilter.order === 'desc' ? (
 							<ArrowDownRightIcon />

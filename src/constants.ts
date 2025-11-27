@@ -29,3 +29,10 @@ export const SIMILARITY_LOW_THRESHOLD = 0.35
 export const MAX_SEARCH_RESULTS = 10
 export const SEARCH_DEBOUNCE_DELAY = 300
 export const SEARCH_SUGGESTIONS_LIMIT = 6
+
+// filters in collection page
+export const FILTER_SETTING = [
+	{ show: 'title', key: 'title' },
+	{ show: 'artist', key: 'artist' },
+	{ show: 'release', key: 'releaseDate' },
+] as const
