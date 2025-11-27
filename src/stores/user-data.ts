@@ -16,6 +16,10 @@ type UserDataState = {
 	// State
 	vocabulary: VocabularyEntryWithSongData[]
 	collections: CollectionSong[]
+	collectionFilter: {
+		key: keyof CollectionSong
+		order: 'asc' | 'desc'
+	}
 	loading: boolean
 	error: string | null
 
@@ -45,6 +49,12 @@ type UserDataState = {
 	addToCollections: (songId: string) => Promise<void>
 	removeFromCollections: (songId: string) => Promise<void>
 
+	// Actions - Collections filtering
+	setCollectionFilter: (filter: {
+		key: keyof CollectionSong
+		order: 'asc' | 'desc'
+	}) => void
+
 	// Utility
 	setError: (error: string | null) => void
 	setLoading: (loading: boolean) => void
@@ -54,6 +64,7 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 	// Initial state
 	vocabulary: [],
 	collections: [],
+	collectionFilter: { key: 'title', order: 'asc' },
 	loading: false,
 	error: null,
 
@@ -265,6 +276,28 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		} finally {
 			set({ loading: false })
 		}
+	},
+
+	// Collections filtering
+	setCollectionFilter: ({ key, order }) => {
+		const collections = get().collections
+		const sortedCollections = [...collections].sort((a, b) => {
+			if (a[key] && b[key]) {
+				if (order === 'asc') {
+					return a[key]!.localeCompare(b[key]!)
+				} else {
+					return b[key]!.localeCompare(a[key]!)
+				}
+			}
+			return 0
+		})
+		set({
+			collectionFilter: {
+				key,
+				order,
+			},
+			collections: sortedCollections,
+		})
 	},
 
 	// Utility functions

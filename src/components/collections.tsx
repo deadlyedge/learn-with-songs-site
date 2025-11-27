@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { normalizeSongPath } from '@/lib/utils'
 import { CollectionSong } from '@/types'
+import { Filters } from './filters'
 
 interface CollectionItemProps {
 	song: CollectionSong
@@ -85,7 +86,10 @@ interface CollectionsListProps {
 
 export function CollectionsList({ collections }: CollectionsListProps) {
 	return (
-		<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+		<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 relative">
+			<div className="absolute right-0 -top-10">
+				<Filters />
+			</div>
 			{collections.map((song) => (
 				<CollectionItem key={song.id} song={song} />
 			))}
