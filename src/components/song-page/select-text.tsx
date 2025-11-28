@@ -35,6 +35,7 @@ import {
 	normalizeSongPath,
 } from '@/lib/utils'
 import { useUserDataStore } from '@/stores/user-data'
+import { BookPlusIcon, RefreshCwIcon } from 'lucide-react'
 
 type SelectionInfo = {
 	word: string
@@ -138,10 +139,6 @@ export const SelectText = ({
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const { isSignedIn } = useUser()
 	const { addVocabularyItem } = useUserDataStore()
-
-	// const resetSelection = () => {
-	// 	dispatch({ type: 'RESET' })
-	// }
 
 	const closeAndReset = () => {
 		dispatch({ type: 'CLOSE_DIALOG' })
@@ -362,6 +359,7 @@ export const SelectText = ({
 				songId,
 				songPath: normalizedSongPath!,
 			})
+			dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: true })
 			toast.success('已加入我的生词本')
 		} catch (error) {
 			// Error is already handled by the store
@@ -472,36 +470,48 @@ export const SelectText = ({
 							<p className="text-xs text-destructive">{state.duplicateError}</p>
 						)}
 					</div>
-					<DialogFooter className="gap-2 w-full">
+					<DialogFooter className="gap-2 w-full sm:justify-between">
 						<Button
 							type="button"
+							variant="outline"
 							onClick={handleRefetch}
 							disabled={!state.result || state.isSaving}>
+							<RefreshCwIcon />
 							重新询问AI
 						</Button>
-						{isSignedIn ? (
-							<Button
-								type="button"
-								className="w-full sm:w-auto"
-								onClick={handleAddToVocabulary}
-								disabled={
-									!state.result ||
-									state.isSaving ||
-									state.duplicateExists ||
-									state.duplicateChecking
-								}>
-								{state.isSaving ? '加入中...' : '加入我的生词本'}
-							</Button>
-						) : (
-							<SignInButton mode="modal">
-								<Button onClick={closeAndReset}>登录开启生词本</Button>
-							</SignInButton>
-						)}
-						<DialogClose asChild>
-							<Button type="button" variant="secondary" onClick={closeAndReset}>
-								Close
-							</Button>
-						</DialogClose>
+						<div className="flex items-center justify-between gap-2">
+							{isSignedIn ? (
+								<Button
+									type="button"
+									className="w-full sm:w-auto"
+									onClick={handleAddToVocabulary}
+									disabled={
+										!state.result ||
+										state.isSaving ||
+										state.duplicateExists ||
+										state.duplicateChecking
+									}>
+									<BookPlusIcon />
+									{state.isSaving
+										? '加入中...'
+										: state.duplicateExists
+										? '已经加入生词本'
+										: '加入我的生词本'}
+								</Button>
+							) : (
+								<SignInButton mode="modal">
+									<Button onClick={closeAndReset}>登录开启生词本</Button>
+								</SignInButton>
+							)}
+							<DialogClose asChild>
+								<Button
+									type="button"
+									variant="secondary"
+									onClick={closeAndReset}>
+									Close
+								</Button>
+							</DialogClose>
+						</div>
 					</DialogFooter>
 				</DialogContent>
 			)}

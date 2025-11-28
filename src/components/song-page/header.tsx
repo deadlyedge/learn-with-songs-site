@@ -1,16 +1,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { EditIcon, EyeIcon, Outdent, ShareIcon } from 'lucide-react'
+import { EditIcon, EyeIcon, Outdent } from 'lucide-react'
 import { cn, fonts, hexToRgb01 } from '@/lib/utils'
 
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import Iridescence from '../ui/effects/iridescence'
 
-import Markdown from 'react-markdown'
 import { CollectButton } from './collect-button'
+import { ShareButton } from './share-button'
 import { isSongCollected } from '@/actions/collections'
 import type { HeaderContents } from '@/types'
+import { HeaderDescription } from './header-description'
 
 type HeaderProps = {
 	headerContents: HeaderContents
@@ -18,7 +18,6 @@ type HeaderProps = {
 }
 
 export const Header = async ({ headerContents, songId }: HeaderProps) => {
-	// const { headerContents, songId } = await getSongDetails(path)
 	const isCollected = songId ? await isSongCollected(songId) : false
 
 	return (
@@ -77,12 +76,7 @@ export const Header = async ({ headerContents, songId }: HeaderProps) => {
 						</div>
 						<div className="flex flex-col items-end px-2 gap-1">
 							<div className="flex items-center justify-end gap-2 text-xs">
-								<Badge
-									variant="buttonLike"
-									className="hover:cursor-pointer border-0">
-									<ShareIcon />
-									分享
-								</Badge>
+								<ShareButton />
 								<CollectButton songId={songId} initialCollected={isCollected} />
 							</div>
 							{headerContents.url ? (
@@ -113,19 +107,7 @@ export const Header = async ({ headerContents, songId }: HeaderProps) => {
 						</div>
 					) : null}
 				</div>
-				<div className="w-full md:w-1/2 h-52 overflow-y-auto border rounded-lg bg-white/80 p-2 text-sm text-shadow-none">
-					{headerContents.description ? (
-						<div
-							className={cn(
-								'markdown max-w-none text-sm text-foreground',
-								fonts.sans
-							)}>
-							<Markdown>{headerContents.description}</Markdown>
-						</div>
-					) : (
-						<p className="text-sm text-muted-foreground">歌曲详情加载中。</p>
-					)}
-				</div>
+				<HeaderDescription description={headerContents.description} />
 			</div>
 		</div>
 	)
