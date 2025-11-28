@@ -138,17 +138,10 @@ export const VocabularyCard = ({
 						)}
 					</Button>
 				</div>
-				{/* <Button size="sm" variant="secondary" type="button">
-					<Link
-						href={songHref}
-						className="text-xs font-medium text-primary hover:underline">
-						打开歌词
-					</Link>
-				</Button> */}
 			</CardFooter>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-lg" showCloseButton={false}>
-					<DialogHeader>
+					<DialogHeader className="text-left">
 						<DialogTitle>
 							<span className="text-xs italic text-muted-foreground">
 								word{entry.word.includes(' ') ? 's' : ''}:
@@ -167,11 +160,13 @@ export const VocabularyCard = ({
 					) : (
 						<p className="text-sm text-muted-foreground">暂无说明</p>
 					)}
-					<DialogFooter className="gap-2 w-full">
+					<DialogFooter className="gap-2 w-full flex-row justify-between sm:justify-between">
 						<Button
 							type="button"
+							variant="outline"
 							onClick={handleRefetch}
-							disabled={isRefetching}>
+							disabled={isRefetching}
+							className="w-36">
 							{isRefetching ? '重新询问中...' : '重新询问AI'}
 						</Button>
 						<DialogClose asChild>

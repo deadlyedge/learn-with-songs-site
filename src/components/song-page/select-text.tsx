@@ -1,14 +1,12 @@
 'use client'
 
 import { useEffect, useReducer } from 'react'
-import { SignedIn, SignInButton, useUser } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import {
 	vocabularyEntryExists,
-	// addVocabularyEntry,
 	updateVocabularyEntry,
 } from '@/actions/vocabulary'
 import {
-	// VocabularyDuplicateError,
 	VocabularyPayloadError,
 	VocabularyUnauthorizedError,
 } from '@/lib/vocabulary-errors'
@@ -431,10 +429,10 @@ export const SelectText = ({
 		<Dialog open={state.openDialog}>
 			{state.selection && (
 				<DialogContent className="sm:max-w-lg" showCloseButton={false}>
-					<DialogHeader>
+					<DialogHeader className="text-left">
 						<DialogTitle>
 							<span className="select-none italic text-xs text-muted-foreground font-light">
-								word{state.selection.word.includes(' ') ? 's' : ''}:
+								word{previewText.includes(' ') ? 's' : ''}:
 							</span>{' '}
 							{previewText}
 						</DialogTitle>
@@ -470,22 +468,26 @@ export const SelectText = ({
 							<p className="text-xs text-destructive">{state.duplicateError}</p>
 						)}
 					</div>
-					<DialogFooter className="gap-2 w-full flex-col sm:justify-between">
-						<SignedIn>
+					<DialogFooter className="gap-2 w-full flex-row justify-between sm:justify-between">
+						{isSignedIn ? (
 							<Button
 								type="button"
 								variant="outline"
 								onClick={handleRefetch}
-								disabled={!state.result || state.isSaving}>
+								disabled={!state.result || state.isSaving}
+								className="w-36">
 								<RefreshCwIcon />
 								重新询问AI
 							</Button>
-						</SignedIn>
-						<div className="flex items-center justify-end sm:justify-between gap-2">
+						) : (
+							<div />
+						)}
+
+						<div className="flex items-center justify-end gap-2">
 							{isSignedIn ? (
 								<Button
 									type="button"
-									className="sm:w-auto"
+									className=""
 									onClick={handleAddToVocabulary}
 									disabled={
 										!state.result ||
