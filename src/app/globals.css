@@ -61,7 +61,7 @@
 	--spacing: 0.25rem;
 }
 
-.dark {
+/* .dark {
 	--background: hsl(25 15.3846% 15.2941%);
 	--foreground: hsl(39 34.4828% 88.6275%);
 	--card: hsl(25.7143 13.7255% 20%);
@@ -114,7 +114,7 @@
 	--shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
 		2px 8px 10px -1px hsl(28 13% 20% / 0.12);
 	--shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.3);
-}
+} */
 
 @theme inline {
 	--color-background: var(--background);

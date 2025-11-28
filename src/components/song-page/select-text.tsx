@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useReducer } from 'react'
-import { SignInButton, useUser } from '@clerk/nextjs'
+import { SignedIn, SignInButton, useUser } from '@clerk/nextjs'
 import {
 	vocabularyEntryExists,
 	// addVocabularyEntry,
@@ -470,20 +470,22 @@ export const SelectText = ({
 							<p className="text-xs text-destructive">{state.duplicateError}</p>
 						)}
 					</div>
-					<DialogFooter className="gap-2 w-full sm:justify-between">
-						<Button
-							type="button"
-							variant="outline"
-							onClick={handleRefetch}
-							disabled={!state.result || state.isSaving}>
-							<RefreshCwIcon />
-							重新询问AI
-						</Button>
-						<div className="flex items-center justify-between gap-2">
+					<DialogFooter className="gap-2 w-full flex-col sm:justify-between">
+						<SignedIn>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={handleRefetch}
+								disabled={!state.result || state.isSaving}>
+								<RefreshCwIcon />
+								重新询问AI
+							</Button>
+						</SignedIn>
+						<div className="flex items-center justify-end sm:justify-between gap-2">
 							{isSignedIn ? (
 								<Button
 									type="button"
-									className="w-full sm:w-auto"
+									className="sm:w-auto"
 									onClick={handleAddToVocabulary}
 									disabled={
 										!state.result ||

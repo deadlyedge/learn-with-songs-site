@@ -1,16 +1,13 @@
 import Image from 'next/image'
-// import { SongSearch } from '@/components/song-search'
-// import { Loader } from 'lucide-react'
 import { FeaturedSongs } from '@/components/featured-songs'
 import { InputWithSuggestions } from '@/components/search/input-with-suggestions'
 import { SearchResults } from '@/components/search/search-results'
-// import { ExpandableInput } from '@/components/search/expandable-input'
 
 export default async function HomePage() {
 	return (
 		<div className="space-y-12 pb-10 pt-6">
 			<div className="flex flex-col items-center justify-center">
-				<section className="w-lg rounded-2xl bg-linear-to-r from-primary/10 via-primary/5 to-transparent p-8 shadow-sm">
+				<section className="w-full sm:w-lg rounded-2xl bg-linear-to-r from-primary/10 via-primary/5 to-transparent p-8 shadow-sm">
 					<div className="flex items-center justify-center gap-4">
 						<Image
 							src="/logo_512.png"
@@ -19,7 +16,7 @@ export default async function HomePage() {
 							height={128}
 						/>
 						<div>
-							<h1 className="text-3xl font-semibold sm:text-4xl">
+							<h1 className="text-2xl font-semibold sm:text-3xl">
 								看歌词，学英语
 							</h1>
 							<h2>—— Learning English with Songs</h2>
@@ -31,9 +28,8 @@ export default async function HomePage() {
 				</section>
 			</div>
 
-			{/* <SongSearch /> */}
+			{/* SongSearch */}
 			<section className="space-y-6 px-1.5">
-				{/* <ExpandableInput /> */}
 				<InputWithSuggestions />
 				<SearchResults />
 			</section>
