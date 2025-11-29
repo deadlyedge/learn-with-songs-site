@@ -5,6 +5,7 @@ import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
+import { PWARegister } from '@/components/pwa-register'
 import { Suspense } from 'react'
 import { Loader } from 'lucide-react'
 import { Toaster } from '@/components/ui/sonner'
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
 		apple: '/logo_512.png',
 		other: [{ rel: 'apple-touch-icon', url: '/logo_512.png' }],
 	},
+	manifest: '/manifest.json',
 	openGraph: {
 		title: 'Learn English with Songs',
 		description:
@@ -48,7 +50,7 @@ export const metadata: Metadata = {
 export const viewport = {
 	width: 'device-width',
 	initialScale: 1,
-	themeColor: '#0ea5e9',
+	themeColor: '#4a3f35',
 }
 
 export default function RootLayout({
@@ -67,6 +69,7 @@ export default function RootLayout({
 						defer
 						/> */}
 					<body className={`${fonts.noto} antialiased`}>
+						<PWARegister />
 						<main className="mx-auto w-full xl:w-3/4">
 							<EnsureClerkUser />
 

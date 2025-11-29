@@ -1,0 +1,23 @@
+{
+	"name": "Learn English with Songs",
+	"short_name": "Learn with Songs",
+	"description": "通过阅读分析英语歌词，伴随兴趣和娱乐提升单词量和英语语感的学习平台。",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#4a3f35",
+	"theme_color": "#4a3f35",
+	"lang": "zh-CN",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/logo_128.png",
+			"sizes": "128x128",
+			"type": "image/png"
+		},
+		{
+			"src": "/logo_512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
