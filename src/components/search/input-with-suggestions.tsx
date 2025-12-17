@@ -59,6 +59,7 @@ export const InputWithSuggestions = () => {
 				} catch (error) {
 					console.error('Failed to fetch suggestions:', error)
 					setSuggestions([])
+					location.reload()
 				}
 			} else {
 				setSuggestions([])
@@ -124,13 +125,13 @@ export const InputWithSuggestions = () => {
 				<div
 					className={cn(
 						'absolute top-0 left-1/2 -translate-x-1/2 w-full md:w-2xl border-2 rounded-3xl overflow-hidden transition-all duration-300',
-						isExpanded ? 'bg-card border-primary shadow-lg' : 'border-border'
+						isExpanded ? 'bg-card border-primary shadow-lg' : 'border-border',
 					)}>
 					{/* Input area always present */}
 					<InputGroup
 						className={cn(
 							'h-11 border-0',
-							isExpanded ? 'border-b border-border' : 'hover:bg-card'
+							isExpanded ? 'border-b border-border' : 'hover:bg-card',
 						)}>
 						<InputGroupAddon>
 							<SearchIcon className="h-4 w-4" />
@@ -173,7 +174,7 @@ export const InputWithSuggestions = () => {
 										onMouseDown={() => handleSuggestionSelect(suggestion)}
 										className={cn(
 											'px-4 py-2 cursor-pointer hover:bg-muted transition-colors duration-150',
-											index === selectedIndex ? 'bg-muted' : ''
+											index === selectedIndex ? 'bg-muted' : '',
 										)}
 										role="option"
 										aria-selected={index === selectedIndex}>
@@ -185,8 +186,8 @@ export const InputWithSuggestions = () => {
 														suggestion.type === 'song'
 															? 'bg-blue-100 text-blue-800'
 															: suggestion.type === 'artist'
-															? 'bg-green-100 text-green-800'
-															: 'bg-purple-100 text-purple-800'
+																? 'bg-green-100 text-green-800'
+																: 'bg-purple-100 text-purple-800'
 													}`}>
 													{suggestion.type}
 												</span>
