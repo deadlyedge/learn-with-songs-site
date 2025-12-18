@@ -12,6 +12,7 @@ import {
 	InputGroupInput,
 } from '../ui/input-group'
 import { SearchIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 // Debounce hook for search input
 function useDebounce<T>(value: T, delay = 500): T {
@@ -47,6 +48,16 @@ export const InputWithSuggestions = () => {
 
 	const inputRef = useRef<HTMLInputElement>(null)
 	const debouncedQuery = useDebounce(query)
+	const router = useRouter()
+
+	const isStaleActionError = (error: unknown) => {
+		if (!(error instanceof Error)) return false
+		const msg = error.message || ''
+		return (
+			msg.includes('Failed to find Server Action') ||
+			msg.includes('server-action')
+		)
+	}
 
 	// Fetch suggestions based on debounced query
 	useEffect(() => {
@@ -59,7 +70,10 @@ export const InputWithSuggestions = () => {
 				} catch (error) {
 					console.error('Failed to fetch suggestions:', error)
 					setSuggestions([])
-					location.reload()
+					if (isStaleActionError(error)) {
+						console.error('Stale action error, retrying...')
+						router.refresh()
+					}
 				}
 			} else {
 				setSuggestions([])
@@ -67,7 +81,7 @@ export const InputWithSuggestions = () => {
 		}
 
 		fetchSuggestions()
-	}, [debouncedQuery, setSelectedIndex, setSuggestions])
+	}, [debouncedQuery, router, setSelectedIndex, setSuggestions])
 
 	const handleFocus = () => {
 		setIsExpanded(true)
