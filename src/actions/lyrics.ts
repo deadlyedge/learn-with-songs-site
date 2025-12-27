@@ -27,7 +27,9 @@ export async function getSongLyrics(path: string): Promise<LyricsResponse> {
 	let lyricsError: string | null = null
 
 	const needsRefresh =
-		!lyricRecord || isDbResourceStale(lyricRecord.updatedAt, 'LYRICS')
+		!lyricRecord ||
+		isDbResourceStale(lyricRecord.updatedAt, 'LYRICS') ||
+		!lyricRecord.content?.trim()
 
 	if (needsRefresh) {
 		try {
