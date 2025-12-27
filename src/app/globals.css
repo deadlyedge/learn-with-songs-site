@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -46,16 +46,21 @@
 	--shadow-color: hsl(28 13% 20%);
 	--shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
 	--shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
-	--shadow-sm: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
-		2px 1px 2px -1px hsl(28 13% 20% / 0.12);
-	--shadow: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
-		2px 1px 2px -1px hsl(28 13% 20% / 0.12);
-	--shadow-md: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
-		2px 2px 4px -1px hsl(28 13% 20% / 0.12);
-	--shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
-		2px 4px 6px -1px hsl(28 13% 20% / 0.12);
-	--shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
-		2px 8px 10px -1px hsl(28 13% 20% / 0.12);
+	--shadow-sm:
+		2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px
+		hsl(28 13% 20% / 0.12);
+	--shadow:
+		2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 1px 2px -1px
+		hsl(28 13% 20% / 0.12);
+	--shadow-md:
+		2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 2px 4px -1px
+		hsl(28 13% 20% / 0.12);
+	--shadow-lg:
+		2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 4px 6px -1px
+		hsl(28 13% 20% / 0.12);
+	--shadow-xl:
+		2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 8px 10px -1px
+		hsl(28 13% 20% / 0.12);
 	--shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.3);
 	--tracking-normal: 0em;
 	--spacing: 0.25rem;
@@ -177,7 +182,7 @@
 		@apply bg-background text-foreground;
 	}
 	button:not(:disabled),
-	[role='button']:not(:disabled) {
+	[role="button"]:not(:disabled) {
 		cursor: pointer;
 	}
 	.markdown {

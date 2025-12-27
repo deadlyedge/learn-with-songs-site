@@ -55,3 +55,7 @@ Use `npm run build` / `bun run build` followed by `next start` (or let Vercel ha
 ## License
 
 This project is covered by the [MIT License](LICENSE).
+
+## Todo
+- Improve error handling and loading states.
+- __内容为空或空白__ ← __新增修复__ 修复了lyric为空的重新获取，基于相对稳定的genius api，暂不添加genius api refetch
