@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import { learnWordInLine } from '@/lib/openrouter'
-import { updateVocabularyEntry } from '@/actions/vocabulary'
+import { useUpdateVocabularyEntry } from '@/hooks/use-vocabulary'
 import { normalizeSongPath } from '@/lib/utils'
 
 import { toast } from 'sonner'
@@ -35,7 +35,7 @@ import {
 	CardTitle,
 } from './ui/card'
 
-import { VocabularyEntryWithSongData } from '@/types'
+import type { VocabularyEntryWithSongData } from '@/types'
 
 export type VocabularyEntryCardProps = {
 	entry: VocabularyEntryWithSongData
@@ -54,20 +54,21 @@ export const VocabularyCard = ({
 		: `/${entry.songPath}`
 	const songHref = `/song${normalizedPath}`
 
+	const updateMutation = useUpdateVocabularyEntry()
+
 	const handleRefetch = async () => {
 		setIsRefetching(true)
 		try {
 			const newResult = await learnWordInLine(entry.word, entry.line)
 			setResult(newResult)
-			// 直接更新数据库，不检查重复
-			await updateVocabularyEntry({
-				word: entry.word,
-				line: entry.line,
-				lineNumber: entry.lineNumber,
+
+			// 使用 mutation 更新数据库
+			await updateMutation.mutateAsync({
+				id: entry.id,
 				result: newResult,
-				songId: entry.songId,
 				songPath: normalizeSongPath(entry.songPath)!,
 			})
+
 			toast.success('已重新获取AI解释')
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : '重新询问AI失败')
