@@ -2,7 +2,7 @@
 
 import { FormEvent, useState, useEffect, useRef } from 'react'
 import { Spinner } from '../ui/spinner'
-import { getSearchSuggestions } from '@/actions/suggestions'
+import { useSearchSuggestions } from '@/hooks/use-suggestions'
 import { useSearchStore } from '@/stores/search'
 import { cn } from '@/lib/utils'
 import {
@@ -48,40 +48,17 @@ export const InputWithSuggestions = () => {
 
 	const inputRef = useRef<HTMLInputElement>(null)
 	const debouncedQuery = useDebounce(query)
-	const router = useRouter()
 
-	const isStaleActionError = (error: unknown) => {
-		if (!(error instanceof Error)) return false
-		const msg = error.message || ''
-		return (
-			msg.includes('Failed to find Server Action') ||
-			msg.includes('server-action')
-		)
-	}
+	// Use the new hook for suggestions
+	const { data: suggestionData, isLoading: isSuggestionsLoading } = useSearchSuggestions(debouncedQuery)
 
-	// Fetch suggestions based on debounced query
+	// Update suggestions when data changes
 	useEffect(() => {
-		const fetchSuggestions = async () => {
-			if (debouncedQuery.length >= 2) {
-				try {
-					const results = await getSearchSuggestions(debouncedQuery)
-					setSuggestions(results)
-					setSelectedIndex(-1)
-				} catch (error) {
-					console.error('Failed to fetch suggestions:', error)
-					setSuggestions([])
-					if (isStaleActionError(error)) {
-						console.error('Stale action error, retrying...')
-						router.refresh()
-					}
-				}
-			} else {
-				setSuggestions([])
-			}
+		if (suggestionData !== undefined) {
+			setSuggestions(suggestionData)
+			setSelectedIndex(-1)
 		}
-
-		fetchSuggestions()
-	}, [debouncedQuery, router, setSelectedIndex, setSuggestions])
+	}, [suggestionData, setSuggestions, setSelectedIndex])
 
 	const handleFocus = () => {
 		setIsExpanded(true)
@@ -104,28 +81,32 @@ export const InputWithSuggestions = () => {
 		if (!isExpanded || suggestions.length === 0) return
 
 		switch (e.key) {
-			case 'ArrowDown':
+			case 'ArrowDown': {
 				e.preventDefault()
 				const nextIndex =
 					selectedIndex < suggestions.length - 1 ? selectedIndex + 1 : 0
 				setSelectedIndex(nextIndex)
 				break
-			case 'ArrowUp':
+			}
+			case 'ArrowUp': {
 				e.preventDefault()
 				const prevIndex =
 					selectedIndex > 0 ? selectedIndex - 1 : suggestions.length - 1
 				setSelectedIndex(prevIndex)
 				break
-			case 'Enter':
+			}
+			case 'Enter': {
 				if (selectedIndex >= 0) {
 					e.preventDefault()
 					handleSuggestionSelect(suggestions[selectedIndex])
 				}
 				break
-			case 'Escape':
+			}
+			case 'Escape': {
 				setIsExpanded(false)
 				setSelectedIndex(-1)
 				break
+			}
 		}
 	}
 
@@ -185,13 +166,20 @@ export const InputWithSuggestions = () => {
 								suggestions.map((suggestion, index) => (
 									<div
 										key={`${suggestion.text}-${suggestion.type}-${index}`}
-										onMouseDown={() => handleSuggestionSelect(suggestion)}
+										onClick={() => handleSuggestionSelect(suggestion)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault()
+												handleSuggestionSelect(suggestion)
+											}
+										}}
 										className={cn(
-											'px-4 py-2 cursor-pointer hover:bg-muted transition-colors duration-150',
+											'w-full text-left px-4 py-2 cursor-pointer hover:bg-muted transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary',
 											index === selectedIndex ? 'bg-muted' : '',
 										)}
 										role="option"
-										aria-selected={index === selectedIndex}>
+										aria-selected={index === selectedIndex}
+										tabIndex={0}>
 										<div className="flex items-center justify-between">
 											<div className="flex items-center space-x-2">
 												<span className="font-medium">{suggestion.text}</span>

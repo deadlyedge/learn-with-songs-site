@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { searchSongs } from '@/actions/search'
 import type { SearchSongDTO, SongSearchResponse, Suggestion } from '@/types'
 
 type SearchState = {
@@ -95,7 +94,21 @@ export const useSearchStore = create<SearchStore>((set, get) => ({
 		resetSearchState()
 
 		try {
-			const payload = await searchSongs({ query, source })
+			const params = new URLSearchParams({
+				query: query.trim(),
+			})
+
+			if (source) {
+				params.append('source', source)
+			}
+
+			const res = await fetch(`/api/search?${params}`)
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to search songs')
+			}
+
+			const payload = await res.json()
 
 			updateSearchState({
 				results: payload.songs,

@@ -1,7 +1,12 @@
-import { getSongLyrics } from '@/actions/lyrics'
+'use client'
 
-export const Lyric = async ({ path }: { path: string }) => {
-	const { lyricsError, lyricLines } = await getSongLyrics(path)
+import { useSongLyrics } from '@/hooks/use-song-lyrics'
+
+export const Lyric = ({ path }: { path: string }) => {
+	const { data, isLoading, error } = useSongLyrics(path)
+
+	const lyricsError = data?.lyricsError || (error ? '歌词加载失败' : null)
+	const lyricLines = data?.lyricLines || []
 
 	return (
 		<section className="space-y-2 w-full md:w-1/2">
@@ -15,16 +20,17 @@ export const Lyric = async ({ path }: { path: string }) => {
 					<div className="w-full mb-40">
 						{lyricLines.length > 0 ? (
 							<ul className="space-y-2">
-								{lyricLines.map((line, index) =>
-									line === '' ? (
+								{lyricLines.map((line, index) => {
+									const lineKey = `line-${index}-${line.length}-${line.charCodeAt(0) || 0}`
+									return line === '' ? (
 										<span
-											key={`spacer-${index}`}
+											key={`spacer-${lineKey}`}
 											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
 											{index + 1}
 										</span>
 									) : (
 										<li
-											key={`${index}-${line}`}
+											key={lineKey}
 											className="leading-6 group/line">
 											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none group-hover/line:font-bold group-hover/line:text-red-400">
 												{index + 1}
@@ -34,7 +40,7 @@ export const Lyric = async ({ path }: { path: string }) => {
 											</span>
 										</li>
 									)
-								)}
+								})}
 							</ul>
 						) : (
 							<p className="text-sm text-muted-foreground">
