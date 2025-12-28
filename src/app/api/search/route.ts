@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { searchGeniusSongs } from '@/lib/genius'
-import { Prisma } from '@/generated/prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import type {
 	GeniusSongResponse,
 	SongSearchResult,
@@ -57,7 +57,7 @@ const executeLocalSearch = (where: Prisma.SongWhereInput, take: number) =>
 
 const searchBySimilarity = async (
 	query: string,
-	take: number
+	take: number,
 ): Promise<SongWithSimilarity[]> => {
 	const raw = await prisma.$queryRaw<SongWithSimilarity[]>`
 		SELECT
@@ -87,7 +87,7 @@ const searchBySimilarity = async (
 const determineConfidence = (
 	highMatches: number,
 	mediumMatches: number,
-	totalMatches: number
+	totalMatches: number,
 ): CacheConfidence => {
 	if (highMatches >= 3) {
 		return 'high'
@@ -99,7 +99,7 @@ const determineConfidence = (
 }
 
 const fetchCachedSearchResults = async (
-	normalizedQuery: string
+	normalizedQuery: string,
 ): Promise<CacheResult | null> => {
 	if (!normalizedQuery) {
 		return null
@@ -191,7 +191,7 @@ const clearGeniusCallInProgress = async (query: string) => {
 const cacheSearchResults = async (
 	normalizedQuery: string,
 	songs: SearchSongDTO[],
-	confidence: CacheConfidence
+	confidence: CacheConfidence,
 ) => {
 	if (
 		!normalizedQuery ||
@@ -285,7 +285,7 @@ const buildSearchConditions = (trimmedQuery: string) => {
 						{ title: { contains: word, mode: 'insensitive' } },
 						{ artist: { contains: word, mode: 'insensitive' } },
 					]),
-			  }
+				}
 			: null
 
 	return { mediumConfidenceWhere, lowConfidenceWhere }
@@ -293,7 +293,7 @@ const buildSearchConditions = (trimmedQuery: string) => {
 
 const checkCacheResults = async (
 	normalizedQuery: string,
-	forceGenius: boolean
+	forceGenius: boolean,
 ): Promise<SongSearchResponse | null> => {
 	if (forceGenius) {
 		return null
@@ -361,12 +361,12 @@ const performLocalSearch = async (trimmedQuery: string) => {
 	}))
 
 	const similarityHighCount = songsWithSimilarity.filter(
-		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD
+		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD,
 	).length
 	const similarityMediumCount = songsWithSimilarity.filter(
 		(item) =>
 			item.similarity >= SIMILARITY_LOW_THRESHOLD &&
-			item.similarity < SIMILARITY_HIGH_THRESHOLD
+			item.similarity < SIMILARITY_HIGH_THRESHOLD,
 	).length
 
 	return { songs, similarityHighCount, similarityMediumCount }
@@ -376,14 +376,14 @@ const handleGeniusFallback = async (
 	trimmedQuery: string,
 	forceGenius: boolean,
 	songs: SongSearchResult[],
-	confidence: CacheConfidence
+	confidence: CacheConfidence,
 ) => {
 	if (forceGenius || confidence === 'low') {
 		const callInProgress = await isGeniusCallInProgress(trimmedQuery)
 
 		if (callInProgress) {
 			console.log(
-				`[Genius Search Skipped] Query "${trimmedQuery}" is already being processed`
+				`[Genius Search Skipped] Query "${trimmedQuery}" is already being processed`,
 			)
 			return { performedGenius: false, autoContinued: false }
 		}
@@ -391,9 +391,8 @@ const handleGeniusFallback = async (
 		await markGeniusCallInProgress(trimmedQuery)
 
 		try {
-			const fallbackSongs: GeniusSongResponse[] = await searchGeniusSongs(
-				trimmedQuery
-			)
+			const fallbackSongs: GeniusSongResponse[] =
+				await searchGeniusSongs(trimmedQuery)
 
 			if (fallbackSongs.length > 0) {
 				console.log('[Genius Search] ', trimmedQuery)
@@ -403,7 +402,7 @@ const handleGeniusFallback = async (
 				const persisted: SongSearchResult[] = await Promise.all(
 					fallbackSongs
 						.slice(0, MAX_SEARCH_RESULTS)
-						.map((song) => upsertNormalizedSong(song))
+						.map((song) => upsertNormalizedSong(song)),
 				)
 
 				const seen = new Set(songs.map((song) => song.id))
@@ -422,10 +421,15 @@ const handleGeniusFallback = async (
 
 				return { performedGenius, autoContinued }
 			} else {
-				console.warn(`[Genius Search] No results found for query: "${trimmedQuery}"`)
+				console.warn(
+					`[Genius Search] No results found for query: "${trimmedQuery}"`,
+				)
 			}
 		} catch (error) {
-			console.error(`[Genius Search Error] Failed to search Genius for query "${trimmedQuery}":`, error)
+			console.error(
+				`[Genius Search Error] Failed to search Genius for query "${trimmedQuery}":`,
+				error,
+			)
 		} finally {
 			await clearGeniusCallInProgress(trimmedQuery)
 		}
@@ -438,7 +442,7 @@ const determineResponseSource = (
 	performedGenius: boolean,
 	forceGenius: boolean,
 	songs: SongSearchResult[],
-	similarityHighCount: number
+	similarityHighCount: number,
 ): SongSearchResponse['source'] => {
 	if (forceGenius || performedGenius) {
 		if (performedGenius && similarityHighCount > 0) {
@@ -455,16 +459,16 @@ const determineResponseSource = (
 }
 
 // GET /api/search - 搜索歌曲
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
 	try {
-		const { searchParams } = new URL(request.url)
+		const { searchParams } = request.nextUrl
 		const query = searchParams.get('query')
 		const source = searchParams.get('source')
 
 		if (!query) {
 			return NextResponse.json(
 				{ error: 'Query parameter is required' },
-				{ status: 400 }
+				{ status: 400 },
 			)
 		}
 
@@ -485,7 +489,7 @@ export async function GET(request: Request) {
 		const confidence = determineConfidence(
 			similarityHighCount,
 			similarityMediumCount,
-			songs.length
+			songs.length,
 		)
 
 		// Handle Genius fallback if needed
@@ -493,7 +497,7 @@ export async function GET(request: Request) {
 			trimmedQuery,
 			forceGenius,
 			songs,
-			confidence
+			confidence,
 		)
 
 		// If no Genius was needed, cache the results
@@ -506,7 +510,7 @@ export async function GET(request: Request) {
 			performedGenius,
 			forceGenius,
 			songs,
-			similarityHighCount
+			similarityHighCount,
 		)
 		const resultDTOs = songs.map(toSearchSongDTO)
 
@@ -523,7 +527,7 @@ export async function GET(request: Request) {
 		console.error('Error searching songs:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 }

@@ -27,7 +27,7 @@ export function useSearchSongs() {
 			}
 			return res.json()
 		},
-		onSuccess: (data) => {
+		onSuccess: () => {
 			// Optionally invalidate related queries
 			// This can help keep search suggestions fresh
 			queryClient.invalidateQueries({ queryKey: ['suggestions'] })

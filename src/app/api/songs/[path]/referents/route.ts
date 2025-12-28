@@ -15,11 +15,11 @@ type ReferentsResponse = {
 
 // GET /api/songs/[path]/referents - 获取歌曲 Genius annotations
 export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ path: string }> }
+	// request: Request,
+	context: { params: Promise<{ path: string }> },
 ) {
 	try {
-		const { path } = await params
+		const { path } = await context.params
 		const geniusPath = `/${path}`
 
 		// First find the song by path to get the songId
@@ -29,10 +29,7 @@ export async function GET(
 		})
 
 		if (!songRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		const songId = songRecord.id
@@ -50,10 +47,7 @@ export async function GET(
 		})
 
 		if (!fullSongRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		let referents: NormalizedReferent[] = []
@@ -61,7 +55,7 @@ export async function GET(
 		const hasCachedReferents = cachedReferents.length > 0
 		const needsRefresh = isDbResourceStale(
 			fullSongRecord.referentsFetchedAt,
-			'REFERENTS'
+			'REFERENTS',
 		)
 
 		if (hasCachedReferents && !needsRefresh) {
@@ -75,7 +69,7 @@ export async function GET(
 			try {
 				if (!fullSongRecord.geniusId) throw new Error('No geniusId')
 				const referentsResponse = await fetchGeniusReferents(
-					fullSongRecord.geniusId
+					fullSongRecord.geniusId,
 				)
 				referents = normalizeReferents(referentsResponse)
 				await cacheReferentsForSong(fullSongRecord.id, referents, {
@@ -98,7 +92,7 @@ export async function GET(
 		console.error('Error fetching song referents:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 }

@@ -1,15 +1,4 @@
 import { create } from 'zustand'
-import {
-	getUserVocabulary,
-	addVocabularyEntry,
-	updateVocabularyEntry,
-	switchMasteredState,
-} from '@/actions/vocabulary'
-import {
-	getUserCollections,
-	addSongToUserCollections,
-	removeSongFromUserCollections,
-} from '@/actions/collections'
 import type { CollectionSong, VocabularyEntryWithSongData } from '@/types'
 
 type UserDataState = {
@@ -40,7 +29,7 @@ type UserDataState = {
 	}) => Promise<void>
 	updateVocabularyItem: (
 		id: string,
-		updates: { word?: string; line?: string; result?: string }
+		updates: { word?: string; line?: string; result?: string },
 	) => Promise<void>
 	toggleMastered: (id: string) => Promise<void>
 
@@ -83,12 +72,13 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 	fetchVocabulary: async () => {
 		set({ loading: true, error: null })
 		try {
-			const vocabulary = await getUserVocabulary()
-			if (vocabulary) {
-				set({ vocabulary, loading: false })
-			} else {
-				set({ loading: false, error: 'Failed to load vocabulary' })
+			const res = await fetch('/api/vocabulary')
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to fetch vocabulary')
 			}
+			const data = await res.json()
+			set({ vocabulary: data.vocabulary, loading: false })
 		} catch (error) {
 			set({
 				loading: false,
@@ -113,7 +103,15 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		set({ vocabulary: [...vocabulary, optimisticItem], loading: true })
 
 		try {
-			await addVocabularyEntry(item)
+			const res = await fetch('/api/vocabulary', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(item),
+			})
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to add vocabulary entry')
+			}
 			// Refresh data to get the real entry
 			await get().fetchVocabulary()
 		} catch (error) {
@@ -142,20 +140,24 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		const optimisticItem = { ...originalItem, ...updates }
 		set({
 			vocabulary: vocabulary.map((item) =>
-				item.id === id ? optimisticItem : item
+				item.id === id ? optimisticItem : item,
 			),
 			loading: true,
 		})
 
 		try {
-			await updateVocabularyEntry({
-				word: optimisticItem.word,
-				line: optimisticItem.line,
-				lineNumber: optimisticItem.lineNumber,
-				result: optimisticItem.result,
-				songId: optimisticItem.songId,
-				songPath: optimisticItem.songPath,
+			const res = await fetch(`/api/vocabulary/${id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					result: optimisticItem.result,
+					songPath: optimisticItem.songPath,
+				}),
 			})
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to update vocabulary entry')
+			}
 		} catch (error) {
 			// Revert optimistic update
 			set({
@@ -180,17 +182,23 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		const newMastered = !item.mastered
 		set({
 			vocabulary: vocabulary.map((v) =>
-				v.id === id ? { ...v, mastered: newMastered } : v
+				v.id === id ? { ...v, mastered: newMastered } : v,
 			),
 		})
 
 		try {
-			await switchMasteredState(id)
+			const res = await fetch(`/api/vocabulary/${id}/mastered`, {
+				method: 'PATCH',
+			})
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to toggle mastered state')
+			}
 		} catch (error) {
 			// Revert optimistic update
 			set({
 				vocabulary: vocabulary.map((v) =>
-					v.id === id ? { ...v, mastered: item.mastered } : v
+					v.id === id ? { ...v, mastered: item.mastered } : v,
 				),
 				error:
 					error instanceof Error
@@ -204,12 +212,13 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 	fetchCollections: async () => {
 		set({ loading: true, error: null })
 		try {
-			const collections = await getUserCollections()
-			if (collections) {
-				set({ collections, loading: false })
-			} else {
-				set({ loading: false, error: 'Failed to load collections' })
+			const res = await fetch('/api/collections')
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to fetch collections')
 			}
+			const data = await res.json()
+			set({ collections: data.collections, loading: false })
 		} catch (error) {
 			set({
 				loading: false,
@@ -236,7 +245,15 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		set({ collections: [...collections, tempSong], loading: true })
 
 		try {
-			await addSongToUserCollections(songId)
+			const res = await fetch('/api/collections', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ songId }),
+			})
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to add to collection')
+			}
 			// Refresh to get complete song data
 			await get().fetchCollections()
 		} catch (error) {
@@ -263,7 +280,13 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 		})
 
 		try {
-			await removeSongFromUserCollections(songId)
+			const res = await fetch(`/api/collections/${songId}`, {
+				method: 'DELETE',
+			})
+			if (!res.ok) {
+				const error = await res.json()
+				throw new Error(error.error || 'Failed to remove from collection')
+			}
 		} catch (error) {
 			// Revert optimistic update
 			set({
@@ -282,11 +305,13 @@ export const useUserDataStore = create<UserDataState>((set, get) => ({
 	setCollectionFilter: ({ key, order }) => {
 		const collections = get().collections
 		const sortedCollections = [...collections].sort((a, b) => {
-			if (a[key] && b[key]) {
+			const aValue = a[key]
+			const bValue = b[key]
+			if (aValue && bValue) {
 				if (order === 'asc') {
-					return a[key]!.localeCompare(b[key]!)
+					return aValue.localeCompare(bValue)
 				} else {
-					return b[key]!.localeCompare(a[key]!)
+					return bValue.localeCompare(aValue)
 				}
 			}
 			return 0
