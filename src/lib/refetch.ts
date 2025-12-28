@@ -30,7 +30,7 @@ const toDate = (value: Date | string | null | undefined) => {
 
 export const isDbResourceStale = (
 	lastFetchedAt: Date | string | null | undefined,
-	resource: DbRefetchResource
+	resource: DbRefetchResource,
 ) => {
 	const date = toDate(lastFetchedAt)
 	if (!date) {

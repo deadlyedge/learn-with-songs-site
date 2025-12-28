@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
+import { prisma } from '@/lib/prisma'
 
 // DELETE /api/collections/[songId] - 从用户收藏中移除歌曲
 export async function DELETE(
-	request: NextRequest,
-	{ params }: { params: Promise<{ songId: string }> }
+	_request: NextRequest,
+	{ params }: { params: Promise<{ songId: string }> },
 ) {
 	try {
 		const user = await initialUser()
@@ -37,14 +37,17 @@ export async function DELETE(
 		return NextResponse.json({ success: true })
 	} catch (error) {
 		console.error('Error removing from collection:', error)
-		return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+		return NextResponse.json(
+			{ error: 'Internal server error' },
+			{ status: 500 },
+		)
 	}
 }
 
 // GET /api/collections/[songId] - 检查歌曲是否已被用户收藏
 export async function GET(
-	request: NextRequest,
-	{ params }: { params: Promise<{ songId: string }> }
+	_request: NextRequest,
+	{ params }: { params: Promise<{ songId: string }> },
 ) {
 	try {
 		const user = await initialUser()
@@ -66,6 +69,9 @@ export async function GET(
 		return NextResponse.json({ isCollected: count > 0 })
 	} catch (error) {
 		console.error('Error checking collection status:', error)
-		return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+		return NextResponse.json(
+			{ error: 'Internal server error' },
+			{ status: 500 },
+		)
 	}
 }

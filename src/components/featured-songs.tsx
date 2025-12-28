@@ -1,10 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
-
-import type { FeaturedSong } from '@/types'
+import Link from 'next/link'
 import { useFeaturedSongs } from '@/hooks/use-featured-songs'
+import type { FeaturedSong } from '@/types'
 
 function SongListItem({
 	song,
@@ -16,7 +15,8 @@ function SongListItem({
 	return (
 		<Link
 			href={`/song${song.geniusPath}`}
-			className="group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3 transition hover:border-primary/60 hover:bg-primary/5">
+			className="group flex items-center gap-3 rounded-lg border border-border/70 bg-background/80 p-3 transition hover:border-primary/60 hover:bg-primary/5"
+		>
 			{song.artworkUrl ? (
 				<Image
 					src={song.artworkUrl}
@@ -65,7 +65,9 @@ export function FeaturedSongs() {
 							可以快速打开的本地歌曲列表。
 						</p>
 					</div>
-					<p className="text-xs text-muted-foreground">根据 Genius 浏览量排列</p>
+					<p className="text-xs text-muted-foreground">
+						根据 Genius 浏览量排列
+					</p>
 				</div>
 				<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
 					<SongListItemSkeleton key="skeleton-1" />

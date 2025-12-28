@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { type NextRequest, NextResponse } from 'next/server'
 import { initialUser } from '@/lib/clerk-auth'
+import { prisma } from '@/lib/prisma'
 import { transformVocabularyEntriesToDisplayData } from '@/lib/transforms'
-import type { VocabularyEntryWithFullSong } from '@/types'
+import type { VocabularyEntryWithFullSong, VocabularyPayload } from '@/types'
 
 // Constants
 const ERROR_MESSAGES = {
@@ -21,7 +21,7 @@ const ensureLoggedInUser = async () => {
 	return user
 }
 
-const validateVocabularyPayload = (payload: any) => {
+const validateVocabularyPayload = (payload: VocabularyPayload) => {
 	const { word, line, songId, result, songPath } = payload
 
 	if (!word?.trim() || !line?.trim() || !songId || !result || !songPath) {
@@ -73,10 +73,15 @@ export async function GET() {
 		return NextResponse.json({ vocabulary: transformedData })
 	} catch (error) {
 		console.error('Error fetching vocabulary:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }
@@ -102,7 +107,7 @@ export async function POST(request: NextRequest) {
 		if (existing) {
 			return NextResponse.json(
 				{ error: ERROR_MESSAGES.DUPLICATE_ENTRY },
-				{ status: 409 }
+				{ status: 409 },
 			)
 		}
 
@@ -118,15 +123,22 @@ export async function POST(request: NextRequest) {
 			},
 		})
 
-		console.log(`[Vocabulary Add] '${validPayload.word}' added by '${user.name}'`)
+		console.log(
+			`[Vocabulary Add] '${validPayload.word}' added by '${user.name}'`,
+		)
 
 		return NextResponse.json({ entry: newEntry })
 	} catch (error) {
 		console.error('Error adding vocabulary entry:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }
@@ -140,7 +152,7 @@ export async function PUT(request: NextRequest) {
 		if (!word?.trim() || !line?.trim() || !songId) {
 			return NextResponse.json(
 				{ error: ERROR_MESSAGES.MISSING_FIELDS },
-				{ status: 400 }
+				{ status: 400 },
 			)
 		}
 
@@ -172,10 +184,15 @@ export async function PUT(request: NextRequest) {
 		})
 	} catch (error) {
 		console.error('Error checking vocabulary entry:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }

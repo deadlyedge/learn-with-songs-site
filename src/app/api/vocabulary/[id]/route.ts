@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { type NextRequest, NextResponse } from 'next/server'
 import { initialUser } from '@/lib/clerk-auth'
+import { prisma } from '@/lib/prisma'
 
 // Constants
 const ERROR_MESSAGES = {
@@ -21,7 +21,7 @@ const ensureLoggedInUser = async () => {
 // PUT /api/vocabulary/[id] - 更新词汇条目
 export async function PUT(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const user = await ensureLoggedInUser()
@@ -31,7 +31,7 @@ export async function PUT(
 		if (!result?.trim() || !songPath) {
 			return NextResponse.json(
 				{ error: ERROR_MESSAGES.MISSING_FIELDS },
-				{ status: 400 }
+				{ status: 400 },
 			)
 		}
 
@@ -46,7 +46,7 @@ export async function PUT(
 		if (!existing) {
 			return NextResponse.json(
 				{ error: ERROR_MESSAGES.ENTRY_NOT_FOUND },
-				{ status: 404 }
+				{ status: 404 },
 			)
 		}
 
@@ -61,18 +61,23 @@ export async function PUT(
 		return NextResponse.json({ entry: updatedEntry })
 	} catch (error) {
 		console.error('Error updating vocabulary entry:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }
 
 // PATCH /api/vocabulary/[id]/mastered - 切换掌握状态
 export async function PATCH(
-	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	_request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const user = await ensureLoggedInUser()
@@ -89,7 +94,7 @@ export async function PATCH(
 		if (!existing) {
 			return NextResponse.json(
 				{ error: ERROR_MESSAGES.ENTRY_NOT_FOUND },
-				{ status: 404 }
+				{ status: 404 },
 			)
 		}
 
@@ -106,10 +111,15 @@ export async function PATCH(
 		return NextResponse.json({ entry: updatedEntry })
 	} catch (error) {
 		console.error('Error toggling mastered state:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }

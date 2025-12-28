@@ -1,6 +1,6 @@
-import { cn, fonts } from '@/lib/utils'
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
 import Markdown from 'react-markdown'
+import { cn, fonts } from '@/lib/utils'
 import { Button } from '../ui/button'
 
 type HeaderDescriptionProps = { description: string }
@@ -14,7 +14,8 @@ export const HeaderDescription = ({ description }: HeaderDescriptionProps) => {
 						<Button
 							size="sm"
 							variant="link"
-							className="text-foreground text-xs">
+							className="text-foreground text-xs"
+						>
 							登入可显示中文简介
 						</Button>
 					</SignInButton>
@@ -23,8 +24,9 @@ export const HeaderDescription = ({ description }: HeaderDescriptionProps) => {
 					<div
 						className={cn(
 							'markdown max-w-none text-sm text-foreground',
-							fonts.sans
-						)}>
+							fonts.sans,
+						)}
+					>
 						<Markdown>{description}</Markdown>
 					</div>
 				) : (
@@ -39,8 +41,9 @@ export const HeaderDescription = ({ description }: HeaderDescriptionProps) => {
 					<div
 						className={cn(
 							'markdown max-w-none text-sm text-foreground',
-							fonts.sans
-						)}>
+							fonts.sans,
+						)}
+					>
 						<Markdown>{description}</Markdown>
 					</div>
 				) : (

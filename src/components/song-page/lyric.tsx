@@ -18,20 +18,19 @@ export const Lyric = ({ path }: { path: string }) => {
 					</p>
 				) : (
 					<div className="w-full mb-40">
-						{lyricLines.length > 0 ? (
+						{!isLoading || lyricLines.length > 0 ? (
 							<ul className="space-y-2">
 								{lyricLines.map((line, index) => {
 									const lineKey = `line-${index}-${line.length}-${line.charCodeAt(0) || 0}`
 									return line === '' ? (
 										<span
 											key={`spacer-${lineKey}`}
-											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none">
+											className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none"
+										>
 											{index + 1}
 										</span>
 									) : (
-										<li
-											key={lineKey}
-											className="leading-6 group/line">
+										<li key={lineKey} className="leading-6 group/line">
 											<span className="w-8 text-xs -ml-2 mr-1 text-gray-500 font-thin italic select-none group-hover/line:font-bold group-hover/line:text-red-400">
 												{index + 1}
 											</span>

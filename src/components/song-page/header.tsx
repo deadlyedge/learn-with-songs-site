@@ -1,15 +1,13 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import { EditIcon, EyeIcon, Outdent } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { cn, fonts, hexToRgb01 } from '@/lib/utils'
-
+import type { HeaderContents } from '@/types'
 import { Button } from '../ui/button'
 import Iridescence from '../ui/effects/iridescence'
-
 import { CollectButton } from './collect-button'
-import { ShareButton } from './share-button'
-import type { HeaderContents } from '@/types'
 import { HeaderDescription } from './header-description'
+import { ShareButton } from './share-button'
 
 type HeaderProps = {
 	headerContents: HeaderContents
@@ -32,7 +30,8 @@ function HeaderContent({ headerContents, songId }: HeaderProps) {
 
 			<Link
 				href="/"
-				className="text-sm font-medium text-secondary underline-offset-4 hover:underline">
+				className="text-sm font-medium text-secondary underline-offset-4 hover:underline"
+			>
 				← 返回搜索
 			</Link>
 			<h1 className={cn('text-2xl font-semibold', fonts.uncial)}>
@@ -82,7 +81,8 @@ function HeaderContent({ headerContents, songId }: HeaderProps) {
 									href={headerContents.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="">
+									className=""
+								>
 									<Button size="sm" className="rounded-full text-xs">
 										在 Genius 上查看
 										<Outdent />

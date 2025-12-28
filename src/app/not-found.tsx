@@ -1,5 +1,5 @@
+import { ArrowUpRightIcon, SquircleDashedIcon } from 'lucide-react'
 import Link from 'next/link'
-
 import {
 	Empty,
 	EmptyDescription,
@@ -7,7 +7,6 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from '@/components/ui/empty'
-import { SquircleDashedIcon, ArrowUpRightIcon } from 'lucide-react'
 
 export default async function NotFound() {
 	return (

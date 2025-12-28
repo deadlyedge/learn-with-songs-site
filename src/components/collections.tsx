@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { normalizeSongPath } from '@/lib/utils'
-import { CollectionSong } from '@/types'
+import type { CollectionSong } from '@/types'
 import { Filters } from './filters'
 
 interface CollectionItemProps {
@@ -46,7 +46,8 @@ export function CollectionItem({ song }: CollectionItemProps) {
 					{releaseYear ? (
 						<time
 							className="text-muted-foreground/80 text-xs"
-							dateTime={releaseDateIso}>
+							dateTime={releaseDateIso}
+						>
 							发行：{releaseYear}
 						</time>
 					) : null}
@@ -57,7 +58,8 @@ export function CollectionItem({ song }: CollectionItemProps) {
 				{hasSongPage ? (
 					<Link
 						href={`/song${normalizedPath}`}
-						className="text-primary hover:underline">
+						className="text-primary hover:underline"
+					>
 						打开歌词页
 					</Link>
 				) : null}
@@ -67,7 +69,8 @@ export function CollectionItem({ song }: CollectionItemProps) {
 						href={song.url}
 						target="_blank"
 						rel="noreferrer"
-						className="text-primary/80 hover:underline">
+						className="text-primary/80 hover:underline"
+					>
 						在 Genius 查看
 					</a>
 				) : null}

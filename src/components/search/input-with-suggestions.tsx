@@ -1,18 +1,17 @@
 'use client'
 
-import { FormEvent, useState, useEffect, useRef } from 'react'
-import { Spinner } from '../ui/spinner'
+import { SearchIcon } from 'lucide-react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { useSearchSuggestions } from '@/hooks/use-suggestions'
-import { useSearchStore } from '@/stores/search'
 import { cn } from '@/lib/utils'
+import { useSearchStore } from '@/stores/search'
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupButton,
 	InputGroupInput,
 } from '../ui/input-group'
-import { SearchIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Spinner } from '../ui/spinner'
 
 // Debounce hook for search input
 function useDebounce<T>(value: T, delay = 500): T {
@@ -50,7 +49,7 @@ export const InputWithSuggestions = () => {
 	const debouncedQuery = useDebounce(query)
 
 	// Use the new hook for suggestions
-	const { data: suggestionData, isLoading: isSuggestionsLoading } = useSearchSuggestions(debouncedQuery)
+	const { data: suggestionData } = useSearchSuggestions(debouncedQuery)
 
 	// Update suggestions when data changes
 	useEffect(() => {
@@ -121,13 +120,15 @@ export const InputWithSuggestions = () => {
 					className={cn(
 						'absolute top-0 left-1/2 -translate-x-1/2 w-full md:w-2xl border-2 rounded-3xl overflow-hidden transition-all duration-300',
 						isExpanded ? 'bg-card border-primary shadow-lg' : 'border-border',
-					)}>
+					)}
+				>
 					{/* Input area always present */}
 					<InputGroup
 						className={cn(
 							'h-11 border-0',
 							isExpanded ? 'border-b border-border' : 'hover:bg-card',
-						)}>
+						)}
+					>
 						<InputGroupAddon>
 							<SearchIcon className="h-4 w-4" />
 						</InputGroupAddon>
@@ -136,7 +137,8 @@ export const InputWithSuggestions = () => {
 								variant="secondary"
 								className="rounded mr-2"
 								disabled={isPending}
-								type="submit">
+								type="submit"
+							>
 								{isPending ? (
 									<span className="flex items-center">
 										搜索中 <Spinner />
@@ -179,7 +181,8 @@ export const InputWithSuggestions = () => {
 										)}
 										role="option"
 										aria-selected={index === selectedIndex}
-										tabIndex={0}>
+										tabIndex={0}
+									>
 										<div className="flex items-center justify-between">
 											<div className="flex items-center space-x-2">
 												<span className="font-medium">{suggestion.text}</span>
@@ -190,7 +193,8 @@ export const InputWithSuggestions = () => {
 															: suggestion.type === 'artist'
 																? 'bg-green-100 text-green-800'
 																: 'bg-purple-100 text-purple-800'
-													}`}>
+													}`}
+												>
 													{suggestion.type}
 												</span>
 											</div>

@@ -1,7 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { prisma } from '@/lib/prisma'
 
 export default async function AdminPage() {
 	const user = await currentUser()
@@ -11,10 +11,12 @@ export default async function AdminPage() {
 	}
 
 	const primaryEmail = user.emailAddresses.find(
-		(email) => email.id === user.primaryEmailAddressId
+		(email) => email.id === user.primaryEmailAddressId,
 	)
 	const fallbackEmail = user.emailAddresses.at(0)
-	const resolvedEmail = (primaryEmail ?? fallbackEmail)?.emailAddress ?? `${user.id}@users.clerk.local`
+	const resolvedEmail =
+		(primaryEmail ?? fallbackEmail)?.emailAddress ??
+		`${user.id}@users.clerk.local`
 
 	if (resolvedEmail !== process.env.ADMIN_EMAIL) {
 		redirect('/')
@@ -23,7 +25,7 @@ export default async function AdminPage() {
 	// 获取统计数据
 	const songCount = await prisma.song.count()
 	const cachedSongCount = await prisma.song.count({
-		where: { detailsFetchedAt: { not: null } }
+		where: { detailsFetchedAt: { not: null } },
 	})
 	const userCount = await prisma.user.count()
 
@@ -32,10 +34,10 @@ export default async function AdminPage() {
 		select: {
 			name: true,
 			email: true,
-			_count: { select: { vocabularyEntries: true } }
+			_count: { select: { vocabularyEntries: true } },
 		},
 		orderBy: { vocabularyEntries: { _count: 'desc' } },
-		take: 5
+		take: 5,
 	})
 
 	// 前5名收藏最多的歌曲
@@ -43,10 +45,10 @@ export default async function AdminPage() {
 		select: {
 			title: true,
 			artist: true,
-			_count: { select: { collectedBy: true } }
+			_count: { select: { collectedBy: true } },
 		},
 		orderBy: { collectedBy: { _count: 'desc' } },
-		take: 5
+		take: 5,
 	})
 
 	// 前5名生词最多的歌曲
@@ -54,10 +56,10 @@ export default async function AdminPage() {
 		select: {
 			title: true,
 			artist: true,
-			_count: { select: { vocabularyEntries: true } }
+			_count: { select: { vocabularyEntries: true } },
 		},
 		orderBy: { vocabularyEntries: { _count: 'desc' } },
-		take: 5
+		take: 5,
 	})
 
 	// 数据库空间占用
@@ -116,12 +118,21 @@ export default async function AdminPage() {
 					{topActiveUsers.length > 0 ? (
 						<div className="space-y-2">
 							{topActiveUsers.map((user, index) => (
-								<div key={user.email} className="flex justify-between items-center">
+								<div
+									key={user.email}
+									className="flex justify-between items-center"
+								>
 									<div>
-										<span className="font-medium">{index + 1}. {user.name || user.email}</span>
-										<span className="text-sm text-muted-foreground ml-2">({user.email})</span>
+										<span className="font-medium">
+											{index + 1}. {user.name || user.email}
+										</span>
+										<span className="text-sm text-muted-foreground ml-2">
+											({user.email})
+										</span>
 									</div>
-									<span className="text-sm text-muted-foreground">{user._count.vocabularyEntries} 个生词</span>
+									<span className="text-sm text-muted-foreground">
+										{user._count.vocabularyEntries} 个生词
+									</span>
 								</div>
 							))}
 						</div>
@@ -141,9 +152,15 @@ export default async function AdminPage() {
 							<div className="space-y-3">
 								{topCollectedSongs.map((song, index) => (
 									<div key={`${song.title}-${song.artist}`}>
-										<p className="font-medium">{index + 1}. {song.title}</p>
-										<p className="text-sm text-muted-foreground">艺术家: {song.artist}</p>
-										<p className="text-sm text-muted-foreground">收藏次数: {song._count.collectedBy}</p>
+										<p className="font-medium">
+											{index + 1}. {song.title}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											艺术家: {song.artist}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											收藏次数: {song._count.collectedBy}
+										</p>
 									</div>
 								))}
 							</div>
@@ -162,9 +179,15 @@ export default async function AdminPage() {
 							<div className="space-y-3">
 								{topVocabularySongs.map((song, index) => (
 									<div key={`${song.title}-${song.artist}`}>
-										<p className="font-medium">{index + 1}. {song.title}</p>
-										<p className="text-sm text-muted-foreground">艺术家: {song.artist}</p>
-										<p className="text-sm text-muted-foreground">生词数量: {song._count.vocabularyEntries}</p>
+										<p className="font-medium">
+											{index + 1}. {song.title}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											艺术家: {song.artist}
+										</p>
+										<p className="text-sm text-muted-foreground">
+											生词数量: {song._count.vocabularyEntries}
+										</p>
 									</div>
 								))}
 							</div>

@@ -1,12 +1,12 @@
 'use client'
 
+import { useParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { Annotations } from '@/components/song-page/annotations'
 import { Header } from '@/components/song-page/header'
 import { Lyric } from '@/components/song-page/lyric'
-import { Annotations } from '@/components/song-page/annotations'
 import { SelectText } from '@/components/song-page/select-text'
 import { useSongDetails } from '@/hooks/use-song-details'
-import { useParams } from 'next/navigation'
 
 // Skeleton for individual sections
 const HeaderSkeleton = () => (

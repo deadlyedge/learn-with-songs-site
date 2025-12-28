@@ -34,9 +34,7 @@ export default async function HomePage() {
 				<SearchResults />
 			</section>
 
-			{/* <Suspense fallback={<Loader />}> */}
 			<FeaturedSongs />
-			{/* </Suspense> */}
 		</div>
 	)
 }

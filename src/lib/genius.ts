@@ -1,9 +1,9 @@
 import { GENIUS_API_BASE } from '@/constants'
-import {
+import type {
 	GeniusSongHit,
+	GeniusSongInfoRaw,
 	GeniusSongResponse,
 	Referent,
-	GeniusSongInfoRaw
 } from '@/types'
 
 const ensureToken = () => {
@@ -11,7 +11,7 @@ const ensureToken = () => {
 
 	if (!token) {
 		throw new Error(
-			'GENIUS_API_TOKEN is not set. Add it to your environment to enable Genius search fallback.'
+			'GENIUS_API_TOKEN is not set. Add it to your environment to enable Genius search fallback.',
 		)
 	}
 
@@ -19,7 +19,7 @@ const ensureToken = () => {
 }
 
 export async function searchGeniusSongs(
-	query: string
+	query: string,
 ): Promise<GeniusSongResponse[]> {
 	const token = ensureToken()
 
@@ -33,7 +33,7 @@ export async function searchGeniusSongs(
 			next: {
 				revalidate: 86400,
 			},
-		}
+		},
 	)
 
 	if (!response.ok) {
@@ -65,7 +65,7 @@ export async function searchGeniusSongs(
 }
 
 export async function fetchGeniusSongDetails(
-	geniusId: number | string
+	geniusId: number | string,
 ): Promise<GeniusSongInfoRaw> {
 	const token = ensureToken()
 	const idValue =
@@ -91,7 +91,7 @@ export async function fetchGeniusSongDetails(
 
 	if (!response.ok) {
 		throw new Error(
-			`Genius song details fetch failed with status ${response.status}`
+			`Genius song details fetch failed with status ${response.status}`,
 		)
 	}
 
@@ -111,7 +111,7 @@ export async function fetchGeniusSongDetails(
 }
 
 export async function fetchGeniusReferents(
-	songId: number | string
+	songId: number | string,
 ): Promise<Referent[]> {
 	const token = ensureToken()
 	const idValue =
@@ -137,7 +137,7 @@ export async function fetchGeniusReferents(
 
 	if (!response.ok) {
 		throw new Error(
-			`Genius song referents fetch failed with status ${response.status}`
+			`Genius song referents fetch failed with status ${response.status}`,
 		)
 	}
 
@@ -151,7 +151,7 @@ export async function fetchGeniusReferents(
 
 	if (!referents) {
 		throw new Error(
-			'Genius song referents payload did not include referent data.'
+			'Genius song referents payload did not include referent data.',
 		)
 	}
 

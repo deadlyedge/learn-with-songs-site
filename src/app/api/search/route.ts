@@ -1,21 +1,20 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { searchGeniusSongs } from '@/lib/genius'
-import type { Prisma } from '@/generated/prisma/client'
-import type {
-	GeniusSongResponse,
-	SongSearchResult,
-	SongSearchResponse,
-	SearchSongDTO,
-} from '@/types'
-
 import {
 	CACHE_TTL_MS,
+	MAX_SEARCH_RESULTS,
 	MIN_CACHE_RESULTS,
 	SIMILARITY_HIGH_THRESHOLD,
 	SIMILARITY_LOW_THRESHOLD,
-	MAX_SEARCH_RESULTS,
 } from '@/constants'
+import type { Prisma } from '@/generated/prisma/client'
+import { searchGeniusSongs } from '@/lib/genius'
+import { prisma } from '@/lib/prisma'
+import type {
+	GeniusSongResponse,
+	SearchSongDTO,
+	SongSearchResponse,
+	SongSearchResult,
+} from '@/types'
 
 type CacheConfidence = 'high' | 'medium' | 'low' | 'ongoing' | null
 type CacheResult = {

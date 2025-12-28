@@ -1,6 +1,29 @@
 import { NextResponse } from 'next/server'
+import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 import type { FeaturedSong } from '@/types'
+
+// Type for song details structure
+interface SongDetails {
+	stats?: {
+		pageviews?: number
+	}
+}
+
+// Type for the song record from database query
+type SongWithDetails = Prisma.SongGetPayload<{
+	select: {
+		id: true
+		title: true
+		artist: true
+		album: true
+		artworkUrl: true
+		geniusPath: true
+		details: true
+	}
+}> & {
+	details: SongDetails | null
+}
 
 // Constants
 const FEATURED_SONGS_RANDOM_SAMPLE_SIZE = 100
@@ -9,7 +32,7 @@ const FEATURED_SONGS_COUNT = 6
 /**
  * 检查歌曲是否具有有效的精选歌曲标准
  */
-const isValidFeaturedSong = (song: any): boolean => {
+const isValidFeaturedSong = (song: SongWithDetails): boolean => {
 	const details = song.details
 	const pageviews = details?.stats?.pageviews
 
@@ -23,9 +46,9 @@ const isValidFeaturedSong = (song: any): boolean => {
 /**
  * 将数据库歌曲记录转换为精选歌曲格式
  */
-const mapSongToFeatured = (song: any): FeaturedSong => {
+const mapSongToFeatured = (song: SongWithDetails): FeaturedSong => {
 	const details = song.details
-	const pageviews = details.stats?.pageviews ?? 0
+	const pageviews = details?.stats?.pageviews ?? 0
 
 	return {
 		id: song.id,
@@ -34,7 +57,7 @@ const mapSongToFeatured = (song: any): FeaturedSong => {
 		album: song.album ?? undefined,
 		artworkUrl: song.artworkUrl ?? undefined,
 		pageviews,
-		geniusPath: song.geniusPath,
+		geniusPath: song.geniusPath as string,
 	}
 }
 
@@ -71,7 +94,7 @@ export async function GET() {
 		console.error('Error fetching featured songs:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 }

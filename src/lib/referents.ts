@@ -1,21 +1,20 @@
-import { prisma } from '@/lib/prisma'
-import { convertDomToMarkdown } from './dom-to-markdown'
-
 import type { Prisma } from '@/generated/prisma/client'
+import { prisma } from '@/lib/prisma'
 import type {
+	GeniusDomNode,
 	NormalizedReferent,
 	NormalizedReferentAnnotation,
-	ReferentDomNode,
 	Referent,
-	GeniusDomNode,
+	ReferentDomNode,
 } from '@/types'
+import { convertDomToMarkdown } from './dom-to-markdown'
 
 type DbReferentWithAnnotations = Prisma.ReferentGetPayload<{
 	include: { annotations: true }
 }>
 
 const normalizeAnnotationAuthors = (
-	authors: Referent['annotations'][number]['authors']
+	authors: Referent['annotations'][number]['authors'],
 ) => {
 	if (!authors || authors.length === 0) {
 		return []
@@ -29,7 +28,7 @@ const normalizeAnnotationAuthors = (
 }
 
 const convertReferentsDomToGenius = (
-	dom?: ReferentDomNode | null
+	dom?: ReferentDomNode | null,
 ): GeniusDomNode | null => {
 	if (!dom) return null
 
@@ -38,8 +37,8 @@ const convertReferentsDomToGenius = (
 				Object.entries(dom.attributes).map(([k, v]) => [
 					k,
 					v === undefined || v === null ? '' : String(v),
-				])
-		  )
+				]),
+			)
 		: undefined
 
 	const mappedData = dom.data
@@ -47,12 +46,12 @@ const convertReferentsDomToGenius = (
 				Object.entries(dom.data).map(([k, v]) => [
 					k,
 					v === undefined || v === null ? '' : String(v),
-				])
-		  )
+				]),
+			)
 		: undefined
 
 	const mappedChildren = dom.children?.map((child) =>
-		typeof child === 'string' ? child : convertReferentsDomToGenius(child)
+		typeof child === 'string' ? child : convertReferentsDomToGenius(child),
 	)
 
 	return {
@@ -64,7 +63,7 @@ const convertReferentsDomToGenius = (
 }
 
 const normalizeAnnotationBody = (
-	annotation: Referent['annotations'][number]
+	annotation: Referent['annotations'][number],
 ) => {
 	try {
 		const geniusDom = convertReferentsDomToGenius(annotation.body?.dom)
@@ -75,7 +74,7 @@ const normalizeAnnotationBody = (
 }
 
 export const normalizeReferents = (
-	referents: Referent[] | undefined
+	referents: Referent[] | undefined,
 ): NormalizedReferent[] => {
 	if (!referents || referents.length === 0) {
 		return []
@@ -101,7 +100,7 @@ export const normalizeReferents = (
 }
 
 export const mapDbReferentsToNormalized = (
-	referents: DbReferentWithAnnotations[]
+	referents: DbReferentWithAnnotations[],
 ): NormalizedReferent[] => {
 	return referents.map((referent) => ({
 		id: referent.geniusId,
@@ -131,7 +130,7 @@ type CacheReferentsOptions = {
 export async function cacheReferentsForSong(
 	songId: string,
 	referents: NormalizedReferent[],
-	options: CacheReferentsOptions = {}
+	options: CacheReferentsOptions = {},
 ) {
 	const baseNow = new Date()
 

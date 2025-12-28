@@ -1,8 +1,7 @@
-import Link from 'next/link'
-
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
-import { Button } from './ui/button'
 import { BookIcon, HeartIcon } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from './ui/button'
 
 export const Navbar = () => {
 	return (
@@ -18,13 +17,13 @@ export const Navbar = () => {
 			<div className="flex items-center">
 				{/* <NavSearch /> */}
 				<SignedIn>
-					<Button variant="link" size="sm" asChild className='text-foreground'>
+					<Button variant="link" size="sm" asChild className="text-foreground">
 						<Link href="/vocabulary">
 							<BookIcon />
 							生词本
 						</Link>
 					</Button>
-					<Button variant="link" size="sm" asChild className='text-foreground'>
+					<Button variant="link" size="sm" asChild className="text-foreground">
 						<Link href="/collections">
 							<HeartIcon />
 							我的收藏
@@ -34,7 +33,9 @@ export const Navbar = () => {
 				</SignedIn>
 				<SignedOut>
 					<SignInButton mode="modal">
-						<Button variant="link" className='text-foreground'>登入</Button>
+						<Button variant="link" className="text-foreground">
+							登入
+						</Button>
 					</SignInButton>
 				</SignedOut>
 			</div>

@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { HeartIcon } from 'lucide-react'
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
-
+import { HeartIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useUserDataStore } from '@/stores/user-data'
-import { toast } from 'sonner'
 
 type CollectButtonProps = {
 	songId: string
@@ -58,8 +57,9 @@ const CollectToggleButton = ({
 			size="sm"
 			className={cn(
 				'gap-1.5 text-xs bg-transparent rounded-lg',
-				isCollected ? 'text-destructive hover:text-destructive' : ''
-			)}>
+				isCollected ? 'text-destructive hover:text-destructive' : '',
+			)}
+		>
 			<HeartIcon className={cn(isCollected ? 'fill-destructive' : '')} />
 			{loading ? '处理中...' : isCollected ? '已收藏' : '收藏'}
 		</Button>

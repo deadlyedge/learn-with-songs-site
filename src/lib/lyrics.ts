@@ -1,4 +1,4 @@
-import { DEFAULT_LYRICS_ENDPOINT } from "@/constants"
+import { DEFAULT_LYRICS_ENDPOINT } from '@/constants'
 
 export async function fetchLyricsFromPath(path: string) {
 	if (!path.startsWith('/')) {

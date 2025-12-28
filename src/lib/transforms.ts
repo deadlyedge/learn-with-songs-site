@@ -2,7 +2,7 @@
  * API 与 Database 之间，以及 Database 与 前端的类型转换工具
  */
 
-import {
+import type {
 	VocabularyEntryWithFullSong,
 	VocabularyEntryWithSongData,
 } from '@/types'
@@ -11,7 +11,7 @@ import {
  * 将 Prisma 查询结果转换为前端显示格式，完全利用 Prisma 类型安全
  */
 function transformVocabularyEntryToDisplayData(
-	entry: VocabularyEntryWithFullSong
+	entry: VocabularyEntryWithFullSong,
 ): VocabularyEntryWithSongData {
 	return {
 		id: entry.id,
@@ -31,7 +31,7 @@ function transformVocabularyEntryToDisplayData(
  * 批量转换词汇条目
  */
 export function transformVocabularyEntriesToDisplayData(
-	entries: VocabularyEntryWithFullSong[]
+	entries: VocabularyEntryWithFullSong[],
 ): VocabularyEntryWithSongData[] {
 	return entries.map(transformVocabularyEntryToDisplayData)
 }

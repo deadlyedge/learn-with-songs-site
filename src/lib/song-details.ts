@@ -1,8 +1,8 @@
 import type { Prisma, Song } from '@/generated/prisma/client'
 import type { GeniusSongInfo, GeniusSongInfoRaw } from '@/types'
+import { normalizeSongInfo } from './dom-to-markdown'
 import { fetchGeniusSongDetails } from './genius'
 import { prisma } from './prisma'
-import { normalizeSongInfo } from './dom-to-markdown'
 
 const normalizeGeniusId = (value: number | string): string | null => {
 	if (typeof value === 'number' && Number.isFinite(value)) {
@@ -14,7 +14,7 @@ const normalizeGeniusId = (value: number | string): string | null => {
 }
 
 const toGeniusSongInfo = (
-	value: Prisma.JsonValue | null
+	value: Prisma.JsonValue | null,
 ): GeniusSongInfo | null => {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) {
 		return null
@@ -43,7 +43,7 @@ const parseReleaseDate = (info: GeniusSongInfo): Date | null => {
 
 const buildUpdateData = (
 	song: Song,
-	info: GeniusSongInfo
+	info: GeniusSongInfo,
 ): Prisma.SongUpdateInput => {
 	const data: Prisma.SongUpdateInput = {
 		details: info as unknown as Prisma.InputJsonValue,
@@ -100,7 +100,7 @@ export type EnsureSongDetailsOptions = {
 
 export async function ensureSongDetails(
 	song: Song,
-	options: EnsureSongDetailsOptions = {}
+	options: EnsureSongDetailsOptions = {},
 ): Promise<{ song: Song; details: GeniusSongInfo | null }> {
 	const cached = toGeniusSongInfo(song.details)
 
@@ -129,7 +129,7 @@ export async function ensureSongDetails(
 
 export async function ensureSongDetailsByGeniusId(
 	geniusId: number | string,
-	options: EnsureSongDetailsOptions = {}
+	options: EnsureSongDetailsOptions = {},
 ): Promise<{ song: Song; details: GeniusSongInfo | null } | null> {
 	const normalized = normalizeGeniusId(geniusId)
 

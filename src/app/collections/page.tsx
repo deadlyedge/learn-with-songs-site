@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { ArrowUpRightIcon, SquircleDashedIcon } from 'lucide-react'
 import Link from 'next/link'
-
+import { useEffect } from 'react'
+import { CollectionsList } from '@/components/collections'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import {
 	Empty,
 	EmptyDescription,
@@ -12,10 +12,8 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from '@/components/ui/empty'
-import { ArrowUpRightIcon, SquircleDashedIcon } from 'lucide-react'
-
+import { Spinner } from '@/components/ui/spinner'
 import { useUserDataStore } from '@/stores/user-data'
-import { CollectionsList } from '@/components/collections'
 
 export default function CollectionsPage() {
 	const { collections, loading, error, fetchCollections } = useUserDataStore()
@@ -115,7 +113,8 @@ export default function CollectionsPage() {
 					<p className="text-sm text-destructive">{error}</p>
 					<Button
 						onClick={fetchCollections}
-						className="text-sm text-primary hover:underline mt-2">
+						className="text-sm text-primary hover:underline mt-2"
+					>
 						重试
 					</Button>
 				</div>

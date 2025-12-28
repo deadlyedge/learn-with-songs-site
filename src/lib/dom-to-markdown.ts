@@ -1,9 +1,9 @@
-import {
-	SongAnnotation,
+import type {
 	AnnotationRaw,
 	GeniusDomNode,
 	GeniusSongInfo,
 	GeniusSongInfoRaw,
+	SongAnnotation,
 } from '@/types'
 
 const BLOCK_LEVEL_TAGS = new Set([
@@ -155,7 +155,7 @@ const domNodeToMarkdown = (node: GeniusDomNode): string => {
 }
 
 export const convertDomToMarkdown = (
-	dom?: GeniusDomNode | null
+	dom?: GeniusDomNode | null,
 ): string | null => {
 	if (!dom) {
 		return null
@@ -166,7 +166,7 @@ export const convertDomToMarkdown = (
 }
 
 const normalizeAnnotations = (
-	annotations?: AnnotationRaw[] | null
+	annotations?: AnnotationRaw[] | null,
 ): SongAnnotation[] | undefined => {
 	if (!annotations) {
 		return undefined
@@ -204,7 +204,7 @@ export const normalizeSongInfo = (raw: GeniusSongInfoRaw): GeniusSongInfo => {
 		cloned.description_annotation = {
 			...cloned.description_annotation,
 			annotations: normalizeAnnotations(
-				cloned.description_annotation.annotations
+				cloned.description_annotation.annotations,
 			),
 		}
 	}

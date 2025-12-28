@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { fetchLyricsFromPath } from '@/lib/lyrics'
-import { splitLyrics } from '@/lib/utils'
+import { prisma } from '@/lib/prisma'
 import { isDbResourceStale } from '@/lib/refetch'
+import { splitLyrics } from '@/lib/utils'
 
 type LyricsResponse = {
 	lyricLines: string[]
@@ -11,8 +11,8 @@ type LyricsResponse = {
 
 // GET /api/songs/[path]/lyrics - 获取歌曲歌词
 export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ path: string }> }
+	_request: Request,
+	{ params }: { params: Promise<{ path: string }> },
 ) {
 	try {
 		const { path } = await params
@@ -26,10 +26,7 @@ export async function GET(
 		})
 
 		if (!songRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		let lyricRecord = songRecord.lyrics
@@ -74,7 +71,7 @@ export async function GET(
 		console.error('Error fetching song lyrics:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 }

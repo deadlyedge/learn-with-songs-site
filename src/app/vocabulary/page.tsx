@@ -1,10 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { ArrowUpRightIcon, SquircleDashedIcon } from 'lucide-react'
 import Link from 'next/link'
-
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import {
 	Empty,
 	EmptyDescription,
@@ -12,10 +11,9 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from '@/components/ui/empty'
-import { ArrowUpRightIcon, SquircleDashedIcon } from 'lucide-react'
-
-import { useUserDataStore } from '@/stores/user-data'
+import { Spinner } from '@/components/ui/spinner'
 import { VocabularyList } from '@/components/vocabulary-list'
+import { useUserDataStore } from '@/stores/user-data'
 
 export default function VocabularyPage() {
 	const { vocabulary, loading, error, fetchVocabulary } = useUserDataStore()
@@ -47,9 +45,7 @@ export default function VocabularyPage() {
 							<SquircleDashedIcon />
 						</EmptyMedia>
 						<EmptyTitle>还没有添加生词</EmptyTitle>
-						<EmptyDescription>
-							点击歌词中的单词即可收藏
-						</EmptyDescription>
+						<EmptyDescription>点击歌词中的单词即可收藏</EmptyDescription>
 						<Link href="/">
 							<span className="flex">
 								去搜索歌曲
@@ -63,7 +59,8 @@ export default function VocabularyPage() {
 					<p className="text-sm text-destructive">{error}</p>
 					<Button
 						onClick={fetchVocabulary}
-						className="text-sm text-primary hover:underline mt-2">
+						className="text-sm text-primary hover:underline mt-2"
+					>
 						重试
 					</Button>
 				</div>

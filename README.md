@@ -2,20 +2,24 @@
 
 Learn English with Songs is a learning hub built on Next.js App Router. It surfaces lyrics from Genius, surfaces Genius annotations, and lets learners gather vocabulary notes while they explore songs. Every search hyphenates a local cache with Genius as a fallback, and authenticated learners can collect AI explanations for any highlighted line.
 
+Recently migrated from Server Actions to TanStack Query for improved stability and client-side caching.
+
 ## Features
 
 - **Song search + fallback:** searches the PostgreSQL-backed catalog first and only hits Genius when local rows are sparse. The same API powers the featured song widgets.
 - **Song detail page:** lyrics, metadata, artwork, annotated referents, and a lyric selection tool that passes the context to OpenRouter to return a markdown tip before saving a vocabulary card.
 - **Vocabulary tracker:** every saved word is tied to a song and line, and the list is scoped to the signed-in Clerk user.
-- **Clerk + Prisma:** Clerk handles authentication, Prisma persists users, songs, lyrics, and vocabulary, and the webhook keeps Clerk users in sync with the local user table.
+- **Collections:** users can collect favorite songs for easy access.
+- **Clerk + Prisma:** Clerk handles authentication, Prisma persists users, songs, lyrics, vocabulary, and collections, and the webhook keeps Clerk users in sync with the local user table.
 
 ## Technology
 
 - Next.js **App Router** (v16.x) with React 19 server and client components.
+- TanStack Query for client-side data fetching, caching, and synchronization.
 - Clerk for authentication, Prisma for PostgreSQL access.
 - Genius API and a lyrics proxy (`lyrics.zick.me`) for metadata and content, OpenRouter for LLML explanations, and the Sonner toaster for notifications.
 - Tailwind CSS (v4) plus Lucide UI primitives and shadcn/ui components for layout.
-- zustand for state management.
+- Zustand for additional state management where needed.
 
 ## Getting started
 

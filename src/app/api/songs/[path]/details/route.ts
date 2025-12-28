@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { ensureSongDetails } from '@/lib/song-details'
-import { isDbResourceStale } from '@/lib/refetch'
-import type { HeaderContents, GeniusSongInfo } from '@/types'
 import type { Song } from '@/generated/prisma/client'
+import { prisma } from '@/lib/prisma'
+import { isDbResourceStale } from '@/lib/refetch'
+import { ensureSongDetails } from '@/lib/song-details'
+import type { GeniusSongInfo, HeaderContents } from '@/types'
 
 type SongDetailsResponse = {
 	songId: string
@@ -12,8 +12,8 @@ type SongDetailsResponse = {
 
 // GET /api/songs/[path]/details - 获取歌曲详情
 export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ path: string }> }
+	_request: Request,
+	{ params }: { params: Promise<{ path: string }> },
 ) {
 	try {
 		const { path } = await params
@@ -37,15 +37,12 @@ export async function GET(
 		})) as Song | null
 
 		if (!songRecord) {
-			return NextResponse.json(
-				{ error: 'Song not found' },
-				{ status: 404 }
-			)
+			return NextResponse.json({ error: 'Song not found' }, { status: 404 })
 		}
 
 		const shouldRefreshDetails = isDbResourceStale(
 			songRecord.detailsFetchedAt,
-			'SONG_DETAILS'
+			'SONG_DETAILS',
 		)
 
 		let song = songRecord
@@ -94,7 +91,7 @@ export async function GET(
 		console.error('Error fetching song details:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 }

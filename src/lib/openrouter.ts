@@ -14,7 +14,7 @@ const openRouter = new OpenRouter({
 
 export const translator = async (
 	text: string,
-	language: string = 'chinese'
+	language: string = 'chinese',
 ) => {
 	const content = `Translate the following text to ${language}:\n\n${text}`
 

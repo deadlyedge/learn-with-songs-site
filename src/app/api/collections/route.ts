@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@/generated/prisma/client'
 import { initialUser } from '@/lib/clerk-auth'
+import { prisma } from '@/lib/prisma'
 import type { CollectionSong } from '@/types'
 
 // Constants
@@ -29,7 +30,20 @@ const validateSongExists = async (songId: string) => {
 	}
 }
 
-const mapCollectionSong = (song: any): CollectionSong => ({
+const mapCollectionSong = (
+	song: Prisma.SongGetPayload<{
+		select: {
+			id: true
+			title: true
+			artist: true
+			album: true
+			artworkUrl: true
+			releaseDate: true
+			geniusPath: true
+			url: true
+		}
+	}>,
+): CollectionSong => ({
 	id: song.id,
 	title: song.title,
 	artist: song.artist,
@@ -70,10 +84,15 @@ export async function GET() {
 		return NextResponse.json({ collections: mappedCollections })
 	} catch (error) {
 		console.error('Error fetching collections:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }
@@ -85,7 +104,10 @@ export async function POST(request: NextRequest) {
 		const { songId } = await request.json()
 
 		if (!songId || typeof songId !== 'string') {
-			return NextResponse.json({ error: 'Song ID is required' }, { status: 400 })
+			return NextResponse.json(
+				{ error: 'Song ID is required' },
+				{ status: 400 },
+			)
 		}
 
 		await validateSongExists(songId)
@@ -102,10 +124,15 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ success: true })
 	} catch (error) {
 		console.error('Error adding to collection:', error)
-		const status = error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED ? 401 : 500
+		const status =
+			error instanceof Error && error.message === ERROR_MESSAGES.UNAUTHENTICATED
+				? 401
+				: 500
 		return NextResponse.json(
-			{ error: error instanceof Error ? error.message : 'Internal server error' },
-			{ status }
+			{
+				error: error instanceof Error ? error.message : 'Internal server error',
+			},
+			{ status },
 		)
 	}
 }

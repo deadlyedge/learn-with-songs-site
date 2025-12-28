@@ -11,7 +11,7 @@ export async function initialUser() {
 	}
 
 	const primaryEmail = clerkUser.emailAddresses.find(
-		(email) => email.id === clerkUser.primaryEmailAddressId
+		(email) => email.id === clerkUser.primaryEmailAddressId,
 	)
 	const fallbackEmail = clerkUser.emailAddresses.at(0)
 	const resolvedEmail =

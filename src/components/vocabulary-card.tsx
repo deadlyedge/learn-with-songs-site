@@ -1,30 +1,19 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
-
-import { learnWordInLine } from '@/lib/openrouter'
-import { useUpdateVocabularyEntry } from '@/hooks/use-vocabulary'
-import { normalizeSongPath } from '@/lib/utils'
-
-import { toast } from 'sonner'
-import Markdown from 'react-markdown'
-
 import {
 	FileSearchCornerIcon,
 	ThumbsDownIcon,
 	ThumbsUpIcon,
 } from 'lucide-react'
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from './ui/dialog'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
+import Markdown from 'react-markdown'
+import { toast } from 'sonner'
+import { useUpdateVocabularyEntry } from '@/hooks/use-vocabulary'
+import { learnWordInLine } from '@/lib/openrouter'
+import { normalizeSongPath } from '@/lib/utils'
+import type { VocabularyEntryWithSongData } from '@/types'
 import { Button } from './ui/button'
 import {
 	Card,
@@ -34,8 +23,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from './ui/card'
-
-import type { VocabularyEntryWithSongData } from '@/types'
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from './ui/dialog'
 
 export type VocabularyEntryCardProps = {
 	entry: VocabularyEntryWithSongData
@@ -63,11 +59,14 @@ export const VocabularyCard = ({
 			setResult(newResult)
 
 			// 使用 mutation 更新数据库
-			await updateMutation.mutateAsync({
-				id: entry.id,
-				result: newResult,
-				songPath: normalizeSongPath(entry.songPath)!,
-			})
+			const normalizedSongPath = normalizeSongPath(entry.songPath)
+			if (normalizedSongPath) {
+				await updateMutation.mutateAsync({
+					id: entry.id,
+					result: newResult,
+					songPath: normalizedSongPath,
+				})
+			}
 
 			toast.success('已重新获取AI解释')
 		} catch (error) {
@@ -89,7 +88,8 @@ export const VocabularyCard = ({
 			<CardFooter className="w-full flex flex-col items-start gap-2">
 				<Link
 					href={songHref}
-					className="text-sm font-semibold text-primary hover:underline">
+					className="text-sm font-semibold text-primary hover:underline"
+				>
 					<div className="flex items-center gap-2">
 						{entry.songArtworkUrl ? (
 							<Image
@@ -117,7 +117,8 @@ export const VocabularyCard = ({
 						size="sm"
 						variant="outline"
 						type="button"
-						onClick={() => setOpen(true)}>
+						onClick={() => setOpen(true)}
+					>
 						<FileSearchCornerIcon />
 						复习
 					</Button>{' '}
@@ -125,7 +126,8 @@ export const VocabularyCard = ({
 						size="sm"
 						variant="destructive"
 						type="button"
-						onClick={() => handleSwitchMastered(entry.id)}>
+						onClick={() => handleSwitchMastered(entry.id)}
+					>
 						{entry.mastered ? (
 							<>
 								<ThumbsDownIcon />
@@ -167,7 +169,8 @@ export const VocabularyCard = ({
 							variant="outline"
 							onClick={handleRefetch}
 							disabled={isRefetching}
-							className="w-36">
+							className="w-36"
+						>
 							{isRefetching ? '重新询问中...' : '重新询问AI'}
 						</Button>
 						<DialogClose asChild>

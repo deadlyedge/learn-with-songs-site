@@ -5,17 +5,17 @@ import { useEffect } from 'react'
 export function PWARegister() {
 	useEffect(() => {
 		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', function () {
+			window.addEventListener('load', () => {
 				navigator.serviceWorker.register('/sw.js').then(
-					function (registration) {
+					(registration) => {
 						console.log(
 							'ServiceWorker registration successful with scope: ',
-							registration.scope
+							registration.scope,
 						)
 					},
-					function (err) {
+					(err) => {
 						console.log('ServiceWorker registration failed: ', err)
-					}
+					},
 				)
 			})
 		}

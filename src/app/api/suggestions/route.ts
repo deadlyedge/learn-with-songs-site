@@ -1,8 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@/generated/prisma/client'
-import type { SearchSongDTO, Suggestion } from '@/types'
+import { type NextRequest, NextResponse } from 'next/server'
 import { SEARCH_SUGGESTIONS_LIMIT } from '@/constants'
+import { Prisma } from '@/generated/prisma/client'
+import { prisma } from '@/lib/prisma'
+import type { SearchSongDTO, Suggestion } from '@/types'
 
 // Type for songs used in suggestion processing
 type ProcessedSong = {

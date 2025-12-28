@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import type { SearchSongDTO } from '@/types'
 import { useSearchStore } from '@/stores/search'
+import type { SearchSongDTO } from '@/types'
 
 export const SearchResults = () => {
 	const {
@@ -43,10 +43,10 @@ export const SearchResults = () => {
 							{source === 'database'
 								? 'Local'
 								: source === 'genius'
-								? 'Genius API'
-								: source === 'cache'
-								? 'Cached results'
-								: 'Local + Genius'}
+									? 'Genius API'
+									: source === 'cache'
+										? 'Cached results'
+										: 'Local + Genius'}
 						</p>
 					) : null}
 					{canSearchGenius ? (
@@ -55,7 +55,8 @@ export const SearchResults = () => {
 							variant="outline"
 							size="sm"
 							onClick={handleGeniusSearch}
-							disabled={isPending}>
+							disabled={isPending}
+						>
 							{isPending ? 'Searching...' : '继续搜索Genius'}
 						</Button>
 					) : null}
@@ -85,7 +86,8 @@ export const SearchResults = () => {
 								{releaseYear ? (
 									<time
 										className="text-xs text-muted-foreground"
-										dateTime={song.releaseDate ?? undefined}>
+										dateTime={song.releaseDate ?? undefined}
+									>
 										发行：{releaseYear}
 									</time>
 								) : null}
@@ -101,7 +103,8 @@ export const SearchResults = () => {
 					return (
 						<li
 							key={song.id}
-							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5">
+							className="group rounded-lg border border-border/70 bg-background/80 p-4 transition hover:border-primary/70 hover:bg-primary/5"
+						>
 							{songHref ? (
 								<Link href={songHref} className="block space-y-2">
 									{cardBody}

@@ -1,55 +1,55 @@
 // ===== 数据库查询结果类型 (完全基于Prisma生成的类型) =====
 
 // Prisma导入 - 所有数据库相关类型都应当从这里来
-import { Prisma } from '@/generated/prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 
 // ===== 外部API响应类型 (规范化的API类型定义) =====
 
 // 从 referentsAPI导出的规范类型
 export type {
-	Referent,
-	Range,
 	Annotatable,
 	Annotation as ReferentAnnotation,
+	AnnotationCurrentUserMetadata,
 	Author,
+	AvatarImage,
 	// User as GeniusUser,
 	AvatarImages,
-	AvatarImage,
 	BoundingBox,
-	UserCurrentUserMetadata,
-	AnnotationCurrentUserMetadata,
 	DomNode as ReferentDomNode,
+	Range,
+	Referent,
+	UserCurrentUserMetadata,
 } from './referentsAPI'
 
 // 从 songsAPI导出的规范类型
 export type {
-	GeniusSongInfo,
-	SongStats,
-	CurrentUserMetadata,
 	Album as SongAlbum,
-	Artist as SongArtist,
-	Performance,
-	MediaItem,
-	RelatedSong,
-	SongRelationship,
-	TranslationSong,
-	DescriptionAnnotation,
-	DescriptionAnnotationRaw,
-	GeniusSongInfoRaw,
+	Annotation as SongAnnotation,
 	// User as GeniusSongUser, // 避免与 GeniusUser 冲突
 	AnnotationAuthor,
-	GeniusDomNode,
 	AnnotationRaw,
-	Annotation as SongAnnotation,
+	Artist as SongArtist,
+	CurrentUserMetadata,
+	DescriptionAnnotation,
+	DescriptionAnnotationRaw,
+	GeniusDomNode,
+	GeniusSongInfo,
+	GeniusSongInfoRaw,
+	MediaItem,
+	Performance,
+	RelatedSong,
+	SongRelationship,
+	SongStats,
+	TranslationSong,
 } from './songsAPI'
 
 export type {
+	DuplicateOptions,
+	VocabularyEntryData,
 	VocabularyEntryWithFullSong,
 	VocabularyEntryWithSongData,
-	VocabularyPayload,
-	DuplicateOptions,
 	VocabularyExistsPayload,
-	VocabularyEntryData,
+	VocabularyPayload,
 } from './vocabulary'
 
 // ===== Genius API专用类型 (完全基于API响应的规范类型) =====

@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx'
+import { type ClassValue, clsx } from 'clsx'
 import { Noto_Sans, Noto_Serif, Uncial_Antiqua } from 'next/font/google'
 import { twMerge } from 'tailwind-merge'
 

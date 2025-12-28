@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma'
 import { initialUser } from '@/lib/clerk-auth'
-import {
+import { prisma } from '@/lib/prisma'
+import type {
 	DuplicateOptions,
 	VocabularyEntryData,
 	VocabularyExistsPayload,
@@ -13,7 +13,6 @@ import {
 	VocabularyPayloadError,
 	VocabularyUnauthorizedError,
 } from './vocabulary-errors'
-
 
 export const findDuplicateEntry = (options: DuplicateOptions) => {
 	return prisma.vocabularyEntry.findFirst({
@@ -50,7 +49,7 @@ export const createVocabularyEntry = (data: {
 }
 
 export const validateVocabularyPayload = (
-	payload: Partial<VocabularyPayload>
+	payload: Partial<VocabularyPayload>,
 ): VocabularyPayload => {
 	if (
 		!payload.word ||
@@ -78,14 +77,14 @@ export const ensureVocabularyUser = async () => {
 	const user = await initialUser()
 	if (!user) {
 		throw new VocabularyUnauthorizedError(
-			VOCABULARY_ERROR_MESSAGES.UNAUTHENTICATED
+			VOCABULARY_ERROR_MESSAGES.UNAUTHENTICATED,
 		)
 	}
 	return user
 }
 
 export const addVocabularyEntry = async (
-	payload: Partial<VocabularyPayload>
+	payload: Partial<VocabularyPayload>,
 ) => {
 	const validPayload = validateVocabularyPayload(payload)
 	const user = await ensureVocabularyUser()
@@ -100,7 +99,7 @@ export const addVocabularyEntry = async (
 
 	if (existing) {
 		throw new VocabularyDuplicateError(
-			VOCABULARY_ERROR_MESSAGES.DUPLICATE_ENTRY
+			VOCABULARY_ERROR_MESSAGES.DUPLICATE_ENTRY,
 		)
 	}
 
@@ -116,7 +115,7 @@ export const addVocabularyEntry = async (
 }
 
 export const updateVocabularyEntry = async (
-	payload: Partial<VocabularyPayload>
+	payload: Partial<VocabularyPayload>,
 ) => {
 	const validPayload = validateVocabularyPayload(payload)
 	const user = await ensureVocabularyUser()
@@ -130,9 +129,7 @@ export const updateVocabularyEntry = async (
 	})
 
 	if (!existing) {
-		throw new VocabularyNotFoundError(
-			VOCABULARY_ERROR_MESSAGES.ENTRY_NOT_FOUND
-		)
+		throw new VocabularyNotFoundError(VOCABULARY_ERROR_MESSAGES.ENTRY_NOT_FOUND)
 	}
 
 	return prisma.vocabularyEntry.update({
@@ -145,7 +142,7 @@ export const updateVocabularyEntry = async (
 }
 
 export const validateExistsPayload = (
-	payload: Partial<VocabularyExistsPayload>
+	payload: Partial<VocabularyExistsPayload>,
 ) => {
 	if (!payload.word || !payload.line || !payload.songId) {
 		throw new VocabularyPayloadError(VOCABULARY_ERROR_MESSAGES.MISSING_FIELDS)
@@ -159,7 +156,7 @@ export const validateExistsPayload = (
 }
 
 export const getVocabularyEntry = async (
-	payload: Partial<VocabularyExistsPayload>
+	payload: Partial<VocabularyExistsPayload>,
 ) => {
 	const validPayload = validateExistsPayload(payload)
 	const user = await ensureVocabularyUser()
@@ -174,7 +171,7 @@ export const getVocabularyEntry = async (
 }
 
 export const vocabularyEntryExists = async (
-	payload: Partial<VocabularyExistsPayload>
+	payload: Partial<VocabularyExistsPayload>,
 ) => {
 	const entry = await getVocabularyEntry(payload)
 	if (!entry) {

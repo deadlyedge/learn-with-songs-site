@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
 	const { token } = await req.json()
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 	if (!secret) {
 		return NextResponse.json(
 			{ error: 'Turnstile secret not configured' },
-			{ status: 500 }
+			{ status: 500 },
 		)
 	}
 
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: params,
-		}
+		},
 	)
 	const data = await res.json()
 

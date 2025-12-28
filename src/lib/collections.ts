@@ -24,7 +24,10 @@ export const addSongToCollection = async (userId: string, songId: string) => {
 	})
 }
 
-export const removeSongFromCollection = async (userId: string, songId: string) => {
+export const removeSongFromCollection = async (
+	userId: string,
+	songId: string,
+) => {
 	const song = await prisma.song.findUnique({
 		where: { id: songId },
 		select: { id: true },
@@ -46,7 +49,7 @@ export const removeSongFromCollection = async (userId: string, songId: string) =
 
 export const isSongCollectedByUserId = async (
 	userId: string,
-	songId: string
+	songId: string,
 ) => {
 	const count = await prisma.user.count({
 		where: {

@@ -42,8 +42,12 @@ export const Footer = () => {
 	return (
 		<footer className="flex flex-col items-center justify-center text-xs border-t mt-2 p-2 gap-4 pt-6">
 			<ItemGroup className="flex-wrap flex-row items-start justify-center gap-6">
-				{itemContents.map((item, index) => (
-					<Item key={index} variant="muted" className="w-48 sm:w-64 rounded-lg">
+				{itemContents.map((item) => (
+					<Item
+						key={item.title}
+						variant="muted"
+						className="w-48 sm:w-64 rounded-lg"
+					>
 						<ItemContent>
 							<ItemTitle>
 								<a href={item.href} target="_blank" className="underline">

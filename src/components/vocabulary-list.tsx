@@ -1,16 +1,15 @@
 'use client'
 
+import { ChevronsUpDownIcon } from 'lucide-react'
 import { useState } from 'react'
+import { useUserDataStore } from '@/stores/user-data'
+import { Button } from './ui/button'
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from './ui/collapsible'
-import { Button } from './ui/button'
-import { ChevronsUpDownIcon } from 'lucide-react'
-
 import { VocabularyCard } from './vocabulary-card'
-import { useUserDataStore } from '@/stores/user-data'
 
 export const VocabularyList = () => {
 	const { vocabulary, toggleMastered } = useUserDataStore()
@@ -56,11 +55,12 @@ export const VocabularyList = () => {
 				))}
 			</div>
 			{currentHistoryWords.length > 0 && (
-				<Collapsible open={isOpen} onOpenChange={setIsOpen} className='pt-4'>
+				<Collapsible open={isOpen} onOpenChange={setIsOpen} className="pt-4">
 					<CollapsibleTrigger asChild>
 						<Button
 							variant="outline"
-							className="w-full rounded-xl flex items-center justify-between mb-2">
+							className="w-full rounded-xl flex items-center justify-between mb-2"
+						>
 							<span>历史记录</span>
 							<ChevronsUpDownIcon />
 						</Button>

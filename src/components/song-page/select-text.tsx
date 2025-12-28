@@ -1,16 +1,23 @@
 'use client'
 
-import { useEffect, useReducer } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
+import { BookPlusIcon, RefreshCwIcon } from 'lucide-react'
+import { useEffect, useReducer } from 'react'
+import Markdown from 'react-markdown'
+import { toast } from 'sonner'
+import { DEFAULT_CONTAINER_ID, MAX_SELECTION_LENGTH } from '@/constants'
 import {
 	useCheckVocabularyEntry,
 	useUpdateVocabularyEntry,
 } from '@/hooks/use-vocabulary'
 import { learnWordInLine } from '@/lib/openrouter'
-import Markdown from 'react-markdown'
-
-import { Spinner } from '../ui/spinner'
-import { toast } from 'sonner'
+import {
+	expandToFullWords,
+	findLineElement,
+	normalizeSongPath,
+} from '@/lib/utils'
+import { useUserDataStore } from '@/stores/user-data'
+import { Button } from '../ui/button'
 import {
 	Dialog,
 	DialogClose,
@@ -20,16 +27,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '../ui/dialog'
-import { Button } from '../ui/button'
-
-import { DEFAULT_CONTAINER_ID, MAX_SELECTION_LENGTH } from '@/constants'
-import {
-	expandToFullWords,
-	findLineElement,
-	normalizeSongPath,
-} from '@/lib/utils'
-import { useUserDataStore } from '@/stores/user-data'
-import { BookPlusIcon, RefreshCwIcon } from 'lucide-react'
+import { Spinner } from '../ui/spinner'
 
 type SelectionInfo = {
 	word: string
@@ -134,7 +132,7 @@ export const SelectText = ({
 	const { isSignedIn } = useUser()
 	const { addVocabularyItem } = useUserDataStore()
 	const checkMutation = useCheckVocabularyEntry()
-	const updateMutation = useUpdateVocabularyEntry()
+	const _updateMutation = useUpdateVocabularyEntry()
 
 	const closeAndReset = () => {
 		dispatch({ type: 'CLOSE_DIALOG' })
@@ -240,6 +238,8 @@ export const SelectText = ({
 			return
 		}
 
+		const { word, line } = state.selection
+
 		let cancelled = false
 
 		const fetchResult = async () => {
@@ -288,10 +288,7 @@ export const SelectText = ({
 			let markdownString = ''
 
 			try {
-				markdownString = await learnWordInLine(
-					state.selection!.word,
-					state.selection!.line,
-				)
+				markdownString = await learnWordInLine(word, line)
 			} catch (error) {
 				if (cancelled) {
 					return
@@ -347,7 +344,7 @@ export const SelectText = ({
 				lineNumber: state.selection.lineNumber,
 				result: state.result,
 				songId,
-				songPath: normalizedSongPath!,
+				songPath: normalizedSongPath as string,
 			})
 			dispatch({ type: 'SET_DUPLICATE_EXISTS', payload: true })
 			toast.success('已加入我的生词本')
@@ -393,7 +390,7 @@ export const SelectText = ({
 		dispatch({ type: 'SET_DUPLICATE_CHECKING', payload: false })
 
 		if (hadExistingEntry && songId && songPath) {
-			const normalizedSongPath = normalizeSongPath(songPath)
+			const _normalizedSongPath = normalizeSongPath(songPath)
 
 			try {
 				// Find the entry ID - we need to get it from the store or API

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { fetchGeniusReferents } from '@/lib/genius'
+import { prisma } from '@/lib/prisma'
 import {
 	cacheReferentsForSong,
 	mapDbReferentsToNormalized,
@@ -15,7 +15,7 @@ type ReferentsResponse = {
 
 // GET /api/songs/[path]/referents - 获取歌曲 Genius annotations
 export async function GET(
-	request: Request,
+	_request: Request,
 	context: { params: Promise<{ path: string }> },
 ) {
 	try {

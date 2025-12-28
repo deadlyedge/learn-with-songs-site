@@ -1,9 +1,9 @@
 import { ArrowDownRightIcon, ArrowUpRightIcon } from 'lucide-react'
-import { Button } from './ui/button'
-import { ButtonGroup } from './ui/button-group'
+import { FILTER_SETTING } from '@/constants'
 import { useUserDataStore } from '@/stores/user-data'
 import type { CollectionSong } from '@/types'
-import { FILTER_SETTING } from '@/constants'
+import { Button } from './ui/button'
+import { ButtonGroup } from './ui/button-group'
 
 export const Filters = () => {
 	const { collectionFilter, setCollectionFilter } = useUserDataStore()
@@ -24,7 +24,8 @@ export const Filters = () => {
 					variant={collectionFilter.key === key ? 'default' : 'outline'}
 					size="sm"
 					className="flex items-center"
-					onClick={() => handleChangeFilter(key)}>
+					onClick={() => handleChangeFilter(key)}
+				>
 					{show.charAt(0).toUpperCase() + show.slice(1)}
 					{collectionFilter.key === key &&
 						(collectionFilter.order === 'desc' ? (

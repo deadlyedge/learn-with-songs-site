@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { CheckCircleIcon, ShareIcon } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
-
-import { Badge } from '../ui/badge'
 import { cn } from '@/lib/utils'
+import { Badge } from '../ui/badge'
 
 export const ShareButton = () => {
 	const [isShared, setIsShared] = useState(false)
@@ -27,9 +26,10 @@ export const ShareButton = () => {
 			variant="buttonLike"
 			className={cn(
 				'hover:cursor-pointer border-0 transition-colors duration-200',
-				isShared && 'bg-green-300! hover:cursor-default text-primary'
+				isShared && 'bg-green-300! hover:cursor-default text-primary',
 			)}
-			onClick={handleShare}>
+			onClick={handleShare}
+		>
 			{isShared ? <CheckCircleIcon /> : <ShareIcon />}
 			分享
 		</Badge>

@@ -1,16 +1,15 @@
 'use client'
 
-import { fonts } from '@/lib/utils'
 // import type { NormalizedReferent } from '@/lib/referents'
 import Markdown from 'react-markdown'
+import { useSongReferents } from '@/hooks/use-song-referents'
+import { fonts } from '@/lib/utils'
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from '../ui/accordion'
-
-import { useSongReferents } from '@/hooks/use-song-referents'
 
 // type AnnotationsProps = {
 // 	referents: NormalizedReferent[]
@@ -101,12 +100,13 @@ export const Annotations = ({ path }: { path?: string }) => {
 						type="single"
 						collapsible
 						defaultValue={firstTabValue}
-						className={fonts.sans}>
+						className={fonts.sans}
+					>
 						{referents.map((referent) => {
 							const normalizedAnnotations = referent.annotations
 								.map((annotation) => {
 									const normalizedBody = normalizeAnnotationBody(
-										annotation.body
+										annotation.body,
 									)
 
 									if (!normalizedBody) {
@@ -120,11 +120,11 @@ export const Annotations = ({ path }: { path?: string }) => {
 								})
 								.filter(
 									(
-										value
+										value,
 									): value is {
 										id: number
 										body: string
-									} => Boolean(value)
+									} => Boolean(value),
 								)
 
 							const value = `referent-${referent.id}`
@@ -147,7 +147,8 @@ export const Annotations = ({ path }: { path?: string }) => {
 																{children}
 															</p>
 														),
-													}}>
+													}}
+												>
 													{annotation.body}
 												</Markdown>
 											))

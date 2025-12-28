@@ -1,17 +1,13 @@
-import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
+import type { Metadata } from 'next'
 import { fonts } from '@/lib/utils'
 import './globals.css'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
+import { Footer } from '@/components/footer'
+import { Navbar } from '@/components/navbar'
 import { PWARegister } from '@/components/pwa-register'
-// import { Suspense } from 'react'
-// import { Loader } from 'lucide-react'
 import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/providers/query-provider'
-
-// import Script from 'next/script'
 
 export const metadata: Metadata = {
 	metadataBase: new URL('https://le.zick.me'),
@@ -61,7 +57,6 @@ export default function RootLayout({
 }>) {
 	// const CLOUDFLARE_SITE_KEY = process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY ?? ''
 	return (
-		// <Suspense fallback={<Loader />}>
 		<ClerkProvider>
 			<QueryProvider>
 				<html lang="en">
@@ -85,6 +80,5 @@ export default function RootLayout({
 				</html>
 			</QueryProvider>
 		</ClerkProvider>
-		// </Suspense>
 	)
 }
