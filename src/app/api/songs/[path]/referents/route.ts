@@ -15,7 +15,7 @@ type ReferentsResponse = {
 
 // GET /api/songs/[path]/referents - 获取歌曲 Genius annotations
 export async function GET(
-	// request: Request,
+	request: Request,
 	context: { params: Promise<{ path: string }> },
 ) {
 	try {

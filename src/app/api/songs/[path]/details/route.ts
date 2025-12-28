@@ -12,7 +12,7 @@ type SongDetailsResponse = {
 
 // GET /api/songs/[path]/details - 获取歌曲详情
 export async function GET(
-	// request: NextRequest,
+	request: Request,
 	{ params }: { params: Promise<{ path: string }> }
 ) {
 	try {
