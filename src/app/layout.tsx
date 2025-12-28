@@ -6,8 +6,8 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { EnsureClerkUser } from '@/components/ensure-clerk-user'
 import { PWARegister } from '@/components/pwa-register'
-import { Suspense } from 'react'
-import { Loader } from 'lucide-react'
+// import { Suspense } from 'react'
+// import { Loader } from 'lucide-react'
 import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/providers/query-provider'
 
@@ -61,30 +61,30 @@ export default function RootLayout({
 }>) {
 	// const CLOUDFLARE_SITE_KEY = process.env.NEXT_PUBLIC_CLOUDFLARE_SITE_KEY ?? ''
 	return (
-		<Suspense fallback={<Loader />}>
-			<ClerkProvider>
-				<QueryProvider>
-					<html lang="en">
-						{/* <Script
+		// <Suspense fallback={<Loader />}>
+		<ClerkProvider>
+			<QueryProvider>
+				<html lang="en">
+					{/* <Script
 							src="https://challenges.cloudflare.com/turnstile/v0/api.js"
 							async
 							defer
 							/> */}
-						<body className={`${fonts.noto} antialiased`}>
-							<PWARegister />
-							<main className="mx-auto w-full xl:w-3/4">
-								<EnsureClerkUser />
+					<body className={`${fonts.noto} antialiased`}>
+						<PWARegister />
+						<main className="mx-auto w-full xl:w-3/4">
+							<EnsureClerkUser />
 
-								<Navbar />
-								{children}
-							</main>
-							<Footer />
-							{/* <div className="cf-turnstile" data-sitekey={CLOUDFLARE_SITE_KEY} /> */}
-							<Toaster />
-						</body>
-					</html>
-				</QueryProvider>
-			</ClerkProvider>
-		</Suspense>
+							<Navbar />
+							{children}
+						</main>
+						<Footer />
+						{/* <div className="cf-turnstile" data-sitekey={CLOUDFLARE_SITE_KEY} /> */}
+						<Toaster />
+					</body>
+				</html>
+			</QueryProvider>
+		</ClerkProvider>
+		// </Suspense>
 	)
 }
