@@ -8,7 +8,6 @@ import Iridescence from '../ui/effects/iridescence'
 
 import { CollectButton } from './collect-button'
 import { ShareButton } from './share-button'
-import { isSongCollected } from '@/actions/collections'
 import type { HeaderContents } from '@/types'
 import { HeaderDescription } from './header-description'
 
@@ -17,9 +16,8 @@ type HeaderProps = {
 	songId: string
 }
 
-export const Header = async ({ headerContents, songId }: HeaderProps) => {
-	const isCollected = songId ? await isSongCollected(songId) : false
-
+// Client component for the header content
+function HeaderContent({ headerContents, songId }: HeaderProps) {
 	return (
 		<div className="relative flex flex-col gap-2 p-2 border-b shadow text-background text-shadow-lg">
 			<div className="absolute inset-0 top-0 z-[-2]">
@@ -77,7 +75,7 @@ export const Header = async ({ headerContents, songId }: HeaderProps) => {
 						<div className="flex flex-col items-end px-2 gap-1">
 							<div className="flex items-center justify-end gap-2 text-xs">
 								<ShareButton />
-								<CollectButton songId={songId} initialCollected={isCollected} />
+								<CollectButton songId={songId} />
 							</div>
 							{headerContents.url ? (
 								<Link
@@ -111,4 +109,9 @@ export const Header = async ({ headerContents, songId }: HeaderProps) => {
 			</div>
 		</div>
 	)
+}
+
+// Server Component wrapper
+export const Header = ({ headerContents, songId }: HeaderProps) => {
+	return <HeaderContent headerContents={headerContents} songId={songId} />
 }

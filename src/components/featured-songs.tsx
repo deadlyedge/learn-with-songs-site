@@ -1,9 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
 import type { FeaturedSong } from '@/types'
-import { getFeaturedSongs } from '@/actions/featured-songs'
-import { Suspense } from 'react'
+import { useFeaturedSongs } from '@/hooks/use-featured-songs'
 
 function SongListItem({
 	song,
@@ -50,11 +51,50 @@ function SongListItem({
 	)
 }
 
-export async function FeaturedSongs() {
-	const featuredSongs = await getFeaturedSongs()
+export function FeaturedSongs() {
+	const { data: featuredSongs, isLoading, error } = useFeaturedSongs()
 	const numberFormatter = new Intl.NumberFormat('zh-CN')
 
-	if (featuredSongs.length === 0) {
+	if (isLoading) {
+		return (
+			<section className="space-y-4 px-2 xl:px-0">
+				<div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+					<div>
+						<h2 className="text-xl font-semibold">其他收录歌曲</h2>
+						<p className="text-sm text-muted-foreground">
+							可以快速打开的本地歌曲列表。
+						</p>
+					</div>
+					<p className="text-xs text-muted-foreground">根据 Genius 浏览量排列</p>
+				</div>
+				<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+					<SongListItemSkeleton key="skeleton-1" />
+					<SongListItemSkeleton key="skeleton-2" />
+					<SongListItemSkeleton key="skeleton-3" />
+					<SongListItemSkeleton key="skeleton-4" />
+					<SongListItemSkeleton key="skeleton-5" />
+					<SongListItemSkeleton key="skeleton-6" />
+				</div>
+			</section>
+		)
+	}
+
+	if (error) {
+		return (
+			<section className="space-y-4 px-2 xl:px-0">
+				<div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+					<div>
+						<h2 className="text-xl font-semibold">其他收录歌曲</h2>
+						<p className="text-sm text-muted-foreground">
+							加载失败，请稍后重试。
+						</p>
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	if (!featuredSongs || featuredSongs.length === 0) {
 		return null
 	}
 
@@ -71,13 +111,11 @@ export async function FeaturedSongs() {
 			</div>
 			<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
 				{featuredSongs.map((song) => (
-					<Suspense key={song.id} fallback={<SongListItemSkeleton />}>
-						<SongListItem
-							key={song.id}
-							song={song}
-							numberFormatter={numberFormatter}
-						/>
-					</Suspense>
+					<SongListItem
+						key={song.id}
+						song={song}
+						numberFormatter={numberFormatter}
+					/>
 				))}
 			</div>
 		</section>

@@ -1,15 +1,12 @@
+'use client'
+
 import { Suspense } from 'react'
 import { Header } from '@/components/song-page/header'
 import { Lyric } from '@/components/song-page/lyric'
 import { Annotations } from '@/components/song-page/annotations'
 import { SelectText } from '@/components/song-page/select-text'
-import { getSongDetails } from '@/actions/details'
-
-type SongPageProps = {
-	params: Promise<{
-		path: string
-	}>
-}
+import { useSongDetails } from '@/hooks/use-song-details'
+import { useParams } from 'next/navigation'
 
 // Skeleton for individual sections
 const HeaderSkeleton = () => (
@@ -31,7 +28,13 @@ const LyricsSkeleton = () => (
 		<div className="h-6 w-32 rounded bg-muted mb-4" />
 		<div className="space-y-2">
 			{Array.from({ length: 8 }, (_, i) => (
-				<div key={i} className="h-4 w-full rounded bg-muted/80" />
+				<div
+					key={`lyrics-skeleton-${
+						// biome-ignore lint/suspicious/noArrayIndexKey: <not now>
+						i
+					}`}
+					className="h-4 w-full rounded bg-muted/80"
+				/>
 			))}
 		</div>
 	</div>
@@ -48,21 +51,35 @@ const AnnotationsSkeleton = () => (
 	</div>
 )
 
-async function SongDetailContent({ params }: SongPageProps) {
-	const { path } = await params
+function SongDetailContent() {
+	const params = useParams()
+	const path = params.path as string
 
-	// Fetch details to get songId
-	// let songId: string | undefined
-	// try {
-	const { songId, headerContents } = await getSongDetails(path)
-	// songId = details.songId
-	// } catch (error) {
-	// console.error('Failed to fetch song details for coordination:', error)
-	// }
+	const { data, isLoading, error } = useSongDetails(path)
 
-	if (!songId || !headerContents) {
-		return null
+	if (isLoading) {
+		return (
+			<article className="space-y-6 pb-6">
+				<HeaderSkeleton />
+				<section className="flex flex-col md:flex-row gap-4">
+					<LyricsSkeleton />
+					<AnnotationsSkeleton />
+				</section>
+			</article>
+		)
 	}
+
+	if (error || !data) {
+		return (
+			<article className="space-y-6 pb-6">
+				<div className="flex h-full items-center justify-center rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-8 text-sm text-destructive text-center">
+					<p>加载歌曲详情失败，请稍后重试。</p>
+				</div>
+			</article>
+		)
+	}
+
+	const { songId, headerContents } = data
 
 	return (
 		<article className="space-y-6 pb-6 relative">
@@ -77,27 +94,13 @@ async function SongDetailContent({ params }: SongPageProps) {
 				</Suspense>
 
 				<Suspense fallback={<AnnotationsSkeleton />}>
-					<Annotations songId={songId} />
+					<Annotations path={path} />
 				</Suspense>
 			</section>
 		</article>
 	)
 }
 
-const SongDetailFallback = () => (
-	<article className="space-y-6 pb-6">
-		<HeaderSkeleton />
-		<section className="flex flex-col md:flex-row gap-4">
-			<LyricsSkeleton />
-			<AnnotationsSkeleton />
-		</section>
-	</article>
-)
-
-export default async function SongDetailPage(props: SongPageProps) {
-	return (
-		<Suspense fallback={<SongDetailFallback />}>
-			<SongDetailContent {...props} />
-		</Suspense>
-	)
+export default function SongDetailPage() {
+	return <SongDetailContent />
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import { fonts } from '@/lib/utils'
 // import type { NormalizedReferent } from '@/lib/referents'
 import Markdown from 'react-markdown'
@@ -8,7 +10,7 @@ import {
 	AccordionTrigger,
 } from '../ui/accordion'
 
-import { getSongReferents } from '@/actions/referents'
+import { useSongReferents } from '@/hooks/use-song-referents'
 
 // type AnnotationsProps = {
 // 	referents: NormalizedReferent[]
@@ -56,12 +58,34 @@ const normalizeAnnotationBody = (body: string | null) => {
 	return normalizedLines.join('\n')
 }
 
-export const Annotations = async ({ songId }: { songId?: string }) => {
-	if (!songId) {
+export const Annotations = ({ path }: { path?: string }) => {
+	const { data, isLoading, error } = useSongReferents(path || '')
+
+	if (!path) {
 		return null
 	}
 
-	const { referents } = await getSongReferents(songId)
+	if (isLoading) {
+		return (
+			<div className="w-full md:w-1/2 border-l pl-2">
+				<div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-background/60 px-4 py-8 text-sm text-muted-foreground text-center">
+					<p>加载注解中...</p>
+				</div>
+			</div>
+		)
+	}
+
+	if (error) {
+		return (
+			<div className="w-full md:w-1/2 border-l pl-2">
+				<div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-background/60 px-4 py-8 text-sm text-muted-foreground text-center">
+					<p>加载注解失败，请稍后重试。</p>
+				</div>
+			</div>
+		)
+	}
+
+	const referents = data?.referents || []
 	const hasReferents = referents.length > 0
 	const firstTabValue = hasReferents ? `referent-${referents[0].id}` : undefined
 

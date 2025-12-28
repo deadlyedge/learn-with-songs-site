@@ -1,9 +1,8 @@
-'use server'
-
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { searchGeniusSongs } from '@/lib/genius'
 import type { Prisma } from '@/generated/prisma/client'
-import {
+import type {
 	GeniusSongResponse,
 	SongSearchResult,
 	SongSearchResponse,
@@ -58,7 +57,7 @@ const executeLocalSearch = (where: Prisma.SongWhereInput, take: number) =>
 
 const searchBySimilarity = async (
 	query: string,
-	take: number
+	take: number,
 ): Promise<SongWithSimilarity[]> => {
 	const raw = await prisma.$queryRaw<SongWithSimilarity[]>`
 		SELECT
@@ -73,7 +72,7 @@ const searchBySimilarity = async (
 			"url",
 			GREATEST(similarity("title", ${query}), similarity("artist", ${query})) AS similarity
 		FROM "Song"
-		WHERE "hasDetails" = true  -- ⚡ 只搜索有内容的歌曲，性能显著提升
+		WHERE "hasDetails" = true
 			AND (
 				similarity("title", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
 				OR similarity("artist", ${query}) > ${SIMILARITY_LOW_THRESHOLD}
@@ -88,7 +87,7 @@ const searchBySimilarity = async (
 const determineConfidence = (
 	highMatches: number,
 	mediumMatches: number,
-	totalMatches: number
+	totalMatches: number,
 ): CacheConfidence => {
 	if (highMatches >= 3) {
 		return 'high'
@@ -100,7 +99,7 @@ const determineConfidence = (
 }
 
 const fetchCachedSearchResults = async (
-	normalizedQuery: string
+	normalizedQuery: string,
 ): Promise<CacheResult | null> => {
 	if (!normalizedQuery) {
 		return null
@@ -147,8 +146,6 @@ const isGeniusCallInProgress = async (query: string): Promise<boolean> => {
 		return false
 	}
 
-	// Special marker for ongoing calls: confidence = 'ongoing'
-	// We use this instead of a separate field to avoid schema changes
 	return ongoingEntry.confidence === 'ongoing'
 }
 
@@ -166,7 +163,7 @@ const markGeniusCallInProgress = async (query: string) => {
 		update: {
 			songs: [],
 			confidence: 'ongoing',
-			updatedAt: new Date(), // Keep the entry alive
+			updatedAt: new Date(),
 		},
 	})
 }
@@ -190,12 +187,11 @@ const clearGeniusCallInProgress = async (query: string) => {
 
 /**
  * Cache search results if they have valid content and confidence level
- * Results with 'low' confidence or 'ongoing' status are not cached
  */
 const cacheSearchResults = async (
 	normalizedQuery: string,
 	songs: SearchSongDTO[],
-	confidence: CacheConfidence
+	confidence: CacheConfidence,
 ) => {
 	if (
 		!normalizedQuery ||
@@ -273,9 +269,8 @@ const buildSearchConditions = (trimmedQuery: string) => {
 		.map((word) => word.trim())
 		.filter((word) => word.length >= 3)
 
-	// 🎯 优化：添加 hasDetails 过滤，避免复杂JOIN查询
 	const mediumConfidenceWhere: Prisma.SongWhereInput = {
-		hasDetails: true, // ⚡ 数据库级索引过滤，无需JOIN
+		hasDetails: true,
 		OR: [
 			{ title: { contains: trimmedQuery, mode: 'insensitive' } },
 			{ artist: { contains: trimmedQuery, mode: 'insensitive' } },
@@ -285,12 +280,12 @@ const buildSearchConditions = (trimmedQuery: string) => {
 	const lowConfidenceWhere: Prisma.SongWhereInput | null =
 		normalizedWords.length > 0
 			? {
-					hasDetails: true, // ⚡ 同样添加hasDetails过滤
+					hasDetails: true,
 					OR: normalizedWords.flatMap((word) => [
 						{ title: { contains: word, mode: 'insensitive' } },
 						{ artist: { contains: word, mode: 'insensitive' } },
 					]),
-			  }
+				}
 			: null
 
 	return { mediumConfidenceWhere, lowConfidenceWhere }
@@ -298,7 +293,7 @@ const buildSearchConditions = (trimmedQuery: string) => {
 
 const checkCacheResults = async (
 	normalizedQuery: string,
-	forceGenius: boolean
+	forceGenius: boolean,
 ): Promise<SongSearchResponse | null> => {
 	if (forceGenius) {
 		return null
@@ -320,7 +315,6 @@ const checkCacheResults = async (
 
 /**
  * Performs local database search optimized for efficiency
- * Instead of 3 separate queries, we use parallel execution and merge results
  */
 const performLocalSearch = async (trimmedQuery: string) => {
 	const { mediumConfidenceWhere, lowConfidenceWhere } =
@@ -345,7 +339,6 @@ const performLocalSearch = async (trimmedQuery: string) => {
 		return added
 	}
 
-	// Execute all queries in parallel for better performance
 	const [similarityMatches, mediumMatches, lowMatches] = await Promise.all([
 		searchBySimilarity(trimmedQuery, MAX_SEARCH_RESULTS),
 		executeLocalSearch(mediumConfidenceWhere, MAX_SEARCH_RESULTS),
@@ -354,7 +347,6 @@ const performLocalSearch = async (trimmedQuery: string) => {
 			: Promise.resolve([]),
 	])
 
-	// Apply results in priority order
 	appendUnique(similarityMatches)
 	if (songs.length < MAX_SEARCH_RESULTS) {
 		appendUnique(mediumMatches)
@@ -363,20 +355,18 @@ const performLocalSearch = async (trimmedQuery: string) => {
 		appendUnique(lowMatches)
 	}
 
-	// Convert similarity matches to the expected format
 	const songsWithSimilarity = similarityMatches.map((song) => ({
 		...song,
 		similarity: song.similarity || 0,
 	}))
 
-	// Calculate confidence metrics from similarity matches
 	const similarityHighCount = songsWithSimilarity.filter(
-		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD
+		(item) => item.similarity >= SIMILARITY_HIGH_THRESHOLD,
 	).length
 	const similarityMediumCount = songsWithSimilarity.filter(
 		(item) =>
 			item.similarity >= SIMILARITY_LOW_THRESHOLD &&
-			item.similarity < SIMILARITY_HIGH_THRESHOLD
+			item.similarity < SIMILARITY_HIGH_THRESHOLD,
 	).length
 
 	return { songs, similarityHighCount, similarityMediumCount }
@@ -386,29 +376,23 @@ const handleGeniusFallback = async (
 	trimmedQuery: string,
 	forceGenius: boolean,
 	songs: SongSearchResult[],
-	confidence: CacheConfidence
+	confidence: CacheConfidence,
 ) => {
 	if (forceGenius || confidence === 'low') {
-		// Prevent concurrent API calls for the same query
 		const callInProgress = await isGeniusCallInProgress(trimmedQuery)
 
 		if (callInProgress) {
-			// Another request is already calling Genius API for this query
-			// In a real implementation, we might want to wait for the result
-			// For now, we'll return empty results to avoid duplicate calls
 			console.log(
-				`[Genius Search Skipped] Query "${trimmedQuery}" is already being processed`
+				`[Genius Search Skipped] Query "${trimmedQuery}" is already being processed`,
 			)
 			return { performedGenius: false, autoContinued: false }
 		}
 
-		// Mark that we're starting the API call
 		await markGeniusCallInProgress(trimmedQuery)
 
 		try {
-			const fallbackSongs: GeniusSongResponse[] = await searchGeniusSongs(
-				trimmedQuery
-			)
+			const fallbackSongs: GeniusSongResponse[] =
+				await searchGeniusSongs(trimmedQuery)
 
 			if (fallbackSongs.length > 0) {
 				console.log('[Genius Search] ', trimmedQuery)
@@ -418,7 +402,7 @@ const handleGeniusFallback = async (
 				const persisted: SongSearchResult[] = await Promise.all(
 					fallbackSongs
 						.slice(0, MAX_SEARCH_RESULTS)
-						.map((song) => upsertNormalizedSong(song))
+						.map((song) => upsertNormalizedSong(song)),
 				)
 
 				const seen = new Set(songs.map((song) => song.id))
@@ -432,20 +416,21 @@ const handleGeniusFallback = async (
 					}
 				}
 
-				// Cache the results now that we have them
 				const songDTOs = songs.map(toSearchSongDTO)
 				await cacheSearchResults(trimmedQuery, songDTOs, confidence)
 
 				return { performedGenius, autoContinued }
 			} else {
-				console.warn(`[Genius Search] No results found for query: "${trimmedQuery}"`)
+				console.warn(
+					`[Genius Search] No results found for query: "${trimmedQuery}"`,
+				)
 			}
 		} catch (error) {
-			console.error(`[Genius Search Error] Failed to search Genius for query "${trimmedQuery}":`, error)
-			// Continue with local results only - don't throw error to user
+			console.error(
+				`[Genius Search Error] Failed to search Genius for query "${trimmedQuery}":`,
+				error,
+			)
 		} finally {
-			// Clear the in-progress marker regardless of success or failure
-			// The marker will be replaced with cached results on success
 			await clearGeniusCallInProgress(trimmedQuery)
 		}
 	}
@@ -457,81 +442,92 @@ const determineResponseSource = (
 	performedGenius: boolean,
 	forceGenius: boolean,
 	songs: SongSearchResult[],
-	similarityHighCount: number
+	similarityHighCount: number,
 ): SongSearchResponse['source'] => {
-	// If forcing Genius or Genius was performed, determine source based on data origin
 	if (forceGenius || performedGenius) {
-		// If we have both Genius results and database results, it's mixed
 		if (performedGenius && similarityHighCount > 0) {
 			return 'mixed'
 		}
-		// Otherwise, it's purely from Genius
 		return 'genius'
 	}
 
-	// If no Genius involvement and we have database results
 	if (songs.length > 0) {
 		return 'database'
 	}
 
-	// Fallback (shouldn't happen in normal flow)
 	return 'genius'
 }
 
-export async function searchSongs({
-	query,
-	source,
-}: {
-	query: string
-	source?: string | null
-}): Promise<SongSearchResponse> {
-	const trimmedQuery = query.trim()
-	const normalizedQuery = normalizeQuery(trimmedQuery)
-	const forceGenius = source === 'genius'
+// GET /api/search - 搜索歌曲
+export async function GET(request: NextRequest) {
+	try {
+		const { searchParams } = request.nextUrl
+		const query = searchParams.get('query')
+		const source = searchParams.get('source')
 
-	// Check cache first if not forcing Genius
-	const cachedResponse = await checkCacheResults(normalizedQuery, forceGenius)
-	if (cachedResponse) {
-		return cachedResponse
-	}
+		if (!query) {
+			return NextResponse.json(
+				{ error: 'Query parameter is required' },
+				{ status: 400 },
+			)
+		}
 
-	// Perform local search
-	const { songs, similarityHighCount, similarityMediumCount } =
-		await performLocalSearch(trimmedQuery)
+		const trimmedQuery = query.trim()
+		const normalizedQuery = normalizeQuery(trimmedQuery)
+		const forceGenius = source === 'genius'
 
-	const confidence = determineConfidence(
-		similarityHighCount,
-		similarityMediumCount,
-		songs.length
-	)
+		// Check cache first if not forcing Genius
+		const cachedResponse = await checkCacheResults(normalizedQuery, forceGenius)
+		if (cachedResponse) {
+			return NextResponse.json(cachedResponse)
+		}
 
-	// Handle Genius fallback if needed
-	const { performedGenius, autoContinued } = await handleGeniusFallback(
-		trimmedQuery,
-		forceGenius,
-		songs,
-		confidence
-	)
+		// Perform local search
+		const { songs, similarityHighCount, similarityMediumCount } =
+			await performLocalSearch(trimmedQuery)
 
-	// If no Genius was needed, cache the results
-	if (!forceGenius && !performedGenius) {
-		const songDTOs = songs.map(toSearchSongDTO)
-		await cacheSearchResults(normalizedQuery, songDTOs, confidence)
-	}
+		const confidence = determineConfidence(
+			similarityHighCount,
+			similarityMediumCount,
+			songs.length,
+		)
 
-	const responseSource = determineResponseSource(
-		performedGenius,
-		forceGenius,
-		songs,
-		similarityHighCount
-	)
-	const resultDTOs = songs.map(toSearchSongDTO)
+		// Handle Genius fallback if needed
+		const { performedGenius, autoContinued } = await handleGeniusFallback(
+			trimmedQuery,
+			forceGenius,
+			songs,
+			confidence,
+		)
 
-	return {
-		source: responseSource,
-		songs: resultDTOs,
-		canSearchGenius: !forceGenius,
-		performedGenius,
-		autoContinued,
+		// If no Genius was needed, cache the results
+		if (!forceGenius && !performedGenius) {
+			const songDTOs = songs.map(toSearchSongDTO)
+			await cacheSearchResults(normalizedQuery, songDTOs, confidence)
+		}
+
+		const responseSource = determineResponseSource(
+			performedGenius,
+			forceGenius,
+			songs,
+			similarityHighCount,
+		)
+		const resultDTOs = songs.map(toSearchSongDTO)
+
+		const response: SongSearchResponse = {
+			source: responseSource,
+			songs: resultDTOs,
+			canSearchGenius: !forceGenius,
+			performedGenius,
+			autoContinued,
+		}
+
+		return NextResponse.json(response)
+	} catch (error) {
+		console.error('Error searching songs:', error)
+		return NextResponse.json(
+			{ error: 'Internal server error' },
+			{ status: 500 },
+		)
 	}
 }
